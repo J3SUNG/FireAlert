@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { getMap } from "./mapModule";
 
 interface FireItem {
   index: string;
@@ -21,6 +22,7 @@ function App() {
       }
     };
 
+    getMap("map");
     fetchData();
   }, []);
 
@@ -45,6 +47,18 @@ function App() {
           ))}
         </tbody>
       </table>
+
+      <div className="flex flex-col items-center">
+        <h1 className="text-lg font-bold my-4">🔥 산불 복구 지도</h1>
+        <div
+          id="map"
+          style={{
+            height: "600px",
+            width: "100%",
+            border: "1px solid black",
+          }}
+        />
+      </div>
     </div>
   );
 }
