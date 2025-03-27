@@ -5,6 +5,12 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5173,
+    strictPort: true,
+    fs: {
+      strict: false,
+      allow: ['..'], // 상위 디렉토리에도 접근 허용
+    },
     proxy: {
       "/api": {
         target: "http://openapi.forest.go.kr",
