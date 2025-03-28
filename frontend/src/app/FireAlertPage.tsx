@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ForestFireList } from '../../../features/forest-fire-list/ui/ForestFireList';
-import { ForestFireData } from '../../../shared/types/forestFire';
-import { ModifiedForestFireMap } from '../../../features/forest-fire-map';
-import { forestFireService, getForestFireStatistics } from '../../../shared/services/forestFireService';
+import { ForestFireList } from '../features/forest-fire-list/ui/ForestFireList';
+import { ForestFireData } from '../shared/types/forestFire';
+import { ModifiedForestFireMap } from '../features/forest-fire-map';
+import { forestFireService, getForestFireStatistics } from '../shared/services/forestFireService';
 
 // 인라인 스타일 정의
 const styles = {
