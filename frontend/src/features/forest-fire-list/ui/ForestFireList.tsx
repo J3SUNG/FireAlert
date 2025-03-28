@@ -23,11 +23,12 @@ export const ForestFireList: FC<ForestFireListProps> = ({
   });
 
   const containerStyle: React.CSSProperties = {
-    height: '100%'
+    height: '100%',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
   };
   
   const filterContainerStyle: React.CSSProperties = {
-    padding: '16px 16px 8px',
+    padding: '12px 16px 8px',
     borderBottom: '1px solid #e5e7eb',
     backgroundColor: '#f9fafb'
   };
@@ -36,17 +37,23 @@ export const ForestFireList: FC<ForestFireListProps> = ({
     display: 'flex',
     gap: '8px',
     overflowX: 'auto',
-    paddingBottom: '4px'
+    paddingBottom: '4px',
+    background: '#f1f5f9',
+    padding: '4px',
+    borderRadius: '18px',
   };
   
   const buttonBaseStyle: React.CSSProperties = {
     padding: '4px 12px',
-    borderRadius: '9999px',
+    borderRadius: '16px',
     fontSize: '12px',
     cursor: 'pointer',
     border: 'none',
     outline: 'none',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    transition: 'all 0.2s ease',
+    backgroundColor: 'transparent',
+    fontWeight: '500'
   };
   
   const getButtonStyle = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
@@ -84,15 +91,16 @@ export const ForestFireList: FC<ForestFireListProps> = ({
   };
   
   const listContainerStyle: React.CSSProperties = {
-    padding: '8px',
+    padding: '12px',
     overflowY: 'auto',
-    height: showFilter ? 'calc(100% - 50px)' : '100%'
+    height: showFilter ? 'calc(100% - 50px)' : '100%',
+    backgroundColor: '#ffffff'
   };
   
   const fireListStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px'
+    gap: '12px'
   };
   
   const emptyMessageStyle: React.CSSProperties = {

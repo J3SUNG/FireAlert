@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ForestFireList } from '../../features/forest-fire-list';
 import { ForestFireMap } from '../../features/forest-fire-map';
-import { ForestFireData, SAMPLE_FOREST_FIRE_DATA } from '../../shared/types/forestFire';
+import { ForestFireData } from '../../shared/types/forestFire';
+import { forestFireService } from '../../shared/services/forestFireService';
 
 export const HomePage: React.FC = () => {
   const [forestFires, setForestFires] = useState<ForestFireData[]>([]);
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'contained' | 'extinguished'>('all');
 
   // 산불 데이터 가져오기
@@ -14,17 +16,14 @@ export const HomePage: React.FC = () => {
     const fetchForestFires = async () => {
       try {
         setIsLoading(true);
-        // 실제 환경에서는 API 호출로 대체
-        // const response = await axios.get('/api/forest-fires');
-        // setForestFires(response.data);
-        
-        // 샘플 데이터 사용
-        setTimeout(() => {
-          setForestFires(SAMPLE_FOREST_FIRE_DATA);
-          setIsLoading(false);
-        }, 800);
+        setError(null);
+        // API 호출
+        const data = await forestFireService.getForestFires();
+        setForestFires(data);
       } catch (error) {
         console.error('산불 데이터를 불러오는데 실패했습니다.', error);
+        setError('데이터를 불러오는데 문제가 발생했습니다. 다시 시도해주세요.');
+      } finally {
         setIsLoading(false);
       }
     };
@@ -152,6 +151,38 @@ export const HomePage: React.FC = () => {
   const loadingTextStyle: React.CSSProperties = {
     fontSize: '18px',
     color: '#4b5563'
+  };
+
+  const errorStyle: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    zIndex: 50,
+    padding: '20px'
+  };
+
+  const errorContentStyle: React.CSSProperties = {
+    maxWidth: '400px',
+    textAlign: 'center'
+  };
+
+  const errorMessageStyle: React.CSSProperties = {
+    fontSize: '16px',
+    color: '#ef4444',
+    marginBottom: '16px'
+  };
+
+  const retryButtonStyle: React.CSSProperties = {
+    padding: '8px 16px',
+    backgroundColor: '#3b82f6',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '14px'
   };
 
   const mapAreaStyle: React.CSSProperties = {
@@ -316,6 +347,18 @@ export const HomePage: React.FC = () => {
             <div style={loadingContentStyle}>
               <div style={loadingCircleStyle}></div>
               <div style={loadingTextStyle}>산불 데이터를 불러오는 중...</div>
+            </div>
+          </div>
+        ) : error ? (
+          <div style={errorStyle}>
+            <div style={errorContentStyle}>
+              <div style={errorMessageStyle}>{error}</div>
+              <button 
+                style={retryButtonStyle}
+                onClick={() => window.location.reload()}
+              >
+                다시 시도
+              </button>
             </div>
           </div>
         ) : (

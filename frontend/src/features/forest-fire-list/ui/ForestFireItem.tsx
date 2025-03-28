@@ -7,6 +7,8 @@ interface ForestFireItemProps {
   isSelected?: boolean;
 }
 
+// 리스코프 치환 원칙(LSP)을 고려하여 설계된 컴포넌트
+// 상위 타입인 ForestFireData를 파라미터로 받아 처리
 export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSelected }) => {
   const handleClick = () => {
     if (onSelect) {
@@ -14,16 +16,25 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     }
   };
 
+  // 진화율에 따라 색상 배정
+  const getExtinguishPercentageColor = (percentage: string): string => {
+    const value = parseInt(percentage, 10);
+    if (value === 100) return '#22c55e'; // 완료: 초록색
+    if (value >= 50) return '#f97316';  // 50% 이상: 주황색
+    return '#ef4444';                   // 50% 미만: 빨강색
+  };
+
   // 스타일 정의
   const containerStyle: React.CSSProperties = {
-    padding: '12px',
+    padding: '14px',
     border: '1px solid',
     borderColor: isSelected ? '#3b82f6' : '#e5e7eb',
-    borderRadius: '8px',
-    backgroundColor: isSelected ? '#eff6ff' : 'white',
+    borderRadius: '10px',
+    backgroundColor: isSelected ? '#f0f7ff' : 'white',
     cursor: 'pointer',
-    boxShadow: isSelected ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' : 'none',
-    transition: 'all 0.2s ease'
+    boxShadow: isSelected ? '0 4px 8px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' : 'none',
+    transition: 'all 0.2s ease',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
   };
 
   const contentStyle: React.CSSProperties = {
@@ -37,10 +48,11 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
   };
 
   const titleStyle: React.CSSProperties = {
-    fontSize: '14px',
-    fontWeight: 500,
+    fontSize: '15px',
+    fontWeight: 600,
     color: '#111827',
-    marginBottom: '4px'
+    marginBottom: '6px',
+    letterSpacing: '-0.3px'
   };
 
   const metaStyle: React.CSSProperties = {
@@ -50,12 +62,60 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     color: '#6b7280'
   };
 
+  const provinceStyle: React.CSSProperties = {
+    fontSize: '12px',
+    color: '#4b5563',
+    marginBottom: '2px',
+    fontWeight: isSelected ? 500 : 'normal'
+  };
+
   const badgeContainerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
     gap: '4px',
     marginLeft: '8px'
+  };
+
+  // 진화율과 대응단계를 포함한 정보 표시
+  const renderSeverityBadge = (fire: ForestFireData) => {
+    return (
+      <span style={getSeverityBadgeStyle(fire.severity)}>
+        대응단계: {fire.responseLevelName || getResponseLevelLabel(fire.severity)}
+      </span>
+    );
+  };
+
+  // 상태 배지 표시 (진화율 포함)
+  const renderStatusBadge = (fire: ForestFireData) => {
+    // 진화율 추출 및 형식화
+    const percentage = fire.extinguishPercentage || '0';
+    const percentageNum = parseInt(percentage, 10);
+    
+    // 진화율에 따라 색상 설정
+    if (fire.status === 'active' || fire.status === 'contained') {
+      const percentColor = getExtinguishPercentageColor(percentage);
+      const customStyle = {
+        ...getStatusBadgeStyle(fire.status),
+        backgroundColor: percentageNum === 100 ? '#dcfce7' : percentageNum >= 50 ? '#ffedd5' : '#fee2e2',
+        color: percentColor
+      };
+      
+      return (
+        <span style={customStyle}>
+          {getStatusIcon(fire.status, percentColor)}
+          진화율: {percentage}%
+        </span>
+      );
+    }
+    
+    // 진화완료인 경우
+    return (
+      <span style={getStatusBadgeStyle(fire.status)}>
+        {getStatusIcon(fire.status)}
+        {getStatusLabel(fire.status)}
+      </span>
+    );
   };
 
   const getSeverityBadgeStyle = (severity: ForestFireData['severity']) => {
@@ -85,10 +145,11 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     
     return {
       fontSize: '12px',
-      padding: '2px 8px',
-      borderRadius: '9999px',
+      padding: '3px 8px',
+      borderRadius: '6px',
       backgroundColor: bgColor,
-      color: textColor
+      color: textColor,
+      fontWeight: 500
     };
   };
 
@@ -115,77 +176,91 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     
     return {
       fontSize: '12px',
-      padding: '2px 8px',
-      borderRadius: '9999px',
+      padding: '3px 8px',
+      borderRadius: '6px',
       backgroundColor: bgColor,
       color: textColor,
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      fontWeight: 500
     };
   };
 
   const descriptionStyle: React.CSSProperties = {
     fontSize: '12px',
     color: '#4b5563',
-    marginTop: '4px',
+    marginTop: '8px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
-    WebkitLineClamp: 1,
-    WebkitBoxOrient: 'vertical'
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    lineHeight: '1.4'
   };
   
-  const getStatusIcon = (status: ForestFireData['status']) => {
+  const getStatusIcon = (status: ForestFireData['status'], iconColor?: string) => {
     const baseStyle: React.CSSProperties = {
       display: 'inline-block',
       width: '8px',
       height: '8px',
       borderRadius: '50%',
-      marginRight: '4px'
+      marginRight: '6px'
     };
     
     let style: React.CSSProperties;
     
-    switch (status) {
-      case 'active':
-        style = {
-          ...baseStyle,
-          backgroundColor: '#ef4444',
-          animation: 'pulse 1.5s infinite'
-        };
-        break;
-      case 'contained':
-        style = {
-          ...baseStyle,
-          backgroundColor: '#f97316'
-        };
-        break;
-      case 'extinguished':
-        style = {
-          ...baseStyle,
-          backgroundColor: '#22c55e'
-        };
-        break;
-      default:
-        style = {
-          ...baseStyle,
-          backgroundColor: '#9ca3af'
-        };
+    // 색상이 지정되면 그 색상 사용
+    if (iconColor) {
+      style = {
+        ...baseStyle,
+        backgroundColor: iconColor,
+        animation: status === 'active' ? 'pulse 1.5s infinite' : 'none'
+      };
+    } else {
+      // 기본 색상 사용
+      switch (status) {
+        case 'active':
+          style = {
+            ...baseStyle,
+            backgroundColor: '#ef4444',
+            animation: 'pulse 1.5s infinite'
+          };
+          break;
+        case 'contained':
+          style = {
+            ...baseStyle,
+            backgroundColor: '#f97316'
+          };
+          break;
+        case 'extinguished':
+          style = {
+            ...baseStyle,
+            backgroundColor: '#22c55e'
+          };
+          break;
+        default:
+          style = {
+            ...baseStyle,
+            backgroundColor: '#9ca3af'
+          };
+      }
     }
     
     return <span style={style}></span>;
   };
   
-  const getSeverityLabel = (severity: ForestFireData['severity']) => {
+  // 대응단계 레이블
+  const getResponseLevelLabel = (severity: ForestFireData['severity']) => {
     switch (severity) {
-      case 'low': return '낮음';
-      case 'medium': return '중간';
-      case 'high': return '높음';
-      case 'critical': return '심각';
-      default: return '알 수 없음';
+      case 'low': return '1단계';
+      case 'medium': return '1단계';
+      case 'high': return '2단계';
+      case 'critical': return '3단계';
+      default: return '대응단계 불명';
     }
   };
   
+  // 상태 레이블
   const getStatusLabel = (status: ForestFireData['status']) => {
     switch (status) {
       case 'active': return '진행중';
@@ -210,13 +285,8 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
           </div>
         </div>
         <div style={badgeContainerStyle}>
-          <span style={getSeverityBadgeStyle(fire.severity)}>
-            {getSeverityLabel(fire.severity)}
-          </span>
-          <span style={getStatusBadgeStyle(fire.status)}>
-            {getStatusIcon(fire.status)}
-            {getStatusLabel(fire.status)}
-          </span>
+          {renderSeverityBadge(fire)}
+          {renderStatusBadge(fire)}
         </div>
       </div>
       {fire.description && (
