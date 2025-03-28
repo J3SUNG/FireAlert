@@ -1,0 +1,1 @@
+export { ForestFireMap } from './ui/ForestFireMap';

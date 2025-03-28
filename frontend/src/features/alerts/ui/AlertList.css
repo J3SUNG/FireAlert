@@ -1,0 +1,27 @@
+.alert-list {
+  padding: 16px 0;
+}
+
+.alert-list__loading,
+.alert-list__error,
+.alert-list__empty {
+  padding: 24px;
+  text-align: center;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.alert-list__loading {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.alert-list__error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.alert-list__empty {
+  background-color: #e9ecef;
+  color: #495057;
+}
