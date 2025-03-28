@@ -1,6 +1,7 @@
 import { FC, useState } from 'react';
 import { ForestFireData } from '../../../shared/types/forestFire';
 import { ForestFireItem } from './ForestFireItem';
+import './forest-fire-list.css';
 
 interface ForestFireListProps {
   fires: ForestFireData[];
@@ -22,118 +23,55 @@ export const ForestFireList: FC<ForestFireListProps> = ({
     return fire.status === filter;
   });
 
-  const containerStyle: React.CSSProperties = {
-    height: '100%',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
-  };
-  
-  const filterContainerStyle: React.CSSProperties = {
-    padding: '12px 16px 8px',
-    borderBottom: '1px solid #e5e7eb',
-    backgroundColor: '#f9fafb'
-  };
-  
-  const buttonGroupStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '8px',
-    overflowX: 'auto',
-    paddingBottom: '4px',
-    background: '#f1f5f9',
-    padding: '4px',
-    borderRadius: '18px',
-  };
-  
-  const buttonBaseStyle: React.CSSProperties = {
-    padding: '4px 12px',
-    borderRadius: '16px',
-    fontSize: '12px',
-    cursor: 'pointer',
-    border: 'none',
-    outline: 'none',
-    whiteSpace: 'nowrap',
-    transition: 'all 0.2s ease',
-    backgroundColor: 'transparent',
-    fontWeight: '500'
-  };
-  
-  const getButtonStyle = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
-    let bgColor, textColor;
+  // 버튼 클래스 계산 함수
+  const getButtonClass = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
+    let className = 'forest-fire-list__button';
     
     if (buttonFilter === filter) {
-      switch (buttonFilter) {
-        case 'all': 
-          bgColor = '#3b82f6'; 
-          textColor = 'white';
-          break;
-        case 'active': 
-          bgColor = '#ef4444'; 
-          textColor = 'white';
-          break;
-        case 'contained': 
-          bgColor = '#f97316'; 
-          textColor = 'white';
-          break;
-        case 'extinguished': 
-          bgColor = '#22c55e'; 
-          textColor = 'white';
-          break;
-      }
-    } else {
-      bgColor = '#e5e7eb';
-      textColor = '#4b5563';
+      className += ` forest-fire-list__button--${buttonFilter}-active`;
     }
     
-    return {
-      ...buttonBaseStyle,
-      backgroundColor: bgColor,
-      color: textColor
-    };
+    return className;
   };
-  
-  const listContainerStyle: React.CSSProperties = {
-    padding: '12px',
-    overflowY: 'auto',
-    height: showFilter ? 'calc(100% - 50px)' : '100%',
-    backgroundColor: '#ffffff'
-  };
-  
-  const fireListStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px'
-  };
-  
-  const emptyMessageStyle: React.CSSProperties = {
-    padding: '16px',
-    textAlign: 'center',
-    color: '#6b7280'
+
+  // 컨텐츠 클래스 계산
+  const getContentClass = () => {
+    let className = 'forest-fire-list__content';
+    
+    if (showFilter) {
+      className += ' forest-fire-list__content--with-filter';
+    } else {
+      className += ' forest-fire-list__content--without-filter';
+    }
+    
+    return className;
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="forest-fire-list">
       {showFilter && (
-        <div style={filterContainerStyle}>
-          <div style={buttonGroupStyle}>
+        <div className="forest-fire-list__filter-container">
+          <div className="forest-fire-list__button-group">
             <button 
-              style={getButtonStyle('all')}
+              className={getButtonClass('all')}
               onClick={() => setFilter('all')}
             >
               전체
             </button>
             <button 
-              style={getButtonStyle('active')}
+              className={getButtonClass('active')}
               onClick={() => setFilter('active')}
             >
               진행중
             </button>
             <button 
-              style={getButtonStyle('contained')}
+              className={getButtonClass('contained')}
               onClick={() => setFilter('contained')}
             >
               통제중
             </button>
             <button 
-              style={getButtonStyle('extinguished')}
+              className={getButtonClass('extinguished')}
               onClick={() => setFilter('extinguished')}
             >
               진화완료
@@ -142,9 +80,9 @@ export const ForestFireList: FC<ForestFireListProps> = ({
         </div>
       )}
       
-      <div style={listContainerStyle}>
+      <div className={getContentClass()}>
         {filteredFires.length > 0 ? (
-          <div style={fireListStyle}>
+          <div className="forest-fire-list__items">
             {filteredFires.map(fire => (
               <ForestFireItem 
                 key={fire.id} 
@@ -155,7 +93,7 @@ export const ForestFireList: FC<ForestFireListProps> = ({
             ))}
           </div>
         ) : (
-          <div style={emptyMessageStyle}>
+          <div className="forest-fire-list__empty-message">
             {filter === 'all' 
               ? '산불 데이터가 없습니다.'
               : `${filter === 'active' ? '진행중인' : filter === 'contained' ? '통제중인' : '진화완료된'} 산불이 없습니다.`

@@ -2,6 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ForestFireData } from "../../../shared/types/forestFire";
+import "./map.css";
 
 interface ModifiedForestFireMapProps {
   fires: ForestFireData[];
@@ -75,29 +76,24 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
     // 범례 추가
     const legend = L.control({ position: legendPosition });
     legend.onAdd = function (map) {
-      const div = L.DomUtil.create("div", "info legend");
-      div.style.backgroundColor = "white";
-      div.style.padding = "8px";
-      div.style.borderRadius = "5px";
-      div.style.boxShadow = "0 0 5px rgba(0,0,0,0.2)";
-      div.style.fontSize = "12px";
-
+      const div = L.DomUtil.create("div", "map-legend");
+      
       div.innerHTML = `
-        <h4 style="margin: 0 0 6px 0; font-size: 12px; font-weight: bold;">산불 심각도</h4>
-        <div style="display: flex; align-items: center; margin-bottom: 3px;">
-          <div style="background-color: #ff0000; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
+        <h4 class="map-legend__title">산불 심각도</h4>
+        <div class="map-legend__item">
+          <div class="map-legend__icon map-legend__icon--critical"></div>
           <span>심각</span>
         </div>
-        <div style="display: flex; align-items: center; margin-bottom: 3px;">
-          <div style="background-color: #ff8000; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
+        <div class="map-legend__item">
+          <div class="map-legend__icon map-legend__icon--high"></div>
           <span>높음</span>
         </div>
-        <div style="display: flex; align-items: center; margin-bottom: 3px;">
-          <div style="background-color: #ffff00; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
+        <div class="map-legend__item">
+          <div class="map-legend__icon map-legend__icon--medium"></div>
           <span>중간</span>
         </div>
-        <div style="display: flex; align-items: center;">
-          <div style="background-color: #0080ff; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
+        <div class="map-legend__item">
+          <div class="map-legend__icon map-legend__icon--low"></div>
           <span>낮음</span>
         </div>
       `;
@@ -196,14 +192,6 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
         }
         const geoJsonData = await response.json();
         console.log("시군구 GeoJSON 데이터 로드 성공");
-        
-        // 처음 두 개의 feature를 로그로 출력하여 속성 확인
-        if (geoJsonData.features && geoJsonData.features.length > 0) {
-          console.log('첫 번째 시군구 feature 속성:', geoJsonData.features[0].properties);
-          if (geoJsonData.features.length > 1) {
-            console.log('두 번째 시군구 feature 속성:', geoJsonData.features[1].properties);
-          }
-        }
 
         // 시군구 이름과 중심점 저장용 맵
         const districtLabels = new Map();
@@ -221,15 +209,12 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
             if (feature.properties) {
               // NL_NAME_2, NL_NAME_1을 사용하여 한글 지역명 표시
               const districtName = feature.properties.NL_NAME_2 || feature.properties.NAME_2 || "";
-
               const provinceName = feature.properties.NL_NAME_1 || feature.properties.NAME_1 || "";
-
               const latLng = layer.getBounds().getCenter();
 
               // 시군구 중심점 저장 (라벨 표시용)
               if (districtName) {
                 districtLabels.set(districtName, latLng);
-                console.log(`시군구 이름 추가: ${districtName} (위치: ${latLng.lat.toFixed(4)}, ${latLng.lng.toFixed(4)})`);
               }
 
               // 마우스 오버 툴팁
@@ -258,7 +243,6 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
         }).addTo(map);
 
         // 시군구 이름 라벨 추가 - 한글로 표시
-        console.log("시군구 라벨 추가 시작", districtLabels.size);
         districtLabels.forEach((latLng, name) => {
           // 지도 줌 레벨에 따라 표시 여부 결정
           const icon = L.divIcon({
@@ -302,7 +286,6 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
           // 줌 변경시 스타일 업데이트
           map.on("zoomend", updateMarkerStyle);
         });
-        console.log("시군구 라벨 추가 완료");
 
         // 시군구 레이어 참조 저장
         districtLayerRef.current = districtLayer;
@@ -329,138 +312,66 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
       return;
     }
 
-    console.log("마커 추가 시작", fires.length);
-
     // 기존 마커 정리
     Object.values(markersRef.current).forEach((marker) => {
       marker.remove();
     });
     markersRef.current = {};
 
-    // 산불 심각도에 따른 마커 색상
-    const getSeverityColor = (severity: ForestFireData["severity"]) => {
-      switch (severity) {
-        case "critical":
-          return "#ff0000"; // 빨강
-        case "high":
-          return "#ff8000"; // 주황
-        case "medium":
-          return "#ffff00"; // 노랑
-        case "low":
-          return "#0080ff"; // 파랑
-        default:
-          return "#808080"; // 회색
-      }
-    };
-
-    // 산불 심각도에 따른 마커 크기 (크기 증가)
-    const getSeveritySize = (severity: ForestFireData["severity"]) => {
-      switch (severity) {
-        case "critical":
-          return 28; // 기존 18에서 28로 증가
-        case "high":
-          return 25; // 기존 16에서 25로 증가
-        case "medium":
-          return 22; // 기존 14에서 22로 증가
-        case "low":
-          return 20; // 기존 12에서 20으로 증가
-        default:
-          return 15; // 기존 10에서 15로 증가
-      }
-    };
-
     // 새 마커 추가
     fires.forEach((fire) => {
       const { lat, lng } = fire.coordinates;
-      const severityColor = getSeverityColor(fire.severity);
-      const severitySize = getSeveritySize(fire.severity);
-
-      // 마커 아이콘 설정
+      
+      // 마커 아이콘 설정 - CSS 클래스를 활용한 스타일링
+      const markerClassName = `fire-marker__container fire-marker__container--${fire.severity}`;
+      const activeClass = fire.status === "active" ? " fire-marker__container--active" : "";
+      
       const icon = L.divIcon({
         className: "custom-div-icon",
-        html: `<div style="
-          background-color: ${severityColor}; 
-          width: ${severitySize}px; 
-          height: ${severitySize}px; 
-          border-radius: 50%; 
-          border: 3px solid white;
-          box-shadow: 0 0 6px rgba(0,0,0,0.5);
-          ${fire.status === "active" ? "animation: pulse 1.5s infinite;" : ""}
-        "></div>
-        <style>
-          @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-          }
-        </style>`,
-        iconSize: [severitySize, severitySize],
-        iconAnchor: [severitySize / 2, severitySize / 2],
+        html: `<div class="${markerClassName}${activeClass}"></div>`,
+        iconSize: [28, 28], // 최대 크기로 설정하고 CSS에서 조절
+        iconAnchor: [14, 14],
       });
 
       // 마커 생성 및 추가
       const marker = L.marker([lat, lng], { icon }).addTo(mapRef.current!);
 
       // 툴팁 설정 (hover에서 표시)
-      marker.bindTooltip(
-        `
+      const severityText = fire.severity === "low" ? "낮음" : 
+                         fire.severity === "medium" ? "중간" : 
+                         fire.severity === "high" ? "높음" : "심각";
+                         
+      const statusText = fire.status === "active" ? "진행중" : 
+                       fire.status === "contained" ? "통제중" : "진화완료";
+                       
+      marker.bindTooltip(`
         <div style="font-weight: bold;">${fire.location}</div>
-        <div>${
-          fire.severity === "low"
-            ? "낮음"
-            : fire.severity === "medium"
-            ? "중간"
-            : fire.severity === "high"
-            ? "높음"
-            : "심각"
-        } - ${
-          fire.status === "active" ? "진행중" : fire.status === "contained" ? "통제중" : "진화완료"
-        }</div>
-      `,
-        {
-          permanent: false,
-          direction: "top",
-          className: "fire-tooltip",
-          opacity: 0.9,
-        }
-      );
+        <div>${severityText} - ${statusText}</div>
+      `, {
+        permanent: false,
+        direction: "top",
+        className: "fire-tooltip",
+        opacity: 0.9,
+      });
 
       // 팝업 설정 (클릭 시 표시)
-      marker.bindPopup(
-        `
-        <div style="width: 220px; padding: 5px;">
-          <h3 style="font-weight: bold; margin-bottom: 5px; color: #333;">${fire.location}</h3>
-          <p style="margin: 4px 0; color: #555;"><strong>발생일:</strong> ${fire.date}</p>
-          <p style="margin: 4px 0; color: #555;"><strong>상태:</strong> ${
-            fire.status === "active"
-              ? '<span style="color: red;">진행중</span>'
-              : fire.status === "contained"
-              ? '<span style="color: orange;">통제중</span>'
-              : '<span style="color: green;">진화완료</span>'
-          }</p>
-          <p style="margin: 4px 0; color: #555;"><strong>심각도:</strong> ${
-            fire.severity === "low"
-              ? '<span style="color: blue;">낮음</span>'
-              : fire.severity === "medium"
-              ? '<span style="color: #cc0;">중간</span>'
-              : fire.severity === "high"
-              ? '<span style="color: orange;">높음</span>'
-              : '<span style="color: red;">심각</span>'
-          }</p>
-          <p style="margin: 4px 0; color: #555;"><strong>영향 면적:</strong> ${
-            fire.affectedArea
-          }ha</p>
-          ${
-            fire.description
-              ? `<p style="margin: 8px 0 0; font-style: italic; color: #666; font-size: 0.9em;">${fire.description}</p>`
-              : ""
-          }
+      const statusClass = `fire-popup__status--${fire.status}`;
+      const severityClass = `fire-popup__severity--${fire.severity}`;
+      
+      const popupContent = `
+        <div class="fire-popup">
+          <h3 class="fire-popup__title">${fire.location}</h3>
+          <p class="fire-popup__info"><span class="fire-popup__label">발생일:</span> ${fire.date}</p>
+          <p class="fire-popup__info"><span class="fire-popup__label">상태:</span> <span class="${statusClass}">${statusText}</span></p>
+          <p class="fire-popup__info"><span class="fire-popup__label">심각도:</span> <span class="${severityClass}">${severityText}</span></p>
+          <p class="fire-popup__info"><span class="fire-popup__label">영향 면적:</span> ${fire.affectedArea}ha</p>
+          ${fire.description ? `<p class="fire-popup__description">${fire.description}</p>` : ""}
         </div>
-      `,
-        {
-          maxWidth: 300,
-        }
-      );
+      `;
+      
+      marker.bindPopup(popupContent, {
+        maxWidth: 300,
+      });
 
       // 클릭 이벤트 처리
       marker.on("click", () => {
@@ -472,8 +383,6 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
       // 마커 레퍼런스 저장
       markersRef.current[fire.id] = marker;
     });
-
-    console.log("마커 추가 완료");
   }, [fires, onFireSelect, isMapLoaded]);
 
   // 선택된 산불 처리
@@ -490,137 +399,17 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
     }
   }, [selectedFireId, fires]);
 
-  const containerStyle: React.CSSProperties = {
-    width: "100%",
-    height: "100%",
-  };
-
-  const mapContainerStyle: React.CSSProperties = {
-    width: "100%",
-    height: "calc(100vh - 70px)",
-  };
-
-  const loadingStyle: React.CSSProperties = {
-    position: "absolute",
-    inset: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    zIndex: 10,
-  };
-
-  const loadingContentStyle: React.CSSProperties = {
-    textAlign: "center",
-  };
-
-  const spinnerStyle: React.CSSProperties = {
-    display: "inline-block",
-    height: "32px",
-    width: "32px",
-    borderRadius: "50%",
-    border: "4px solid #e5e7eb",
-    borderTopColor: "#ef4444",
-    animation: "spin 1s linear infinite",
-  };
-
-  const loadingTextStyle: React.CSSProperties = {
-    marginTop: "8px",
-    color: "#4b5563",
-  };
-
   return (
-    <div style={containerStyle}>
-      <div ref={mapContainerRef} style={mapContainerStyle}></div>
+    <div className="forest-fire-map">
+      <div ref={mapContainerRef} className="forest-fire-map__container"></div>
       {!isMapLoaded && (
-        <div style={loadingStyle}>
-          <div style={loadingContentStyle}>
-            <div style={spinnerStyle}></div>
-            <p style={loadingTextStyle}>지도를 불러오는 중...</p>
+        <div className="forest-fire-map__loading">
+          <div className="forest-fire-map__loading-content">
+            <div className="forest-fire-map__spinner"></div>
+            <p className="forest-fire-map__loading-text">지도를 불러오는 중...</p>
           </div>
         </div>
       )}
-      <style>
-        {`
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          
-          .leaflet-tooltip {
-            background-color: white;
-            border: 1px solid rgba(0,0,0,0.2);
-            border-radius: 4px;
-            padding: 5px 8px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-            font-size: 12px;
-            white-space: nowrap;
-            pointer-events: none;
-          }
-          
-          .province-tooltip {
-            background-color: rgba(255, 255, 255, 0.8);
-            border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            font-size: 10px;
-            padding: 3px 6px;
-            pointer-events: none;
-          }
-          
-          .district-tooltip {
-            background-color: rgba(255, 255, 255, 0.9);
-            border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            font-size: 9px;
-            padding: 2px 5px;
-            pointer-events: none;
-          }
-          
-          .fire-tooltip {
-            background-color: white;
-            border: none;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.3);
-            padding: 5px 8px;
-            font-size: 11px;
-            pointer-events: none;
-          }
-          
-          .province-label {
-            background: transparent;
-            border: none;
-          }
-          
-          .province-label-text {
-            color: #1e40af;
-            font-size: 14px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
-            padding: 3px 5px;
-            border-radius: 3px;
-            white-space: nowrap;
-            pointer-events: none;
-            text-align: center;
-          }
-          
-          .district-label {
-            background: transparent;
-            border: none;
-          }
-          
-          .district-label-text {
-            color: #4b5563;
-            font-size: 11px;
-            font-weight: 500;
-            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
-            padding: 2px 4px;
-            border-radius: 2px;
-            white-space: nowrap;
-            pointer-events: none;
-            text-align: center;
-            transition: font-size 0.2s ease;
-          }
-        `}
-      </style>
     </div>
   );
 };
