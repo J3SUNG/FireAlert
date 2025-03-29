@@ -1,1 +1,1 @@
-export { ModifiedForestFireMap } from './ui/ModifiedForestFireMap';
+export { ForestFireMap } from './ui/ForestFireMap';

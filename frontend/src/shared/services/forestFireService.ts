@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ForestFireData } from "../types/forestFire";
+import { provinceShortNames } from "../utils/locationFormat";
 
 // 간소화된 HTTP 요청 함수
 const fetchData = async <T>(url: string): Promise<T> => {
@@ -16,8 +17,16 @@ const fetchData = async <T>(url: string): Promise<T> => {
 export const extractLocation = (location: string, sigungu?: string): { province: string; district: string } => {
   if (!location || location === "") return { province: "기타", district: "" };
 
-  // 시도 약어 매핑
-  const provinceMap: Record<string, string> = {
+  // 시도 약어 매핑을 사용해 원본 시도명과 단축 시도명 매핑
+  const provinceMap: Record<string, string> = {};
+  
+  // 단축명(서울) -> 원본명(서울특별시) 매핑 추가
+  for (const [fullName, shortName] of Object.entries(provinceShortNames)) {
+    provinceMap[shortName] = fullName;
+  }
+  
+  // 기존 약어(강원) -> 원본명(강원도) 매핑 추가
+  Object.assign(provinceMap, {
     '강원': '강원도',
     '경기': '경기도',
     '경남': '경상남도',
@@ -35,7 +44,7 @@ export const extractLocation = (location: string, sigungu?: string): { province:
     '제주': '제주특별자치도',
     '충남': '충청남도',
     '충북': '충청북도',
-  };
+  });
 
   const parts = location.split(" ").filter(part => part.trim() !== "");
   let province = "기타";
@@ -89,39 +98,6 @@ export const getResponseLevel = (issueName: string): ForestFireData["severity"] 
   return "low";
 };
 
-// 기본 좌표 데이터 (GeoJSON 로드가 실패할 경우를 대비)
-const defaultCoordinates: Record<string, { lat: number; lng: number }> = {
-  // 시도별 좌표
-  '강원도': { lat: 37.880, lng: 127.730 },
-  '경기도': { lat: 37.400, lng: 127.550 },
-  '경상남도': { lat: 35.460, lng: 128.210 },
-  '경상북도': { lat: 36.020, lng: 128.940 },
-  '광주광역시': { lat: 35.160, lng: 126.850 },
-  '대구광역시': { lat: 35.870, lng: 128.600 },
-  '대전광역시': { lat: 36.350, lng: 127.380 },
-  '부산광역시': { lat: 35.180, lng: 129.080 },
-  '서울특별시': { lat: 37.570, lng: 126.980 },
-  '세종특별자치시': { lat: 36.480, lng: 127.290 },
-  '울산광역시': { lat: 35.540, lng: 129.310 },
-  '인천광역시': { lat: 37.460, lng: 126.700 },
-  '전라남도': { lat: 34.870, lng: 126.990 },
-  '전라북도': { lat: 35.720, lng: 127.150 },
-  '제주특별자치도': { lat: 33.500, lng: 126.530 },
-  '충청남도': { lat: 36.660, lng: 126.670 },
-  '충청북도': { lat: 36.800, lng: 127.700 },
-  '기타': { lat: 36.500, lng: 127.500 },
-  
-  // 주요 시군구 좌표
-  '서울 강남구': { lat: 37.517, lng: 127.047 },
-  '서울 강서구': { lat: 37.550, lng: 126.849 },
-  '부산 해운대구': { lat: 35.163, lng: 129.163 },
-  '대구 수성구': { lat: 35.858, lng: 128.630 },
-  '인천 중구': { lat: 37.473, lng: 126.621 },
-  '광주 북구': { lat: 35.174, lng: 126.927 },
-  '대전 유성구': { lat: 36.362, lng: 127.356 },
-  '울산 남구': { lat: 35.543, lng: 129.330 },
-};
-
 // GeoJSON 기반 좌표 검색 서비스
 export class GeoJsonService {
   private geoJsonData: any = null;
@@ -136,51 +112,54 @@ export class GeoJsonService {
     if (this.isLoading) return this.loadPromise!; // 로드 중인 경우
 
     this.isLoading = true;
-    this.loadPromise = new Promise<void>(async (resolve) => {
-      try {
-        console.log("GeoJSON 데이터 로드 시도...");
-        // 상대 경로를 사용하여 public 폴더 접근 
-        const response = await fetch('../assets/map/gadm41_KOR_2.json');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP 오류: ${response.status}`);
+    this.loadPromise = new Promise<void>((resolve) => {
+      // Promise 내부에서 비동기 함수 정의
+      const loadData = async () => {
+        try {
+          // 상대 경로를 사용하여 public 폴더 접근 
+          const response = await fetch('../assets/map/gadm41_KOR_2.json');
+          
+          if (!response.ok) {
+            throw new Error(`HTTP 오류: ${response.status}`);
+          }
+          
+          this.geoJsonData = await response.json();
+
+          this.isLoading = false;
+          resolve();
+        } catch (error) {
+          console.error("GeoJSON 데이터 로드 오류:", error);
+          this.loadError = true;
+          this.isLoading = false;
+          resolve(); // 오류가 발생해도 Promise는 resolve
         }
-        
-        this.geoJsonData = await response.json();
-        console.log("GeoJSON 데이터 로드 성공:", this.geoJsonData ? "데이터 있음" : "데이터 없음");
-        this.isLoading = false;
-        resolve();
-      } catch (error) {
-        console.error("GeoJSON 데이터 로드 오류:", error);
+      };
+
+      // 비동기 함수 실행
+      loadData().catch((error) => {
+        console.error("GeoJSON 로드 중 예외 발생:", error);
         this.loadError = true;
         this.isLoading = false;
-        resolve(); // 오류가 발생해도 Promise는 resolve
-      }
+        resolve();
+      });
     });
 
     return this.loadPromise;
   }
 
   // 지역명으로 좌표 검색
-  async getCoordinatesByName(province: string, district?: string): Promise<{ lat: number; lng: number }> {
+  async getCoordinatesByName(province: string, district?: string): Promise<{ lat: number; lng: number } | null> {
     try {
       await this.loadGeoJsonData();
       
-      console.log("좌표 검색 요청:", { province, district });
-      
-      // GeoJSON 데이터가 로드되지 않았을 경우 기본값 사용
+      // GeoJSON 데이터가 로드되지 않았을 경우 null 반환
       if (!this.geoJsonData || !this.geoJsonData.features || this.geoJsonData.features.length === 0) {
-        console.log("GeoJSON 데이터 없음, 기본 좌표 사용");
-        return this.getDefaultCoordinates(province, district);
+        return null;
       }
 
       // 정확한 지역명 검색
       const fullName = district ? `${province} ${district}` : province;
-      if (defaultCoordinates[fullName]) {
-        console.log(`기본 좌표 매핑에서 발견: ${fullName}`);
-        return defaultCoordinates[fullName];
-      }
-
+      
       // 시군구 검색 (district에 값이 있을 경우)
       if (district) {
         const districtFeatures = this.geoJsonData.features.filter((feature: any) => {
@@ -193,11 +172,11 @@ export class GeoJsonService {
           return matchProvince && matchDistrict;
         });
 
-        console.log(`${province} ${district} 검색 결과:`, districtFeatures.length);
+
         
         if (districtFeatures.length > 0) {
           const coords = this.getCentroid(districtFeatures[0]);
-          console.log("GeoJSON에서 찾은 좌표:", coords);
+
           return coords;
         }
       }
@@ -208,7 +187,7 @@ export class GeoJsonService {
         return props.NL_NAME_1 && (props.NL_NAME_1.includes(province) || province.includes(props.NL_NAME_1));
       });
 
-      console.log(`${province} 검색 결과:`, provinceFeatures.length);
+
       
       if (provinceFeatures.length > 0) {
         // 시도의 모든 구역 중앙 좌표 계산
@@ -228,46 +207,25 @@ export class GeoJsonService {
             lat: sumLat / count,
             lng: sumLng / count
           };
-          console.log("시도 평균 좌표:", avgCoords);
+
           return avgCoords;
         }
       }
 
-      // 기본값 반환
-      console.log("좌표를 찾지 못함, 기본 좌표 사용");
-      return this.getDefaultCoordinates(province, district);
+      // 기본값 반환 (데이터가 없음)
+      return null;
       
     } catch (error) {
       console.error("좌표 검색 처리 오류:", error);
-      return this.getDefaultCoordinates(province, district);
+      return null;
     }
-  }
-
-  // 기본 좌표 가져오기
-  private getDefaultCoordinates(province: string, district?: string): { lat: number; lng: number } {
-    // 시군구 좌표 시도
-    if (district) {
-      const fullName = `${province} ${district}`;
-      if (defaultCoordinates[fullName]) {
-        return defaultCoordinates[fullName];
-      }
-    }
-    
-    // 시도 좌표 시도
-    if (defaultCoordinates[province]) {
-      return defaultCoordinates[province];
-    }
-    
-    // 최종 기본값 (한국 중앙)
-    return { lat: 36.5, lng: 127.5 };
   }
 
   // 지역의 중심점 계산
   private getCentroid(feature: any): { lat: number; lng: number } {
     try {
       if (!feature.geometry) {
-        console.warn("형상 정보 없음:", feature);
-        return { lat: 36.5, lng: 127.5 };
+        throw new Error("지오메트리 정보 없음");
       }
       
       // 포인트 타입
@@ -314,11 +272,10 @@ export class GeoJsonService {
         }
       }
 
-      console.warn("지원되지 않는 형상 타입:", feature.geometry.type);
-      return { lat: 36.5, lng: 127.5 };
+      throw new Error(`지원되지 않는 지오메트리 형식: ${feature.geometry.type}`);
     } catch (error) {
       console.error("중심점 계산 오류:", error);
-      return { lat: 36.5, lng: 127.5 };
+      throw error;
     }
   }
 }
@@ -403,13 +360,13 @@ export class ForestFireService {
       const sigungu = typeof item.sigungu === "string" ? item.sigungu : undefined;
       const { province, district } = extractLocation(location, sigungu);
 
-      // 좌표 가져오기 - 각 산불마다 고유한 좌표를 가지도록 일부 랜덤성 추가
-      const baseCoords = await this.geoJsonService.getCoordinatesByName(province, district);
-      const jitter = 0.01; // 최대 1km 정도의 오차 (실제 데이터에서는 제거)
-      const coordinates = {
-        lat: baseCoords.lat + (Math.random() * 2 - 1) * jitter,
-        lng: baseCoords.lng + (Math.random() * 2 - 1) * jitter
-      };
+      // 좌표 가져오기
+      const coordinates = await this.geoJsonService.getCoordinatesByName(province, district);
+      
+      // 좌표를 가져오지 못한 경우 처리를 건너뛰고 다음 데이터로 진행
+      if (!coordinates) {
+        continue;
+      }
 
       // 피해 면적
       const affectedArea = typeof item.area === "number" ? item.area : 0;

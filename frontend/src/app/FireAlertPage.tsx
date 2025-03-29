@@ -1,112 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { ForestFireList } from "../features/forest-fire-list/ui/ForestFireList";
 import { ForestFireData } from "../shared/types/forestFire";
-import { ModifiedForestFireMap } from "../features/forest-fire-map";
-import { forestFireService } from "../shared/services/forestFireService";
+import { ForestFireMap } from "../features/forest-fire-map";
+import { FireStatusSummary } from "./components/FireStatusSummary";
+import { useFireAlertData } from "./hooks/useFireAlertData";
+import { useCurrentTime } from "./hooks/useCurrentTime";
+import { useFireFilterAndSelection } from "./hooks/useFireFilterAndSelection";
 import "./styles/fire-alert.css";
 
 const FireAlertPage: React.FC = () => {
-  const [selectedFilter, setSelectedFilter] = useState<"all" | "active" | "contained" | "extinguished">("all");
-  const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [fires, setFires] = useState<ForestFireData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  // 데이터 로딩 로직을 훅으로 분리
+  const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } = useFireAlertData();
+  
+  // 필터링 및 선택 상태 관리 훅
+  const { selectedFilter, setSelectedFilter, selectedFireId, setSelectedFireId, filteredData, handleFireSelect, getButtonClass, getFilterButtonLabels } = 
+    useFireFilterAndSelection(fires);
+    
+  // 현재 시간 상태 관리 훅
+  const { currentTime, formattedTime, formatDate } = useCurrentTime();
 
-  useEffect(() => {
-    const loadData = async (): Promise<void> => {
-      try {
-        setLoading(true);
-        const data = await forestFireService.getForestFires();
-        setFires(data);
-        setError(null);
-      } catch (err) {
-        console.error("산불 데이터를 가져오는 중 오류 발생:", err);
-        setError("산불 데이터를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    const fetchData = (): null => {
-      loadData().catch((error: unknown) => {
-        console.error("산불 데이터 로드 중 오류:", error);
-      });
-      return null;
-    };
 
-    fetchData();
-  }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+  // 필터 버튼 라벨 데이터
+  const buttonLabels = getFilterButtonLabels(statusCounts);
 
-  const filteredData = fires.filter((fire) => {
-    if (selectedFilter === "all") return true;
-    return fire.status === selectedFilter;
-  });
 
-  const getButtonClass = (filter: "all" | "active" | "contained" | "extinguished"): string => {
-    const className = "fire-alert__button";
 
-    if (filter === selectedFilter) {
-      if (filter === "all") return `${className} fire-alert__button--active`;
-      if (filter === "active") return `${className} fire-alert__button--active-red`;
-      if (filter === "contained") return `${className} fire-alert__button--active-orange`;
-      return `${className} fire-alert__button--active-green`;
-    }
 
-    return className;
-  };
-
-  const statusCounts = {
-    total: fires.length,
-    active: fires.filter((fire) => fire.status === "active").length,
-    contained: fires.filter((fire) => fire.status === "contained").length,
-    extinguished: fires.filter((fire) => fire.status === "extinguished").length,
-  };
-
-  const responseLevelCounts = {
-    level3: fires.filter((f) => f.severity === "critical").length,
-    level2: fires.filter((f) => f.severity === "high").length,
-    level1: fires.filter((f) => f.severity === "medium" || f.severity === "low").length,
-  };
-
-  const getFilterButtonLabels = () => {
-    return {
-      all: `전체 (${statusCounts.total.toString()})`,
-      active: `진화중 (${statusCounts.active.toString()})`,
-      contained: `통제중 (${statusCounts.contained.toString()})`,
-      extinguished: `진화완료 (${statusCounts.extinguished.toString()})`,
-    };
-  };
-
-  const handleFireSelect = (fire: ForestFireData): null => {
-    setSelectedFireId((prevId) => (prevId === fire.id ? undefined : fire.id));
-    return null;
-  };
-
-  const formatDate = (date: Date): string => {
-    return date.toLocaleString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const handleReload = (): null => {
-    window.location.reload();
-    return null;
-  };
 
   return (
     <div className="fire-alert">
@@ -126,7 +48,7 @@ const FireAlertPage: React.FC = () => {
               setSelectedFilter("all");
             }}
           >
-            {getFilterButtonLabels().all}
+            {buttonLabels.all}
           </button>
           <button
             className={getButtonClass("active")}
@@ -134,7 +56,7 @@ const FireAlertPage: React.FC = () => {
               setSelectedFilter("active");
             }}
           >
-            {getFilterButtonLabels().active}
+            {buttonLabels.active}
           </button>
           <button
             className={getButtonClass("contained")}
@@ -142,7 +64,7 @@ const FireAlertPage: React.FC = () => {
               setSelectedFilter("contained");
             }}
           >
-            {getFilterButtonLabels().contained}
+            {buttonLabels.contained}
           </button>
           <button
             className={getButtonClass("extinguished")}
@@ -150,7 +72,7 @@ const FireAlertPage: React.FC = () => {
               setSelectedFilter("extinguished");
             }}
           >
-            {getFilterButtonLabels().extinguished}
+            {buttonLabels.extinguished}
           </button>
         </div>
 
@@ -179,42 +101,19 @@ const FireAlertPage: React.FC = () => {
         ) : (
           <>
             <div className="fire-alert__map-container">
-              <ModifiedForestFireMap
+              <ForestFireMap
                 fires={filteredData}
                 selectedFireId={selectedFireId}
                 onFireSelect={handleFireSelect}
                 legendPosition="bottomleft"
               />
 
-              <div className="fire-alert__status-summary">
-                <h3 className="fire-alert__summary-title">산불 대응단계 현황</h3>
-                <div className="fire-alert__summary-grid">
-                  <div className="fire-alert__summary-item">
-                    <span className="fire-alert__summary-label">총 발생</span>
-                    <span className="fire-alert__summary-value fire-alert__summary-value--total">
-                      {statusCounts.total.toString()}
-                    </span>
-                  </div>
-                  <div className="fire-alert__summary-item">
-                    <span className="fire-alert__summary-label">대응단계 3단계</span>
-                    <span className="fire-alert__summary-value fire-alert__summary-value--active">
-                      {responseLevelCounts.level3.toString()}
-                    </span>
-                  </div>
-                  <div className="fire-alert__summary-item">
-                    <span className="fire-alert__summary-label">대응단계 2단계</span>
-                    <span className="fire-alert__summary-value fire-alert__summary-value--contained">
-                      {responseLevelCounts.level2.toString()}
-                    </span>
-                  </div>
-                  <div className="fire-alert__summary-item">
-                    <span className="fire-alert__summary-label">대응단계 1단계</span>
-                    <span className="fire-alert__summary-value fire-alert__summary-value--extinguished">
-                      {responseLevelCounts.level1.toString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <FireStatusSummary
+                totalCount={statusCounts.total}
+                level3Count={responseLevelCounts.level3}
+                level2Count={responseLevelCounts.level2}
+                level1Count={responseLevelCounts.level1}
+              />
             </div>
 
             <div className="fire-alert__sidebar">

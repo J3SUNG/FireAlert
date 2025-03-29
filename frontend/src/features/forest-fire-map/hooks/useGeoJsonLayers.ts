@@ -40,13 +40,12 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
   useEffect(() => {
     // 지도가 없으면 아무것도 하지 않음
     if (!map) {
-      console.log('지도가 아직 로드되지 않아 GeoJSON을 로드하지 않습니다.');
       return;
     }
 
     const loadProvinces = async (): Promise<void> => {
       try {
-        console.log('시도 GeoJSON 로드 시작');
+
         const response = await fetch(options.provincesUrl);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${String(response.status)}`);
@@ -78,19 +77,18 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
         provincesLayer.addTo(map);
         geoJsonLayersRef.current.provinces = provincesLayer;
         
-        console.log('시도 GeoJSON 데이터 로드 완료');
+
         
         // 시도 로드 후 시군구 로드
         await loadDistricts();
       } catch (error) {
-        console.error("시도 GeoJSON 로드 오류:", error);
         setIsGeoJsonLoaded(true);
       }
     };
 
     const loadDistricts = async (): Promise<void> => {
       try {
-        console.log('시군구 GeoJSON 로드 시작');
+
         const response = await fetch(options.districtsUrl);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${String(response.status)}`);
@@ -122,14 +120,18 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
             
             // 줌 레벨에 따라 표시 여부 설정
             map.on('zoomend', () => {
-              const currentZoom = map.getZoom();
+              try {
+                const currentZoom = map.getZoom();
               if (currentZoom >= 9) {
                 const toolTip = layer.getTooltip();
-                if (toolTip) toolTip.setOpacity(1);
+                  if (toolTip) toolTip.setOpacity(1);
               } else {
                 const toolTip = layer.getTooltip();
-                if (toolTip) toolTip.setOpacity(0);
+                  if (toolTip) toolTip.setOpacity(0);
               }
+            } catch (error) {
+              // 에러 발생 시 무시
+            }
             });
           }
         });
@@ -149,21 +151,19 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
               map.removeLayer(geoJsonLayersRef.current.districts);
             }
           } catch (error) {
-            console.error('줌 이벤트 처리 중 오류:', error);
+            // 에러 발생 시 무시
           }
         });
         
-        console.log('시군구 GeoJSON 데이터 로드 완료');
+
         setIsGeoJsonLoaded(true);
       } catch (error) {
-        console.error("시군구 GeoJSON 로드 오류:", error);
         setIsGeoJsonLoaded(true);
       }
     };
 
     // GeoJSON 로드 시작
     loadProvinces().catch(error => {
-      console.error('GeoJSON 로드 중 예외 발생:', error);
       setIsGeoJsonLoaded(true);
     });
 
@@ -178,7 +178,7 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
           map.removeLayer(geoJsonLayersRef.current.districts);
         }
       } catch (error) {
-        console.error('GeoJSON 레이어 제거 중 오류:', error);
+        // 에러 발생 시 무시
       }
     };
   }, [map, options]);

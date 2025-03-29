@@ -1,19 +1,57 @@
 import { FC, useEffect, useRef, useState } from "react";
+import { MapLoadingIndicator } from "../components/MapLoadingIndicator";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ForestFireData } from "../../../shared/types/forestFire";
+import { formatLocationName } from "../../../shared/utils/locationFormat";
+import "./map.css";
 
 interface ForestFireMapProps {
   fires: ForestFireData[];
   selectedFireId?: string;
   onFireSelect?: (fire: ForestFireData) => void;
+  legendPosition?: L.ControlPosition;
 }
 
-export const ForestFireMap: FC<ForestFireMapProps> = ({ fires, selectedFireId, onFireSelect }) => {
+interface GeoJsonProperties {
+  NL_NAME_1?: string;
+  NL_NAME_2?: string;
+  TYPE_2?: string;
+  [key: string]: unknown;
+}
+
+interface GeoJsonFeature {
+  type: string;
+  properties: GeoJsonProperties;
+  geometry: {
+    type: string;
+    coordinates: unknown;
+  };
+}
+
+interface GeoJsonData {
+  type: string;
+  features: GeoJsonFeature[];
+}
+
+export const ForestFireMap: FC<ForestFireMapProps> = ({
+  fires,
+  selectedFireId,
+  onFireSelect,
+  legendPosition = "bottomleft",
+}) => {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
+  const geoJsonLayersRef = useRef<{
+    provinces?: L.GeoJSON;
+    districts?: L.GeoJSON;
+  }>({});
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
+  const [isGeoJsonLoaded, setIsGeoJsonLoaded] = useState<boolean>(false);
+  
+  // 지도 클릭이 마커 클릭을 통해 발생한 것인지 확인하기 위한 플래그
+  const isMarkerClickRef = useRef(false);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -22,333 +60,369 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({ fires, selectedFireId, o
 
     if (!mapContainerRef.current) return;
 
-    const map = L.map(mapContainerRef.current, {
-      center: [36.0, 127.7], // 한국 중심점
-      zoom: 7,
-      zoomControl: true, // 줌 컨트롤 활성화
-      dragging: true, // 드래그 활성화
-      scrollWheelZoom: true, // 마우스 휠로 줌 활성화
-      // 아날로그 확대/축소 효과를 위한 설정 추가
-      zoomSnap: 0.1, // 줌 단계를 0.1 단위로 세분화
-      zoomDelta: 0.5, // 줌 버튼 클릭 시 0.5 단위로 확대/축소
-      wheelPxPerZoomLevel: 120, // 휠 스크롤 당 확대/축소 정도 조정 (값이 클수록 느리게)
-    });
+    try {
+      // Leaflet 맵 초기화 시 배경색 직접 설정
+      mapContainerRef.current.style.backgroundColor = "#bae6fd";
 
-    // 타일 레이어 추가 (OpenStreetMap)
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19, // 최대 줌 레벨 설정
-    }).addTo(map);
+      // 지도 초기화 - zoomControl을 false로 설정하여 기본 줌 컨트롤 비활성화
+      const map = L.map(mapContainerRef.current, {
+        center: [36.0, 127.7], // 한국 중심점
+        zoom: 7,
+        zoomControl: false, // 기본 줌 컨트롤 비활성화
+        dragging: true,
+        scrollWheelZoom: true,
+        zoomSnap: 0.1,
+        zoomDelta: 0.5,
+        wheelPxPerZoomLevel: 120,
+        minZoom: 6.5, // 최소 줌 레벨 설정
+        maxZoom: 12, // 최대 줌 레벨 설정
+      });
 
-    L.control
-      .zoom({
-        position: "topright",
-      })
-      .addTo(map);
+      // 한국의 경계 설정 - 남서쪽(제주도 포함)과 북동쪽(독도 포함) 좌표
+      const southWest = L.latLng(33.0, 124.5);
+      const northEast = L.latLng(38.7, 131.0);
+      const bounds = L.latLngBounds(southWest, northEast);
 
-    L.control
-      .scale({
-        imperial: false, // 미터법만 사용
-        position: "bottomright",
-      })
-      .addTo(map);
+      // 경계 제한 설정
+      map.setMaxBounds(bounds);
+      map.options.maxBoundsViscosity = 0.8; // 경계를 넘어갈 때 저항감 (0-1)
 
-    mapRef.current = map;
+      // 오른쪽 위에만 줌 컨트롤 추가
+      L.control
+        .zoom({
+          position: "topright",
+        })
+        .addTo(map);
 
-    const legend = new L.Control({ position: "bottomright" });
+      L.control
+        .scale({
+          imperial: false,
+          position: "bottomright",
+        })
+        .addTo(map);
 
-    legend.onAdd = function (): HTMLElement {
-      const div = L.DomUtil.create("div", "info legend");
-      div.style.backgroundColor = "white";
-      div.style.padding = "8px";
-      div.style.borderRadius = "5px";
-      div.style.boxShadow = "0 0 5px rgba(0,0,0,0.2)";
-      div.style.fontSize = "12px";
+      mapRef.current = map;
 
-      div.innerHTML = `
-        <h4 style="margin: 0 0 6px 0; font-size: 12px; font-weight: bold;">산불 심각도</h4>
-        <div style="display: flex; align-items: center; margin-bottom: 3px;">
-          <div style="background-color: #ff0000; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
-          <span>심각</span>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 3px;">
-          <div style="background-color: #ff8000; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
-          <span>높음</span>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 3px;">
-          <div style="background-color: #ffff00; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
-          <span>중간</span>
-        </div>
-        <div style="display: flex; align-items: center;">
-          <div style="background-color: #0080ff; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white; margin-right: 6px;"></div>
-          <span>낮음</span>
-        </div>
-      `;
+      const legendControl = new L.Control({ position: legendPosition });
 
-      return div;
-    };
+      legendControl.onAdd = function (): HTMLElement {
+        const div = L.DomUtil.create("div", "map-legend");
 
-    legend.addTo(map);
+        div.innerHTML = `
+          <h4 class="map-legend__title">산불 심각도</h4>
+          <div class="map-legend__item">
+            <div class="map-legend__icon map-legend__icon--critical"></div>
+            <span>심각</span>
+          </div>
+          <div class="map-legend__item">
+            <div class="map-legend__icon map-legend__icon--high"></div>
+            <span>높음</span>
+          </div>
+          <div class="map-legend__item">
+            <div class="map-legend__icon map-legend__icon--medium"></div>
+            <span>중간</span>
+          </div>
+          <div class="map-legend__item">
+            <div class="map-legend__icon map-legend__icon--low"></div>
+            <span>낮음</span>
+          </div>
+        `;
 
-    setIsMapLoaded(true);
+        return div;
+      };
+
+      legendControl.addTo(map);
+
+      // 배경색 설정 - 하늘색 바다
+      map.getContainer().style.background = "#bae6fd";
+      setIsMapLoaded(true);
+
+      const loadProvinces = async (): Promise<void> => {
+        try {
+          const response = await fetch("/assets/map/gadm41_KOR_1.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${String(response.status)}`);
+          }
+          const data = (await response.json()) as GeoJsonData;
+
+          if (!mapRef.current) return;
+
+          const provincesLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
+            style: () => ({
+              color: "#ffffff", // 흰색 경계선
+              weight: 3, // 시도 경계선 두께 증가
+              opacity: 0.9,
+              fillColor: "#e0f2fe",
+              fillOpacity: 0.95,
+            }),
+            onEachFeature: (feature, layer) => {
+              const properties = feature.properties as GeoJsonProperties;
+              const provinceName = properties.NL_NAME_1 ?? "알 수 없음";
+
+              layer.bindTooltip(provinceName, {
+                permanent: true,
+                direction: "center",
+                className: "province-label",
+              });
+            },
+          }).addTo(mapRef.current);
+
+          geoJsonLayersRef.current.provinces = provincesLayer;
+
+          await loadDistricts();
+        } catch (error) {
+          console.error("시도 GeoJSON 로드 오류:", error);
+          setIsGeoJsonLoaded(true);
+        }
+      };
+
+      const loadDistricts = async (): Promise<void> => {
+        try {
+          const response = await fetch("/assets/map/gadm41_KOR_2.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${String(response.status)}`);
+          }
+          const data = (await response.json()) as GeoJsonData;
+
+          const mapInstance = mapRef.current;
+          if (!mapInstance) return;
+
+          const districtsLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
+            style: () => ({
+              color: "#ffffff", // 흰색 경계선
+              weight: 1.2,
+              opacity: 0.9,
+              fillColor: "transparent",
+              fillOpacity: 0,
+            }),
+            onEachFeature: (feature, layer) => {
+              const properties = feature.properties as GeoJsonProperties;
+              const districtName = properties.NL_NAME_2 ?? "알 수 없음";
+
+              const tooltip = L.tooltip({
+                permanent: true,
+                direction: "center",
+                className: "district-label",
+                opacity: 0,
+              });
+
+              tooltip.setContent(districtName);
+              layer.bindTooltip(tooltip);
+
+              mapInstance.on("zoomend", () => {
+                const currentZoom = mapInstance.getZoom();
+                if (currentZoom >= 9) {
+                  const toolTip = layer.getTooltip();
+                  if (toolTip) toolTip.setOpacity(1);
+                } else {
+                  const toolTip = layer.getTooltip();
+                  if (toolTip) toolTip.setOpacity(0);
+                }
+              });
+            },
+          });
+
+          mapInstance.on("zoomend", () => {
+            const currentZoom = mapInstance.getZoom();
+            if (currentZoom >= 8) {
+              if (!mapInstance.hasLayer(districtsLayer)) {
+                districtsLayer.addTo(mapInstance);
+              }
+            } else if (mapInstance.hasLayer(districtsLayer)) {
+              mapInstance.removeLayer(districtsLayer);
+            }
+          });
+
+          geoJsonLayersRef.current.districts = districtsLayer;
+
+          setIsGeoJsonLoaded(true);
+        } catch (error) {
+          console.error("시군구 GeoJSON 로드 오류:", error);
+          setIsGeoJsonLoaded(true);
+        }
+      };
+
+      void loadProvinces();
+    } catch (error) {
+      console.error("지도 초기화 중 오류 발생:", error);
+      setIsMapLoaded(true);
+      setIsGeoJsonLoaded(true);
+    }
 
     return () => {
-      // cleanup 함수에서는 지도를 제거하지 않음
-      // 컴포넌트가 언마운트될 때만 지도를 제거
-      // 이렇게 하면 리렌더링 시 지도가 계속 유지됨
+      // cleanup 함수: 컴포넌트가 언마운트될 때만 지도를 제거
     };
-  }, []);
+  }, [legendPosition]);
 
   useEffect(() => {
-    if (!mapRef.current || !isMapLoaded) {
+    if (!mapRef.current || !isMapLoaded || !isGeoJsonLoaded) {
       return;
     }
 
-    Object.values(markersRef.current).forEach((marker) => {
-      marker.remove();
-    });
-    markersRef.current = {};
+    try {
+      // 기존 마커 제거
+      Object.values(markersRef.current).forEach((marker) => {
+        marker.remove();
+      });
+      markersRef.current = {};
 
-    const getSeverityColor = (severity: ForestFireData["severity"]): string => {
-      switch (severity) {
-        case "critical":
-          return "#ff0000"; // 빨강
-        case "high":
-          return "#ff8000"; // 주황
-        case "medium":
-          return "#ffff00"; // 노랑
-        case "low":
-          return "#0080ff"; // 파랑
-        default:
-          return "#808080"; // 회색
-      }
-    };
-
-    const getSeveritySize = (severity: ForestFireData["severity"]): number => {
-      switch (severity) {
-        case "critical":
-          return 28; // 기존 18에서 28로 증가
-        case "high":
-          return 25; // 기존 16에서 25로 증가
-        case "medium":
-          return 22; // 기존 14에서 22로 증가
-        case "low":
-          return 20; // 기존 12에서 20으로 증가
-        default:
-          return 15; // 기존 10에서 15로 증가
-      }
-    };
-
-    fires.forEach((fire) => {
-      const { lat, lng } = fire.coordinates;
-      const severityColor = getSeverityColor(fire.severity);
-      const severitySize = getSeveritySize(fire.severity);
-
-      const icon = L.divIcon({
-        className: "custom-div-icon",
-        html: `<div style="
-          background-color: ${severityColor}; 
-          width: ${severitySize.toString()}px; 
-          height: ${severitySize.toString()}px; 
-          border-radius: 50%; 
-          border: 3px solid white;
-          box-shadow: 0 0 6px rgba(0,0,0,0.5);
-          ${fire.status === "active" ? "animation: pulse 1.5s infinite;" : ""}
-        "></div>
-        <style>
-          @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+      // 지도 인스턴스 가져오기
+      const mapInstance = mapRef.current;
+      if (!mapInstance) return;
+      
+      // 기존 클릭 이벤트 제거
+      mapInstance.off('click');
+      
+      // 지도 빈 영역 클릭 이벤트 추가 - 산불 선택 해제 기능
+      mapInstance.on('click', () => {
+        // 약간의 지연을 두어 마커 클릭이 먼저 처리되도록 함
+        setTimeout(() => {
+          // 마커 클릭이 아닌 경우에만 선택 해제 처리
+          if (onFireSelect && selectedFireId && !isMarkerClickRef.current) {
+            // 산불 선택 해제
+            const currentFire = fires.find(f => f.id === selectedFireId);
+            if (currentFire) {
+              onFireSelect(currentFire); // 동일한 산불을 다시 클릭하는 경우 해제됨
+            }
           }
-        </style>`,
-        iconSize: [severitySize, severitySize],
-        iconAnchor: [severitySize / 2, severitySize / 2],
+          
+          // 플래그 초기화
+          isMarkerClickRef.current = false;
+        }, 10); // 짧은 지연 추가
       });
 
-      if (!mapRef.current) return;
-      const marker = L.marker([lat, lng], { icon }).addTo(mapRef.current);
+      fires.forEach((fire) => {
+        const { lat, lng } = fire.coordinates;
 
-      marker.bindTooltip(
-        `
-        <div style="font-weight: bold;">${fire.location}</div>
-        <div>${
+        const markerClassName = `fire-marker__container fire-marker__container--${fire.severity}`;
+        const activeClass = fire.status === "active" ? " fire-marker__container--active" : "";
+
+        // 심각도에 따라 마커 크기 조정 (이름 표시할 공간 필요)
+        const markerSize =
+          fire.severity === "critical"
+            ? 28
+            : fire.severity === "high"
+            ? 25
+            : fire.severity === "medium"
+            ? 22
+            : 20;
+
+        // 지역 이름을 시도 시군구 형식으로 포맷팅
+        const formattedLocation = formatLocationName(fire.location);
+
+        // 마커 아이콘에 포맷팅된 지역 이름 추가
+        const icon = L.divIcon({
+          className: "custom-div-icon",
+          html: `
+            <div class="${markerClassName}${activeClass}"></div>
+            <div class="fire-marker__location">${formattedLocation}</div>
+          `,
+          iconSize: [markerSize, markerSize + 20], // 높이를 증가시켜 텍스트 공간 확보
+          iconAnchor: [markerSize / 2, markerSize / 2 + 10], // 앵커 포인트 조정
+        });
+
+        const mapInstance = mapRef.current;
+        if (!mapInstance) return;
+
+        const marker = L.marker([lat, lng], { icon }).addTo(mapInstance);
+
+        const severityText =
           fire.severity === "low"
             ? "낮음"
             : fire.severity === "medium"
             ? "중간"
             : fire.severity === "high"
             ? "높음"
-            : "심각"
-        } - ${
-          fire.status === "active" ? "진행중" : fire.status === "contained" ? "통제중" : "진화완료"
-        }</div>
-      `,
-        {
+            : "심각";
+
+        const statusText =
+          fire.status === "active" ? "진행중" : fire.status === "contained" ? "통제중" : "진화완료";
+
+        const statusClass = `fire-popup__status--${fire.status}`;
+        const severityClass = `fire-popup__severity--${fire.severity}`;
+
+        let descriptionContent = "";
+        if (typeof fire.description === "string" && fire.description.length > 0) {
+          descriptionContent = `<p class="fire-popup__description">${fire.description}</p>`;
+        }
+
+        // 진화율 색상 계산
+        const getExtinguishPercentageColor = (percentage: string) => {
+          const percentageNum = parseInt(percentage, 10);
+          if (percentageNum < 50) return "#ef4444"; // 빨간색 (50% 미만)
+          if (percentageNum < 100) return "#f97316"; // 주황색 (50% 이상, 100% 미만)
+          return "#22c55e"; // 초록색 (100%)
+        };
+
+        const extinguishContent =
+          fire.status !== "extinguished"
+            ? `<p class="fire-popup__info"><span class="fire-popup__label">진화율:</span> <span style="color: ${getExtinguishPercentageColor(
+                fire.extinguishPercentage || "0"
+              )}">${fire.extinguishPercentage || "0"}%</span></p>`
+            : "";
+
+        // 마커에 호버 시 나타내는 툴팁 내용 추가
+        marker.bindTooltip(`
+          <div class="fire-popup">
+            <h3 class="fire-popup__title">${formattedLocation}</h3>
+            <p class="fire-popup__info"><span class="fire-popup__label">위치:</span> ${fire.location}</p>
+            <p class="fire-popup__info"><span class="fire-popup__label">발생일:</span> ${fire.date}</p>
+            <p class="fire-popup__info"><span class="fire-popup__label">상태:</span> <span class="${statusClass}">${statusText}</span></p>
+            ${extinguishContent}
+            <p class="fire-popup__info"><span class="fire-popup__label">심각도:</span> <span class="${severityClass}">${severityText}</span></p>
+            <p class="fire-popup__info"><span class="fire-popup__label">영향 면적:</span> ${String(fire.affectedArea)}ha</p>
+            ${descriptionContent}
+          </div>
+        `, {
           permanent: false,
           direction: "top",
-          className: "fire-tooltip",
-          opacity: 0.9,
-        }
-      );
+          offset: [0, -25],
+          className: "fire-tooltip-hover",
+          opacity: 0.98
+        });
 
-      let descriptionContent = "";
-      if (typeof fire.description === "string" && fire.description.length > 0) {
-        descriptionContent = `<p style="margin: 8px 0 0; font-style: italic; color: #666; font-size: 0.9em;">${fire.description}</p>`;
-      }
+        marker.on("click", (e) => {
+          // 마커 클릭 시 이벤트가 지도까지 전파되지 않도록 설정
+          L.DomEvent.stopPropagation(e);
+        
+          // 마커 클릭 플래그 설정
+          isMarkerClickRef.current = true;
+        
+          if (onFireSelect) {
+            onFireSelect(fire); // 이미 useFireFilterAndSelection 훅에서 동일한 산불 클릭 시 선택 해제 기능 있음
+          }
+        });
 
-      marker.bindPopup(
-        `
-        <div style="width: 220px; padding: 5px;">
-          <h3 style="font-weight: bold; margin-bottom: 5px; color: #333;">${fire.location}</h3>
-          <p style="margin: 4px 0; color: #555;"><strong>발생일:</strong> ${fire.date}</p>
-          <p style="margin: 4px 0; color: #555;"><strong>상태:</strong> ${
-            fire.status === "active"
-              ? '<span style="color: red;">진행중</span>'
-              : fire.status === "contained"
-              ? '<span style="color: orange;">통제중</span>'
-              : '<span style="color: green;">진화완료</span>'
-          }</p>
-          <p style="margin: 4px 0; color: #555;"><strong>심각도:</strong> ${
-            fire.severity === "low"
-              ? '<span style="color: blue;">낮음</span>'
-              : fire.severity === "medium"
-              ? '<span style="color: #cc0;">중간</span>'
-              : fire.severity === "high"
-              ? '<span style="color: orange;">높음</span>'
-              : '<span style="color: red;">심각</span>'
-          }</p>
-          <p style="margin: 4px 0; color: #555;"><strong>영향 면적:</strong> ${fire.affectedArea.toString()}ha</p>
-          ${descriptionContent}
-        </div>
-      `,
-        {
-          maxWidth: 300,
-        }
-      );
-
-      marker.on("click", () => {
-        if (onFireSelect) {
-          onFireSelect(fire);
-        }
+        markersRef.current[fire.id] = marker;
       });
-
-      markersRef.current[fire.id] = marker;
-    });
-  }, [fires, onFireSelect, isMapLoaded]);
+    } catch (error) {
+      console.error("마커 업데이트 중 오류 발생:", error);
+    }
+  }, [fires, onFireSelect, isMapLoaded, isGeoJsonLoaded, selectedFireId]);
 
   useEffect(() => {
-    if (typeof selectedFireId !== "string" || !mapRef.current) return;
+    if (typeof selectedFireId !== "string" || !mapRef.current || !isGeoJsonLoaded) return;
 
-    const marker = markersRef.current[selectedFireId];
+    try {
+      if (!Object.prototype.hasOwnProperty.call(markersRef.current, selectedFireId)) {
+        return;
+      }
 
-    if (!Object.prototype.hasOwnProperty.call(markersRef.current, selectedFireId)) return;
+      const marker = markersRef.current[selectedFireId];
 
-    marker.openPopup();
-
-    const fire = fires.find((f) => f.id === selectedFireId);
-    if (fire) {
-      mapRef.current.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
+      const fire = fires.find((f) => f.id === selectedFireId);
+      if (fire) {
+        mapRef.current.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
+      }
+    } catch (error) {
+      console.error("선택된 마커 처리 중 오류 발생:", error);
     }
-  }, [selectedFireId, fires]);
-
-  const containerStyle: React.CSSProperties = {
-    width: "100%",
-    height: "100%",
-  };
-
-  const mapContainerStyle: React.CSSProperties = {
-    width: "100%",
-    height: "calc(100vh - 70px)",
-  };
-
-  const loadingStyle: React.CSSProperties = {
-    position: "absolute",
-    inset: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    zIndex: 10,
-  };
-
-  const loadingContentStyle: React.CSSProperties = {
-    textAlign: "center",
-  };
-
-  const spinnerStyle: React.CSSProperties = {
-    display: "inline-block",
-    height: "32px",
-    width: "32px",
-    borderRadius: "50%",
-    border: "4px solid #e5e7eb",
-    borderTopColor: "#ef4444",
-    animation: "spin 1s linear infinite",
-  };
-
-  const loadingTextStyle: React.CSSProperties = {
-    marginTop: "8px",
-    color: "#4b5563",
-  };
+  }, [selectedFireId, fires, isGeoJsonLoaded]);
 
   return (
-    <div style={containerStyle}>
-      <div ref={mapContainerRef} style={mapContainerStyle}></div>
-      {!isMapLoaded && (
-        <div style={loadingStyle}>
-          <div style={loadingContentStyle}>
-            <div style={spinnerStyle}></div>
-            <p style={loadingTextStyle}>지도를 불러오는 중...</p>
-          </div>
-        </div>
-      )}
-      <style>
-        {`
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          
-          .leaflet-tooltip {
-            background-color: white;
-            border: 1px solid rgba(0,0,0,0.2);
-            border-radius: 4px;
-            padding: 5px 8px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-            font-size: 12px;
-            white-space: nowrap;
-            pointer-events: none;
-          }
-          
-          .province-tooltip {
-            background-color: rgba(255, 255, 255, 0.8);
-            border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            font-size: 10px;
-            padding: 3px 6px;
-            pointer-events: none;
-          }
-          
-          .district-tooltip {
-            background-color: rgba(255, 255, 255, 0.9);
-            border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            font-size: 9px;
-            padding: 2px 5px;
-            pointer-events: none;
-          }
-          
-          .fire-tooltip {
-            background-color: white;
-            border: none;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.3);
-            padding: 5px 8px;
-            font-size: 11px;
-            pointer-events: none;
-          }
-        `}
-      </style>
+    <div className="forest-fire-map">
+      <div ref={mapContainerRef} className="forest-fire-map__container"></div>
+      <MapLoadingIndicator isLoading={!isMapLoaded || !isGeoJsonLoaded} />
     </div>
   );
 };

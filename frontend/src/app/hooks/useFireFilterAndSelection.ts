@@ -4,7 +4,7 @@ import { ForestFireData } from '../../shared/types/forestFire';
 /**
  * 산불 필터링 및 선택 상태를 관리하는 커스텀 훅 (SRP)
  */
-export function useFireFilterAndSelection() {
+export function useFireFilterAndSelection(fires: ForestFireData[]) {
   const [selectedFilter, setSelectedFilter] = useState<"all" | "active" | "contained" | "extinguished">("all");
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
 
@@ -48,11 +48,15 @@ export function useFireFilterAndSelection() {
     };
   };
 
+  // 현재 필터에 따라 데이터 필터링
+  const filteredData = filterFires(fires);
+
   return {
     selectedFilter,
     setSelectedFilter,
     selectedFireId,
-    filterFires,
+    setSelectedFireId,
+    filteredData,
     handleFireSelect,
     getButtonClass,
     getFilterButtonLabels

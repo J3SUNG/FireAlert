@@ -55,9 +55,24 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     return className;
   };
 
-  const getStatusBadgeClass = (status: ForestFireData['status']) => {
+  const getStatusBadgeClass = (status: ForestFireData['status'], percentage?: string) => {
     let className = 'forest-fire-item__status-badge';
     
+    // 진화율에 따른 배경색 결정
+    if (percentage) {
+      const percentNum = parseInt(percentage, 10);
+      if (!isNaN(percentNum)) {
+        if (percentNum >= 100) {
+          return `${className} forest-fire-item__status-badge--extinguished`; // 완료 - 초록색
+        } else if (percentNum >= 50) {
+          return `${className} forest-fire-item__status-badge--contained`; // 50% 이상 - 주황색
+        } else {
+          return `${className} forest-fire-item__status-badge--active`; // 50% 미만 - 빨간색
+        }
+      }
+    }
+    
+    // 기본 상태 기반 배경색
     switch (status) {
       case 'active':
         className += ' forest-fire-item__status-badge--active';
@@ -99,27 +114,15 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     );
   };
 
-  const getExtinguishPercentageStyle = (percentage: string) => {
-    const percentageNum = parseInt(percentage, 10);
-    
-    if (percentageNum < 50) {
-      return { color: '#ef4444' }; // 빨간색 (50% 미만)
-    } else if (percentageNum < 100) {
-      return { color: '#f97316' }; // 주황색 (50% 이상, 100% 미만)
-    } else {
-      return { color: '#22c55e' }; // 초록색 (100%)
-    }
-  };
 
   const renderStatusBadge = (fire: ForestFireData) => {
     const percentage = fire.extinguishPercentage ?? '0';
-    const percentageStyle = getExtinguishPercentageStyle(percentage);
     
     if (fire.status === 'active' || fire.status === 'contained') {
       return (
-        <span className={getStatusBadgeClass(fire.status)}>
+        <span className={getStatusBadgeClass(fire.status, percentage)}>
           <span className={getStatusIconClass(fire.status)}></span>
-          진화율: <span style={percentageStyle}>{percentage}%</span>
+          진화율: <span>{percentage}%</span>
         </span>
       );
     }
