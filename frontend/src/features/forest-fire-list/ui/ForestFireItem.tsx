@@ -8,8 +8,6 @@ interface ForestFireItemProps {
   isSelected?: boolean;
 }
 
-// 리스코프 치환 원칙(LSP)을 고려하여 설계된 컴포넌트
-// 상위 타입인 ForestFireData를 파라미터로 받아 처리
 export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSelected }) => {
   const handleClick = () => {
     if (onSelect) {
@@ -17,7 +15,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     }
   };
 
-  // 대응단계 레이블
   const getResponseLevelLabel = (severity: ForestFireData['severity']) => {
     switch (severity) {
       case 'low': return '1단계';
@@ -28,7 +25,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     }
   };
   
-  // 상태 레이블
   const getStatusLabel = (status: ForestFireData['status']) => {
     switch (status) {
       case 'active': return '진행중';
@@ -38,7 +34,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     }
   };
 
-  // 심각도 배지 클래스
   const getSeverityBadgeClass = (severity: ForestFireData['severity']) => {
     let className = 'forest-fire-item__severity-badge';
     
@@ -60,7 +55,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     return className;
   };
 
-  // 상태 배지 클래스
   const getStatusBadgeClass = (status: ForestFireData['status']) => {
     let className = 'forest-fire-item__status-badge';
     
@@ -79,7 +73,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     return className;
   };
 
-  // 상태 아이콘 클래스
   const getStatusIconClass = (status: ForestFireData['status']) => {
     let className = 'forest-fire-item__status-icon';
     
@@ -98,31 +91,39 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
     return className;
   };
 
-  // 진화율과 대응단계를 포함한 정보 표시
   const renderSeverityBadge = (fire: ForestFireData) => {
     return (
       <span className={getSeverityBadgeClass(fire.severity)}>
-        대응단계: {fire.responseLevelName || getResponseLevelLabel(fire.severity)}
+        대응단계: {fire.responseLevelName ?? getResponseLevelLabel(fire.severity)}
       </span>
     );
   };
 
-  // 상태 배지 표시 (진화율 포함)
-  const renderStatusBadge = (fire: ForestFireData) => {
-    // 진화율 추출 및 형식화
-    const percentage = fire.extinguishPercentage || '0';
+  const getExtinguishPercentageStyle = (percentage: string) => {
+    const percentageNum = parseInt(percentage, 10);
     
-    // 상태 표시
+    if (percentageNum < 50) {
+      return { color: '#ef4444' }; // 빨간색 (50% 미만)
+    } else if (percentageNum < 100) {
+      return { color: '#f97316' }; // 주황색 (50% 이상, 100% 미만)
+    } else {
+      return { color: '#22c55e' }; // 초록색 (100%)
+    }
+  };
+
+  const renderStatusBadge = (fire: ForestFireData) => {
+    const percentage = fire.extinguishPercentage ?? '0';
+    const percentageStyle = getExtinguishPercentageStyle(percentage);
+    
     if (fire.status === 'active' || fire.status === 'contained') {
       return (
         <span className={getStatusBadgeClass(fire.status)}>
           <span className={getStatusIconClass(fire.status)}></span>
-          진화율: {percentage}%
+          진화율: <span style={percentageStyle}>{percentage}%</span>
         </span>
       );
     }
     
-    // 진화완료인 경우
     return (
       <span className={getStatusBadgeClass(fire.status)}>
         <span className={getStatusIconClass(fire.status)}></span>
@@ -133,7 +134,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
 
   return (
     <div 
-      className={`forest-fire-item ${isSelected ? 'forest-fire-item--selected' : ''}`}
+      className={`forest-fire-item ${isSelected === true ? 'forest-fire-item--selected' : ''}`}
       onClick={handleClick}
     >
       <div className="forest-fire-item__content">
@@ -150,7 +151,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
           {renderStatusBadge(fire)}
         </div>
       </div>
-      {fire.description && (
+      {typeof fire.description === 'string' && fire.description !== '' && (
         <p className="forest-fire-item__description">{fire.description}</p>
       )}
     </div>

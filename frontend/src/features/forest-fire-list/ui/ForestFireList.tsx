@@ -23,7 +23,6 @@ export const ForestFireList: FC<ForestFireListProps> = ({
     return fire.status === filter;
   });
 
-  // 버튼 클래스 계산 함수
   const getButtonClass = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
     let className = 'forest-fire-list__button';
     
@@ -34,7 +33,6 @@ export const ForestFireList: FC<ForestFireListProps> = ({
     return className;
   };
 
-  // 컨텐츠 클래스 계산
   const getContentClass = () => {
     let className = 'forest-fire-list__content';
     
@@ -54,25 +52,25 @@ export const ForestFireList: FC<ForestFireListProps> = ({
           <div className="forest-fire-list__button-group">
             <button 
               className={getButtonClass('all')}
-              onClick={() => setFilter('all')}
+              onClick={(): void => { setFilter('all'); }}
             >
               전체
             </button>
             <button 
               className={getButtonClass('active')}
-              onClick={() => setFilter('active')}
+              onClick={(): void => { setFilter('active'); }}
             >
               진행중
             </button>
             <button 
               className={getButtonClass('contained')}
-              onClick={() => setFilter('contained')}
+              onClick={(): void => { setFilter('contained'); }}
             >
               통제중
             </button>
             <button 
               className={getButtonClass('extinguished')}
-              onClick={() => setFilter('extinguished')}
+              onClick={(): void => { setFilter('extinguished'); }}
             >
               진화완료
             </button>

@@ -17,22 +17,20 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
-  const provinceLayerRef = useRef<L.GeoJSON | null>(null);
-  const districtLayerRef = useRef<L.GeoJSON | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
 
-  // 초기 지도 설정
+
   useEffect(() => {
     if (mapRef.current) {
       return; // 이미 맵이 있으면 다시 초기화하지 않음
     }
 
-    // 지도 컨테이너가 존재하는지 확인
+
     if (!mapContainerRef.current) return;
 
-    console.log("지도 초기화 시작");
 
-    // 지도 초기화
+
+
     const map = L.map(mapContainerRef.current, {
       center: [36.0, 127.7], // 한국 중심점
       zoom: 7,
@@ -51,23 +49,25 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
       maxZoom: 19 // 최대 줌 레벨 설정
     }).addTo(map);
 
-    // 줌 컨트롤 위치 설정
+
     L.control.zoom({
       position: 'topright'
     }).addTo(map);
 
-    // 스케일 컨트롤 추가
+
     L.control.scale({
       imperial: false, // 미터법만 사용
       position: 'bottomright'
     }).addTo(map);
 
-    // 맵 레퍼런스 저장
+
     mapRef.current = map;
     
-    // 범례 추가
-    const legend = L.control({position: 'bottomright'});
-    legend.onAdd = function(map) {
+
+    const legend = new L.Control({position: 'bottomright'});
+    
+
+    legend.onAdd = function(): HTMLElement {
       const div = L.DomUtil.create('div', 'info legend');
       div.style.backgroundColor = 'white';
       div.style.padding = '8px';
@@ -97,180 +97,11 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
       
       return div;
     };
+    
     legend.addTo(map);
 
-    // 한국 지도 GeoJSON (시도 레벨) 추가
-    const addKoreaProvinces = async () => {
-      try {
-        console.log("한국 시도 GeoJSON 로드 시도");
-        const response = await fetch('/assets/map/gadm41_KOR_1.json');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch GeoJSON: ${response.status} ${response.statusText}`);
-        }
-        const geoJsonData = await response.json();
-        console.log("시도 GeoJSON 데이터 로드 성공");
-        
-        // GeoJSON 스타일 설정
-        const provinceLayer = L.geoJSON(geoJsonData, {
-          style: {
-            color: '#3388ff',
-            weight: 2,
-            opacity: 0.7,
-            fillColor: '#e6f2ff',
-            fillOpacity: 0.1
-          },
-          onEachFeature: (feature, layer) => {
-            if (feature.properties) {
-              const provinceName = feature.properties.NAME_1 || feature.properties.name || '지역 정보 없음';
-              
-              // 광역시/도 이름 직접 표시 (고정 라벨)
-              // 광역시 또는 특별시인 경우만 표시
-              if (provinceName.includes('광역시') || 
-                  provinceName.includes('특별시') || 
-                  provinceName.includes('특별자치시')) {
-                const latLng = layer.getBounds().getCenter();
-                
-                // 광역시 라벨 생성
-                const icon = L.divIcon({
-                  className: 'province-label',
-                  html: `<div class="province-label-text">${provinceName}</div>`,
-                  iconSize: [100, 20],
-                  iconAnchor: [50, 10]
-                });
-                
-                L.marker(latLng, { 
-                  icon: icon, 
-                  interactive: false, 
-                  keyboard: false 
-                }).addTo(map);
-              }
-              
-              // 마우스 오버 툴팁
-              layer.bindTooltip(provinceName, {
-                permanent: false,
-                direction: 'center',
-                className: 'province-tooltip',
-                opacity: 0.9
-              });
-            }
-            
-            layer.on({
-              mouseover: (e) => {
-                const layer = e.target;
-                layer.setStyle({
-                  fillOpacity: 0.3,
-                  fillColor: '#b3d9ff'
-                });
-              },
-              mouseout: (e) => {
-                provinceLayer.resetStyle(e.target);
-              }
-            });
-          }
-        }).addTo(map);
-        
-        // 시도 레이어 참조 저장
-        provinceLayerRef.current = provinceLayer;
-        console.log("한국 시도 지도 GeoJSON 로드 완료");
-        
-        // 시군구 데이터도 로드
-        await addKoreaDistricts();
-      } catch (error) {
-        console.error("한국 시도 지도 GeoJSON 로드 실패:", error);
-      } finally {
-        setIsMapLoaded(true);
-      }
-    };
-    
-    // 한국 지도 GeoJSON (시군구 레벨) 추가
-    const addKoreaDistricts = async () => {
-      try {
-        console.log("한국 시군구 GeoJSON 로드 시도");
-        const response = await fetch('/assets/map/gadm41_KOR_2.json');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch GeoJSON: ${response.status} ${response.statusText}`);
-        }
-        const geoJsonData = await response.json();
-        console.log("시군구 GeoJSON 데이터 로드 성공");
-        
-        // 시군구 이름과 중심점 저장용 맵
-        const districtLabels = new Map();
-        
-        // GeoJSON 스타일 설정
-        const districtLayer = L.geoJSON(geoJsonData, {
-          style: {
-            color: '#666',
-            weight: 0.8,
-            opacity: 0.6,
-            fillColor: '#f5f5f5',
-            fillOpacity: 0.1
-          },
-          onEachFeature: (feature, layer) => {
-            if (feature.properties) {
-              // 시군구명
-              const districtName = feature.properties.NAME_2 || '';
-              const provinceName = feature.properties.NAME_1 || '';
-              const latLng = layer.getBounds().getCenter();
-              
-              // 시군구 중심점 저장 (나중에 라벨 표시용)
-              if (districtName && !provinceName.includes('광역시') && 
-                  !provinceName.includes('특별시') && 
-                  !provinceName.includes('특별자치시')) {
-                districtLabels.set(districtName, latLng);
-              }
-              
-              // 마우스 오버 툴팁
-              const fullName = districtName + (provinceName ? ` (${provinceName})` : '');
-              layer.bindTooltip(fullName, {
-                permanent: false,
-                direction: 'center',
-                className: 'district-tooltip',
-                opacity: 0.9
-              });
-            }
-            
-            layer.on({
-              mouseover: (e) => {
-                const layer = e.target;
-                layer.setStyle({
-                  fillOpacity: 0.3,
-                  fillColor: '#ffe6b3'
-                });
-              },
-              mouseout: (e) => {
-                districtLayer.resetStyle(e.target);
-              }
-            });
-          }
-        }).addTo(map);
-        
-        // 시군구 이름 라벨 추가 (광역시가 아닌 지역)
-        districtLabels.forEach((latLng, name) => {
-          const icon = L.divIcon({
-            className: 'district-label',
-            html: `<div class="district-label-text">${name}</div>`,
-            iconSize: [80, 20],
-            iconAnchor: [40, 10]
-          });
-          
-          L.marker(latLng, { 
-            icon: icon, 
-            interactive: false,
-            keyboard: false 
-          }).addTo(map);
-        });
-        
-        // 시군구 레이어 참조 저장
-        districtLayerRef.current = districtLayer;
-        console.log("한국 시군구 지도 GeoJSON 로드 완료");
-      } catch (error) {
-        console.error("한국 시군구 지도 GeoJSON 로드 실패:", error);
-      }
-    };
+    setIsMapLoaded(true);
 
-    // 지도 로드 초기화
-    addKoreaProvinces();
-    console.log("지도 초기화 완료");
 
     return () => {
       // cleanup 함수에서는 지도를 제거하지 않음
@@ -279,22 +110,22 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
     };
   }, []);
 
-  // 마커 추가 및 업데이트
+
   useEffect(() => {
     if (!mapRef.current || !isMapLoaded) {
       return;
     }
 
-    console.log("마커 추가 시작", fires.length);
 
-    // 기존 마커 정리
+
+
     Object.values(markersRef.current).forEach(marker => {
       marker.remove();
     });
     markersRef.current = {};
 
-    // 산불 심각도에 따른 마커 색상
-    const getSeverityColor = (severity: ForestFireData['severity']) => {
+
+    const getSeverityColor = (severity: ForestFireData['severity']): string => {
       switch (severity) {
         case 'critical': return '#ff0000'; // 빨강
         case 'high': return '#ff8000';     // 주황
@@ -304,8 +135,8 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
       }
     };
 
-    // 산불 심각도에 따른 마커 크기 (크기 증가)
-    const getSeveritySize = (severity: ForestFireData['severity']) => {
+
+    const getSeveritySize = (severity: ForestFireData['severity']): number => {
       switch (severity) {
         case 'critical': return 28; // 기존 18에서 28로 증가
         case 'high': return 25;     // 기존 16에서 25로 증가
@@ -315,19 +146,19 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
       }
     };
 
-    // 새 마커 추가
+
     fires.forEach(fire => {
       const { lat, lng } = fire.coordinates;
       const severityColor = getSeverityColor(fire.severity);
       const severitySize = getSeveritySize(fire.severity);
       
-      // 마커 아이콘 설정
+  
       const icon = L.divIcon({
         className: 'custom-div-icon',
         html: `<div style="
           background-color: ${severityColor}; 
-          width: ${severitySize}px; 
-          height: ${severitySize}px; 
+          width: ${severitySize.toString()}px; 
+          height: ${severitySize.toString()}px; 
           border-radius: 50%; 
           border: 3px solid white;
           box-shadow: 0 0 6px rgba(0,0,0,0.5);
@@ -344,10 +175,11 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
         iconAnchor: [severitySize/2, severitySize/2]
       });
       
-      // 마커 생성 및 추가
-      const marker = L.marker([lat, lng], { icon }).addTo(mapRef.current!);
+  
+      if (!mapRef.current) return;
+      const marker = L.marker([lat, lng], { icon }).addTo(mapRef.current);
       
-      // 툴팁 설정 (hover에서 표시)
+  
       marker.bindTooltip(`
         <div style="font-weight: bold;">${fire.location}</div>
         <div>${fire.severity === 'low' ? '낮음' : 
@@ -362,7 +194,13 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
         opacity: 0.9
       });
       
-      // 팝업 설정 (클릭 시 표시)
+  
+  
+      let descriptionContent = '';
+      if (typeof fire.description === 'string' && fire.description.length > 0) {
+        descriptionContent = `<p style="margin: 8px 0 0; font-style: italic; color: #666; font-size: 0.9em;">${fire.description}</p>`;
+      }
+
       marker.bindPopup(`
         <div style="width: 220px; padding: 5px;">
           <h3 style="font-weight: bold; margin-bottom: 5px; color: #333;">${fire.location}</h3>
@@ -378,37 +216,40 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
             fire.severity === 'high' ? '<span style="color: orange;">높음</span>' : 
             '<span style="color: red;">심각</span>'
           }</p>
-          <p style="margin: 4px 0; color: #555;"><strong>영향 면적:</strong> ${fire.affectedArea}ha</p>
-          ${fire.description ? `<p style="margin: 8px 0 0; font-style: italic; color: #666; font-size: 0.9em;">${fire.description}</p>` : ''}
+          <p style="margin: 4px 0; color: #555;"><strong>영향 면적:</strong> ${fire.affectedArea.toString()}ha</p>
+          ${descriptionContent}
         </div>
       `, {
         maxWidth: 300
       });
       
-      // 클릭 이벤트 처리
+  
       marker.on('click', () => {
         if (onFireSelect) {
           onFireSelect(fire);
         }
       });
       
-      // 마커 레퍼런스 저장
+  
       markersRef.current[fire.id] = marker;
     });
 
-    console.log("마커 추가 완료");
+
   }, [fires, onFireSelect, isMapLoaded]);
 
-  // 선택된 산불 처리
+
   useEffect(() => {
-    if (!selectedFireId || !markersRef.current[selectedFireId] || !mapRef.current) return;
+    if (typeof selectedFireId !== 'string' || !mapRef.current) return;
     
     const marker = markersRef.current[selectedFireId];
+
+    if (!Object.prototype.hasOwnProperty.call(markersRef.current, selectedFireId)) return;
+    
     marker.openPopup();
     
-    // 선택된 마커의 위치로 지도 중심 이동
+
     const fire = fires.find(f => f.id === selectedFireId);
-    if (fire && mapRef.current) {
+    if (fire) {
       mapRef.current.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
     }
   }, [selectedFireId, fires]);
@@ -509,41 +350,6 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
             padding: 5px 8px;
             font-size: 11px;
             pointer-events: none;
-          }
-          
-          .province-label {
-            background: transparent;
-            border: none;
-          }
-          
-          .province-label-text {
-            color: #1e40af;
-            font-size: 12px;
-            font-weight: bold;
-            text-shadow: 0 0 2px white, 0 0 2px white, 0 0 2px white, 0 0 2px white;
-            background-color: rgba(255, 255, 255, 0.5);
-            padding: 2px 4px;
-            border-radius: 2px;
-            white-space: nowrap;
-            pointer-events: none;
-            text-align: center;
-          }
-          
-          .district-label {
-            background: transparent;
-            border: none;
-          }
-          
-          .district-label-text {
-            color: #4b5563;
-            font-size: 10px;
-            text-shadow: 0 0 2px white, 0 0 2px white, 0 0 2px white, 0 0 2px white;
-            background-color: rgba(255, 255, 255, 0.4);
-            padding: 1px 3px;
-            border-radius: 2px;
-            white-space: nowrap;
-            pointer-events: none;
-            text-align: center;
           }
         `}
       </style>
