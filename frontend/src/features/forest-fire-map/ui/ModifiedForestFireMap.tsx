@@ -56,6 +56,7 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
     if (!mapContainerRef.current) return;
 
     try {
+      // 지도 초기화
       const map = L.map(mapContainerRef.current, {
         center: [36.0, 127.7], // 한국 중심점
         zoom: 7,
@@ -65,7 +66,25 @@ export const ModifiedForestFireMap: FC<ModifiedForestFireMapProps> = ({
         zoomSnap: 0.1,
         zoomDelta: 0.5,
         wheelPxPerZoomLevel: 120,
+        minZoom: 6.5, // 최소 줌 레벨 설정
+        maxZoom: 12  // 최대 줌 레벨 설정
       });
+      
+      // 한국의 경계 설정 - 남서쪽(제주도 포함)과 북동쪽(독도 포함) 좌표
+      const southWest = L.latLng(33.0, 124.5);
+      const northEast = L.latLng(38.7, 131.0);
+      const bounds = L.latLngBounds(southWest, northEast);
+      
+      // 경계 제한 설정
+      map.setMaxBounds(bounds);
+      map.setMinZoom(6.5);
+      map.options.maxBoundsViscosity = 0.8; // 경계를 넘어갈 때 저항감 (0-1)
+
+      // 타일 레이어 추가 (OpenStreetMap)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+      }).addTo(map);
 
       L.control
         .zoom({

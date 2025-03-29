@@ -1,489 +1,449 @@
-import { ForestFireData } from "../types/forestFire";
 import axios from "axios";
-export interface ForestFireService {
-  getForestFires(): Promise<ForestFireData[]>;
-  getFiresByProvince(province: string): Promise<ForestFireData[]>;
-  getFiresByStatus(status: ForestFireData["status"]): Promise<ForestFireData[]>;
-  getFireById(id: string): Promise<ForestFireData | undefined>;
-}
+import { ForestFireData } from "../types/forestFire";
 
-// API 기반 구현
-export class ForestFireServiceImpl implements ForestFireService {
-  private readonly API_URL = "http://localhost:4000/api/fireList";
+// 간소화된 HTTP 요청 함수
+const fetchData = async <T>(url: string): Promise<T> => {
+  try {
+    const response = await axios.get<T>(url);
+    return response.data;
+  } catch (error) {
+    console.error("데이터 요청 오류:", error);
+    throw error;
+  }
+};
 
+// 위치 정보 추출 유틸리티
+export const extractLocation = (location: string, sigungu?: string): { province: string; district: string } => {
+  if (!location || location === "") return { province: "기타", district: "" };
 
-  async getForestFires(): Promise<ForestFireData[]> {
-    try {
-      // 백엔드 API 호출
-      const response = await axios.get<Record<string, unknown>[]>(this.API_URL);
+  // 시도 약어 매핑
+  const provinceMap: Record<string, string> = {
+    '강원': '강원도',
+    '경기': '경기도',
+    '경남': '경상남도',
+    '경북': '경상북도',
+    '광주': '광주광역시',
+    '대구': '대구광역시',
+    '대전': '대전광역시',
+    '부산': '부산광역시',
+    '서울': '서울특별시',
+    '세종': '세종특별자치시',
+    '울산': '울산광역시',
+    '인천': '인천광역시',
+    '전남': '전라남도',
+    '전북': '전라북도',
+    '제주': '제주특별자치도',
+    '충남': '충청남도',
+    '충북': '충청북도',
+  };
 
-      // API 응답 데이터를 ForestFireData 형식으로 변환
-      return this.convertToForestFireData(response.data);
-    } catch (error) {
-      console.error("산불 데이터를 가져오는 중 오류 발생:", error);
-      // 오류 발생 시 테스트 데이터 반환
-      return this.getTestData();
+  const parts = location.split(" ").filter(part => part.trim() !== "");
+  let province = "기타";
+  let district = "";
+
+  // 시도 추출
+  if (parts.length > 0) {
+    // 시도명 확인
+    if (
+      parts[0].includes("도") ||
+      parts[0].includes("시") ||
+      parts[0].includes("특별") ||
+      parts[0].includes("광역")
+    ) {
+      province = parts[0];
+    } 
+    // 약어 처리
+    else if (provinceMap[parts[0]]) {
+      province = provinceMap[parts[0]];
     }
   }
 
-
-  async getFiresByProvince(province: string): Promise<ForestFireData[]> {
-    try {
-      const fires = await this.getForestFires();
-      return fires.filter((fire) => fire.province === province);
-    } catch (error) {
-      console.error(`${province} 지역의 산불 데이터를 가져오는 중 오류 발생:`, error);
-      return [];
-    }
-  }
-
-
-  async getFiresByStatus(status: ForestFireData["status"]): Promise<ForestFireData[]> {
-    try {
-      const fires = await this.getForestFires();
-      return fires.filter((fire) => fire.status === status);
-    } catch (error) {
-      console.error(`상태가 ${status}인 산불 데이터를 가져오는 중 오류 발생:`, error);
-      return [];
-    }
-  }
-
-
-  async getFireById(id: string): Promise<ForestFireData | undefined> {
-    try {
-      const fires = await this.getForestFires();
-      return fires.find((fire) => fire.id === id);
-    } catch (error) {
-      console.error(`ID가 ${id}인 산불 데이터를 가져오는 중 오류 발생:`, error);
-      return undefined;
-    }
-  }
-
-  // 전송된 백엔드 API 데이터를 ForestFireData 형식으로 변환
-  private convertToForestFireData(apiData: Record<string, unknown>[]): ForestFireData[] {
-    console.log("변환할 데이터:", apiData);
-
-    return apiData.map((item, index) => {
-      // 타입 안전성을 위해 레코드에서 값을 가져옵니다
-      const itemObj = item;
-
-
-      if (index === 0) {
-        console.log("첫 번째 산불 데이터 항목:", item);
+  // 시군구 추출
+  if (typeof sigungu === "string" && sigungu.trim().length > 0) {
+    district = sigungu.trim();
+  } else if (parts.length > 1) {
+    for (let i = 1; i < parts.length; i++) {
+      if (parts[i].endsWith("시") || parts[i].endsWith("군") || parts[i].endsWith("구")) {
+        district = parts[i];
+        break;
       }
+    }
+  }
 
+  return { province, district };
+};
 
-      const dateStr = typeof itemObj.date === "string" ? itemObj.date : "";
-      const formattedDate =
-        dateStr.length === 8
-          ? `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`
-          : dateStr;
+// 상태 변환 유틸리티
+export const convertStatus = (status: string, percentage: string): ForestFireData["status"] => {
+  if (percentage === "100") return "extinguished";
+  if (status === "") return "active";
+  if (status.includes("진화완료")) return "extinguished";
+  if (status.includes("진화중") || status.includes("진행")) return "active";
+  return "contained";
+};
 
+export const getResponseLevel = (issueName: string): ForestFireData["severity"] => {
+  if (issueName.includes("3단계")) return "critical";
+  if (issueName.includes("2단계")) return "high";
+  if (issueName.includes("1단계")) return "medium";
+  return "low";
+};
 
-      const extinguishPercentage =
-        typeof itemObj.percentage === "string" || typeof itemObj.percentage === "number"
-          ? String(itemObj.percentage)
-          : "0";
+// 기본 좌표 데이터 (GeoJSON 로드가 실패할 경우를 대비)
+const defaultCoordinates: Record<string, { lat: number; lng: number }> = {
+  // 시도별 좌표
+  '강원도': { lat: 37.880, lng: 127.730 },
+  '경기도': { lat: 37.400, lng: 127.550 },
+  '경상남도': { lat: 35.460, lng: 128.210 },
+  '경상북도': { lat: 36.020, lng: 128.940 },
+  '광주광역시': { lat: 35.160, lng: 126.850 },
+  '대구광역시': { lat: 35.870, lng: 128.600 },
+  '대전광역시': { lat: 36.350, lng: 127.380 },
+  '부산광역시': { lat: 35.180, lng: 129.080 },
+  '서울특별시': { lat: 37.570, lng: 126.980 },
+  '세종특별자치시': { lat: 36.480, lng: 127.290 },
+  '울산광역시': { lat: 35.540, lng: 129.310 },
+  '인천광역시': { lat: 37.460, lng: 126.700 },
+  '전라남도': { lat: 34.870, lng: 126.990 },
+  '전라북도': { lat: 35.720, lng: 127.150 },
+  '제주특별자치도': { lat: 33.500, lng: 126.530 },
+  '충청남도': { lat: 36.660, lng: 126.670 },
+  '충청북도': { lat: 36.800, lng: 127.700 },
+  '기타': { lat: 36.500, lng: 127.500 },
+  
+  // 주요 시군구 좌표
+  '서울 강남구': { lat: 37.517, lng: 127.047 },
+  '서울 강서구': { lat: 37.550, lng: 126.849 },
+  '부산 해운대구': { lat: 35.163, lng: 129.163 },
+  '대구 수성구': { lat: 35.858, lng: 128.630 },
+  '인천 중구': { lat: 37.473, lng: 126.621 },
+  '광주 북구': { lat: 35.174, lng: 126.927 },
+  '대전 유성구': { lat: 36.362, lng: 127.356 },
+  '울산 남구': { lat: 35.543, lng: 129.330 },
+};
 
+// GeoJSON 기반 좌표 검색 서비스
+export class GeoJsonService {
+  private geoJsonData: any = null;
+  private isLoading = false;
+  private loadPromise: Promise<void> | null = null;
+  private loadError = false;
 
-      const status = this.convertStatus(
-        typeof itemObj.status === "string" ? itemObj.status : "",
-        extinguishPercentage
-      );
+  // GeoJSON 데이터 로드
+  async loadGeoJsonData(): Promise<void> {
+    if (this.geoJsonData) return; // 이미 로드된 경우
+    if (this.loadError) return; // 이전에 로드 실패한 경우
+    if (this.isLoading) return this.loadPromise!; // 로드 중인 경우
 
-
-      const responseLevelName = typeof itemObj.issueName === "string" ? itemObj.issueName : "1단계";
-      const responseLevel = this.getResponseLevel(responseLevelName);
-
-
-      const location = typeof itemObj.location === "string" ? itemObj.location : "";
-      const sigungu = typeof itemObj.sigungu === "string" ? itemObj.sigungu : undefined;
-      const extractedLocation = this.extractLocation(location, sigungu);
-      const { province } = extractedLocation;
-
-
-      const itemIndex =
-        typeof itemObj.index === "string" || typeof itemObj.index === "number"
-          ? itemObj.index
-          : index + 1;
-      console.log(
-        `ID: ${String(itemIndex)}, 위치: ${location}, 추출된 시군구: ${extractedLocation.district}`
-      );
-
-
-      const coordinates = this.getRandomCoordinatesFor(province, extractedLocation.district, location);
-
-      return {
-        id: `ff-${String(itemIndex)}`,
-        location: location,
-        date: formattedDate,
-        severity: responseLevel, // 대응단계를 표시
-        status,
-        coordinates,
-        affectedArea: parseFloat((Math.random() * 50).toFixed(1)), // 임의 영향 면적
-        description: this.getDescriptionByStatus(status),
-        province,
-        district: extractedLocation.district,
-        extinguishPercentage, // 진화율 추가
-        responseLevelName, // 대응단계 이름 추가
-      };
+    this.isLoading = true;
+    this.loadPromise = new Promise<void>(async (resolve) => {
+      try {
+        console.log("GeoJSON 데이터 로드 시도...");
+        // 상대 경로를 사용하여 public 폴더 접근 
+        const response = await fetch('../assets/map/gadm41_KOR_2.json');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP 오류: ${response.status}`);
+        }
+        
+        this.geoJsonData = await response.json();
+        console.log("GeoJSON 데이터 로드 성공:", this.geoJsonData ? "데이터 있음" : "데이터 없음");
+        this.isLoading = false;
+        resolve();
+      } catch (error) {
+        console.error("GeoJSON 데이터 로드 오류:", error);
+        this.loadError = true;
+        this.isLoading = false;
+        resolve(); // 오류가 발생해도 Promise는 resolve
+      }
     });
+
+    return this.loadPromise;
   }
 
-  // 상태 정보 전환 - 진화율 정보 추가
-  private convertStatus(status: string, percentage: string): ForestFireData["status"] {
-    // 진화율이 100%면 진화 완료
-    if (percentage === "100") return "extinguished";
-
-    if (status === "") return "active";
-
-    if (status.includes("진화완료")) return "extinguished";
-    if (status.includes("진화중") || status.includes("진행")) return "active";
-
-    // 그 외의 경우 통제중으로 간주
-    return "contained";
-  }
-
-  // 대응단계를 severity로 변환 - 심각도대신 대응단계로 사용
-  private getResponseLevel(issueName: string): ForestFireData["severity"] {
-    // 3단계가 가장 심각
-    if (issueName.includes("3단계")) return "critical";
-    if (issueName.includes("2단계")) return "high";
-    if (issueName.includes("1단계")) return "medium";
-
-    // 임의 기본값
-    return "low";
-  }
-
-  private extractLocation(
-    location: string,
-    sigungu?: string
-  ): { province: string; district: string } {
-    if (location === "") return { province: "기타", district: "" };
-
-    const parts = location.split(" ");
-    let province = "기타";
-    let district = "";
-
-    // 대략적인 시도 이름 추출
-    if (parts.length > 0) {
-      if (
-        parts[0].includes("도") ||
-        parts[0].includes("시") ||
-        parts[0].includes("특별") ||
-        parts[0].includes("광역")
-      ) {
-        province = parts[0];
+  // 지역명으로 좌표 검색
+  async getCoordinatesByName(province: string, district?: string): Promise<{ lat: number; lng: number }> {
+    try {
+      await this.loadGeoJsonData();
+      
+      console.log("좌표 검색 요청:", { province, district });
+      
+      // GeoJSON 데이터가 로드되지 않았을 경우 기본값 사용
+      if (!this.geoJsonData || !this.geoJsonData.features || this.geoJsonData.features.length === 0) {
+        console.log("GeoJSON 데이터 없음, 기본 좌표 사용");
+        return this.getDefaultCoordinates(province, district);
       }
-    }
 
-    // 백엔드에서 시군구 정보를 제공할 경우 사용
-    if (typeof sigungu === "string" && sigungu.length > 0) {
-      district = sigungu;
-    }
-    // 그렇지 않으면 주소에서 시군구 추출 시도
-    else if (parts.length > 1) {
-      // 두 번째 부분이 시군구이면 추출
-      if (parts[1].endsWith("시") || parts[1].endsWith("군") || parts[1].endsWith("구")) {
-        district = parts[1];
+      // 정확한 지역명 검색
+      const fullName = district ? `${province} ${district}` : province;
+      if (defaultCoordinates[fullName]) {
+        console.log(`기본 좌표 매핑에서 발견: ${fullName}`);
+        return defaultCoordinates[fullName];
       }
-      // 시군구 추출 실패시, 추가 계산 시도
-      else {
-        // 재시도: 전체 주소에서 시군구 검색
-        for (let i = 1; i < parts.length; i++) {
-          if (parts[i].endsWith("시") || parts[i].endsWith("군") || parts[i].endsWith("구")) {
-            district = parts[i];
-            break;
-          }
-        }
 
-        // 여전히 못 찾았다면, 개선된 방법 사용
-        if (district === "") {
-          // 특정 시군구 이름 직접 찾기
-          const locationStr = location.toLowerCase();
-          const locationsToCheck = [
-            "고성군",
-            "북구",
-            "서구",
-            "영천시",
-            "동구",
-            "남구",
-            "중구",
-            "양산구",
-            "양천군",
-            "작천군",
-            "서해군",
-            "양구군",
-            "김해시",
-            "경산시",
-            "마산시",
-          ];
+      // 시군구 검색 (district에 값이 있을 경우)
+      if (district) {
+        const districtFeatures = this.geoJsonData.features.filter((feature: any) => {
+          const props = feature.properties;
+          if (!props.NL_NAME_1 || !props.NL_NAME_2) return false;
+          
+          const matchProvince = props.NL_NAME_1.includes(province) || province.includes(props.NL_NAME_1);
+          const matchDistrict = props.NL_NAME_2.includes(district) || district.includes(props.NL_NAME_2);
+          
+          return matchProvince && matchDistrict;
+        });
 
-          for (const loc of locationsToCheck) {
-            if (locationStr.includes(loc.toLowerCase())) {
-              district = loc;
-              break;
-            }
-          }
+        console.log(`${province} ${district} 검색 결과:`, districtFeatures.length);
+        
+        if (districtFeatures.length > 0) {
+          const coords = this.getCentroid(districtFeatures[0]);
+          console.log("GeoJSON에서 찾은 좌표:", coords);
+          return coords;
         }
       }
-    }
 
-    return { province, district };
-  }
+      // 시도 검색
+      const provinceFeatures = this.geoJsonData.features.filter((feature: any) => {
+        const props = feature.properties;
+        return props.NL_NAME_1 && (props.NL_NAME_1.includes(province) || province.includes(props.NL_NAME_1));
+      });
 
-  // 정해진 시도에 대한 대략적인 좌표 및 시군구 편의 기능
-  private getRandomCoordinatesFor(province: string, district?: string, location?: string): {
-    lat: number;
-    lng: number;
-  } {
-    // 한국 시도별 정확한 중앙 좌표
-    const baseCoordinates: Record<string, { lat: number; lng: number }> = {
-      강원도: { lat: 37.880, lng: 127.730 },
-      경기도: { lat: 37.400, lng: 127.550 },
-      경상남도: { lat: 35.460, lng: 128.210 },
-      경상북도: { lat: 36.020, lng: 128.940 },
-      광주광역시: { lat: 35.160, lng: 126.850 },
-      대구광역시: { lat: 35.870, lng: 128.600 },
-      대전광역시: { lat: 36.350, lng: 127.380 },
-      부산광역시: { lat: 35.180, lng: 129.080 },
-      서울특별시: { lat: 37.570, lng: 126.980 },
-      세종특별자치시: { lat: 36.480, lng: 127.290 },
-      울산광역시: { lat: 35.540, lng: 129.310 },
-      인천광역시: { lat: 37.460, lng: 126.700 },
-      전라남도: { lat: 34.870, lng: 126.990 },
-      전라북도: { lat: 35.720, lng: 127.150 },
-      제주특별자치도: { lat: 33.500, lng: 126.530 },
-      충청남도: { lat: 36.660, lng: 126.670 },
-      충청북도: { lat: 36.800, lng: 127.700 },
-      기타: { lat: 36.500, lng: 127.500 },
-    };
-
-    // 시군구 레벨의 특정 좌표 추가 - 개선된 정확도
-    const districtCoordinates: Record<string, { lat: number; lng: number }> = {
-      // 강원도
-      원주시: { lat: 37.342, lng: 127.920 },
-      충주시: { lat: 37.881, lng: 127.736 },
-      고성군: { lat: 38.379, lng: 128.467 },
-      // 경기도
-      수원시: { lat: 37.263, lng: 127.028 },
-      가평군: { lat: 37.831, lng: 127.510 },
-      양평군: { lat: 37.489, lng: 127.574 },
-      // 경상북도
-      안동시: { lat: 36.568, lng: 128.729 },
-      영천시: { lat: 35.972, lng: 128.939 },
-      포항시: { lat: 36.019, lng: 129.358 },
-      // 경상남도
-      김해시: { lat: 35.228, lng: 128.889 },
-      진해시: { lat: 35.180, lng: 128.980 },
-      사천시: { lat: 35.000, lng: 128.063 },
-      // 전라북도
-      전주시: { lat: 35.824, lng: 127.148 },
-      익산시: { lat: 35.948, lng: 126.958 },
-      고창군: { lat: 35.435, lng: 127.219 },
-      // 전라남도
-      목포시: { lat: 34.811, lng: 126.393 },
-      여수시: { lat: 34.760, lng: 127.662 },
-      해남군: { lat: 34.573, lng: 126.599 },
-      // 충청북도
-      청주시: { lat: 36.641, lng: 127.489 },
-      제천시: { lat: 37.132, lng: 128.191 },
-      체뽕군: { lat: 36.825, lng: 127.421 },
-      // 충청남도
-      철주군: { lat: 36.303, lng: 127.252 },
-      서산시: { lat: 36.784, lng: 126.450 },
-      아산시: { lat: 36.790, lng: 127.003 },
-    };
-
-    // 시군구가 특정되었을 경우 시군구 좌표 사용
-    if (location) {
-      const locationLower = location.toLowerCase();
-      for (const [districtName, coords] of Object.entries(districtCoordinates)) {
-        if (locationLower.includes(districtName.toLowerCase())) {
-          // 시군구에 맞는 좌표를 찾았으면 작은 편차 적용
-          return {
-            lat: coords.lat + (Math.random() - 0.5) * 0.05, // 편차를 1/10로 줄임
-            lng: coords.lng + (Math.random() - 0.5) * 0.05,
+      console.log(`${province} 검색 결과:`, provinceFeatures.length);
+      
+      if (provinceFeatures.length > 0) {
+        // 시도의 모든 구역 중앙 좌표 계산
+        let sumLat = 0;
+        let sumLng = 0;
+        let count = 0;
+        
+        provinceFeatures.forEach((feature: any) => {
+          const centroid = this.getCentroid(feature);
+          sumLat += centroid.lat;
+          sumLng += centroid.lng;
+          count++;
+        });
+        
+        if (count > 0) {
+          const avgCoords = {
+            lat: sumLat / count,
+            lng: sumLng / count
           };
+          console.log("시도 평균 좌표:", avgCoords);
+          return avgCoords;
         }
+      }
+
+      // 기본값 반환
+      console.log("좌표를 찾지 못함, 기본 좌표 사용");
+      return this.getDefaultCoordinates(province, district);
+      
+    } catch (error) {
+      console.error("좌표 검색 처리 오류:", error);
+      return this.getDefaultCoordinates(province, district);
+    }
+  }
+
+  // 기본 좌표 가져오기
+  private getDefaultCoordinates(province: string, district?: string): { lat: number; lng: number } {
+    // 시군구 좌표 시도
+    if (district) {
+      const fullName = `${province} ${district}`;
+      if (defaultCoordinates[fullName]) {
+        return defaultCoordinates[fullName];
       }
     }
     
-    // 특정 시군구 좌표가 있는지 확인 
-    if (district) {
-      const districtLower = district.toLowerCase();
-      for (const [districtName, coords] of Object.entries(districtCoordinates)) {
-        if (districtLower === districtName.toLowerCase()) {
+    // 시도 좌표 시도
+    if (defaultCoordinates[province]) {
+      return defaultCoordinates[province];
+    }
+    
+    // 최종 기본값 (한국 중앙)
+    return { lat: 36.5, lng: 127.5 };
+  }
+
+  // 지역의 중심점 계산
+  private getCentroid(feature: any): { lat: number; lng: number } {
+    try {
+      if (!feature.geometry) {
+        console.warn("형상 정보 없음:", feature);
+        return { lat: 36.5, lng: 127.5 };
+      }
+      
+      // 포인트 타입
+      if (feature.geometry.type === 'Point') {
+        const [lng, lat] = feature.geometry.coordinates;
+        return { lat, lng };
+      } 
+      
+      // 폴리곤 타입
+      if (feature.geometry.type === 'Polygon') {
+        // 첫 번째 링(외부 링)의 모든 점 평균
+        const coordinates = feature.geometry.coordinates[0];
+        const sumLat = coordinates.reduce((sum: number, coord: number[]) => sum + coord[1], 0);
+        const sumLng = coordinates.reduce((sum: number, coord: number[]) => sum + coord[0], 0);
+        const count = coordinates.length;
+        
+        return {
+          lat: sumLat / count,
+          lng: sumLng / count
+        };
+      }
+      
+      // 멀티폴리곤 타입
+      if (feature.geometry.type === 'MultiPolygon') {
+        // 모든 폴리곤의 첫 번째 링 점들 평균
+        let sumLat = 0;
+        let sumLng = 0;
+        let totalPoints = 0;
+        
+        feature.geometry.coordinates.forEach((polygon: number[][][]) => {
+          const ring = polygon[0]; // 첫 번째 링
+          ring.forEach((coord: number[]) => {
+            sumLng += coord[0];
+            sumLat += coord[1];
+            totalPoints++;
+          });
+        });
+        
+        if (totalPoints > 0) {
           return {
-            lat: coords.lat + (Math.random() - 0.5) * 0.05,
-            lng: coords.lng + (Math.random() - 0.5) * 0.05,
+            lat: sumLat / totalPoints,
+            lng: sumLng / totalPoints
           };
         }
       }
+
+      console.warn("지원되지 않는 형상 타입:", feature.geometry.type);
+      return { lat: 36.5, lng: 127.5 };
+    } catch (error) {
+      console.error("중심점 계산 오류:", error);
+      return { lat: 36.5, lng: 127.5 };
     }
-
-    // 시도에 따른 좌표 가져오기
-    const base = baseCoordinates[province] ?? baseCoordinates["\uae30\ud0c0"];
-
-    // 시도 레벨이면 더 작은 임의성 적용 (러운하게 모이게)
-    return {
-      lat: base.lat + (Math.random() - 0.5) * 0.2, // 물씬우기, 퍼짐 범위를 줄였지만 시간성은 유지
-      lng: base.lng + (Math.random() - 0.5) * 0.2,
-    };
-  }
-
-  // 상태에 따른 임의 설명 생성
-  private getDescriptionByStatus(status: ForestFireData["status"]): string | undefined {
-    if (Math.random() < 0.5) return undefined; // 50% 확률로 설명 없음
-
-    const descriptions: Record<ForestFireData["status"], string[]> = {
-      active: [
-        "강풍으로 인한 빠른 확산, 산림청 헬기 투입",
-        "등산객의 취사 과정에서 발생한 것으로 추정",
-        "야간에 발생한 산불로 진화에 어려움",
-        "산림 밀집 지역으로 확산 속도가 빠름",
-        "건조한 날씨로 인해 발생, 진화 중",
-      ],
-      contained: [
-        "해당 지역 통제 중, 추가 확산 없음",
-        "인력과 장비 추가 투입으로 통제 중",
-        "해당 지역 분무수가 분사되어 통제 중",
-        "주변 마을 대피 완료, 현재 통제 중",
-        "산불 진화선 구축으로 통제 중",
-      ],
-      extinguished: [
-        "완전히 진화 완료, 재발화 방지 조치 중",
-        "진화 완료, 피해 조사 진행 중",
-        "비로 인한 도움으로 진화 완료",
-        "중앙 및 지자체 협력으로 지고",
-        "산불 진화 완료, 현장 정리 중",
-      ],
-    };
-
-    const list = Object.prototype.hasOwnProperty.call(descriptions, status) ? descriptions[status] : descriptions.active;
-    return list[Math.floor(Math.random() * list.length)];
-  }
-
-  // 테스트용 데이터
-  private getTestData(): ForestFireData[] {
-    // 현재 날짜를 기준으로 최근 날짜로 설정
-    const currentDate = new Date();
-    const formatDate = (date: Date): string => {
-      return date.toISOString().split("T")[0];
-    };
-
-    // 3일 전
-    const threeDaysAgo = new Date(currentDate);
-    threeDaysAgo.setDate(currentDate.getDate() - 3);
-
-    // 2일 전
-    const twoDaysAgo = new Date(currentDate);
-    twoDaysAgo.setDate(currentDate.getDate() - 2);
-
-    // 1일 전
-    const oneDayAgo = new Date(currentDate);
-    oneDayAgo.setDate(currentDate.getDate() - 1);
-
-    // 오늘
-    const today = currentDate;
-
-    return [
-      {
-        id: "ff-001",
-        location: "강원도 춘천시 남산면",
-        date: formatDate(threeDaysAgo),
-        severity: "high",
-        status: "contained",
-        coordinates: {
-          lat: 37.8813,
-          lng: 127.73,
-        },
-        affectedArea: 23.5,
-        description: "건조한 날씨로 인해 발생, 주변 마을 대피 완료",
-        province: "강원도",
-        district: "춘천시",
-        extinguishPercentage: "65",
-        responseLevelName: "2단계",
-      },
-      {
-        id: "ff-002",
-        location: "경상북도 안동시 도산면",
-        date: formatDate(twoDaysAgo),
-        severity: "medium",
-        status: "active",
-        coordinates: {
-          lat: 36.576,
-          lng: 128.7402,
-        },
-        affectedArea: 15.2,
-        province: "경상북도",
-        district: "안동시",
-        extinguishPercentage: "35",
-        responseLevelName: "1단계",
-      },
-      {
-        id: "ff-003",
-        location: "전라남도 해남군 삼산면",
-        date: formatDate(oneDayAgo),
-        severity: "low",
-        status: "extinguished",
-        coordinates: {
-          lat: 34.5415,
-          lng: 126.5958,
-        },
-        affectedArea: 5.7,
-        province: "전라남도",
-        district: "해남군",
-        extinguishPercentage: "100",
-        responseLevelName: "1단계",
-      },
-      {
-        id: "ff-004",
-        location: "경기도 가평군 상면",
-        date: formatDate(today),
-        severity: "critical",
-        status: "active",
-        coordinates: {
-          lat: 37.8318,
-          lng: 127.5128,
-        },
-        affectedArea: 42.1,
-        description: "강풍으로 인한 빠른 확산, 산림청 헬기 5대 투입",
-        province: "경기도",
-        district: "가평군",
-        extinguishPercentage: "25",
-        responseLevelName: "3단계",
-      },
-      {
-        id: "ff-005",
-        location: "충청북도 제천시 백운면",
-        date: formatDate(twoDaysAgo),
-        severity: "high",
-        status: "contained",
-        coordinates: {
-          lat: 37.0965,
-          lng: 128.1707,
-        },
-        affectedArea: 31.8,
-        province: "충청북도",
-        district: "제천시",
-        extinguishPercentage: "78",
-        responseLevelName: "2단계",
-      },
-    ] as ForestFireData[];
   }
 }
 
-// 싱글톤 인스턴스
-export const forestFireService = new ForestFireServiceImpl();
+// 산불 데이터 서비스
+export class ForestFireService {
+  private readonly API_URL = "http://localhost:4000/api/fireList";
+  private readonly geoJsonService: GeoJsonService;
+  private cachedFireData: ForestFireData[] | null = null;
+  
+  constructor() {
+    this.geoJsonService = new GeoJsonService();
+    
+    // 미리 GeoJSON 로드 시작
+    this.geoJsonService.loadGeoJsonData().catch(error => {
+      console.error("초기 GeoJSON 로드 오류:", error);
+    });
+  }
 
+  async getForestFires(): Promise<ForestFireData[]> {
+    // 캐시된 데이터가 있으면 반환
+    if (this.cachedFireData) {
+      return this.cachedFireData;
+    }
+    
+    try {
+      const data = await fetchData<Record<string, unknown>[]>(this.API_URL);
+      const processedData = await this.processForestFireData(data);
+      
+      // 처리된 데이터 캐싱
+      this.cachedFireData = processedData;
+      return processedData;
+    } catch (error) {
+      console.error("산불 데이터를 가져오는 중 오류 발생:", error);
+      return [];
+    }
+  }
 
+  async getFiresByProvince(province: string): Promise<ForestFireData[]> {
+    const fires = await this.getForestFires();
+    return fires.filter((fire) => fire.province === province);
+  }
+
+  async getFiresByStatus(status: ForestFireData["status"]): Promise<ForestFireData[]> {
+    const fires = await this.getForestFires();
+    return fires.filter((fire) => fire.status === status);
+  }
+
+  async getFireById(id: string): Promise<ForestFireData | undefined> {
+    const fires = await this.getForestFires();
+    return fires.find((fire) => fire.id === id);
+  }
+
+  // API 데이터 처리
+  private async processForestFireData(apiData: Record<string, unknown>[]): Promise<ForestFireData[]> {
+    const processedData: ForestFireData[] = [];
+    
+    for (let i = 0; i < apiData.length; i++) {
+      const item = apiData[i];
+      
+      // 날짜 포맷팅
+      const dateStr = typeof item.date === "string" ? item.date : "";
+      const formattedDate = dateStr.length === 8
+        ? `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`
+        : dateStr;
+
+      // 진화율
+      const extinguishPercentage = typeof item.percentage === "string" || typeof item.percentage === "number"
+        ? String(item.percentage)
+        : "0";
+
+      // 상태 변환
+      const statusText = typeof item.status === "string" ? item.status : "";
+      const status = convertStatus(statusText, extinguishPercentage);
+
+      // 대응 단계
+      const responseLevelName = typeof item.issueName === "string" ? item.issueName : "1단계";
+      const severity = getResponseLevel(responseLevelName);
+
+      // 위치 정보
+      const location = typeof item.location === "string" ? item.location : "";
+      const sigungu = typeof item.sigungu === "string" ? item.sigungu : undefined;
+      const { province, district } = extractLocation(location, sigungu);
+
+      // 좌표 가져오기 - 각 산불마다 고유한 좌표를 가지도록 일부 랜덤성 추가
+      const baseCoords = await this.geoJsonService.getCoordinatesByName(province, district);
+      const jitter = 0.01; // 최대 1km 정도의 오차 (실제 데이터에서는 제거)
+      const coordinates = {
+        lat: baseCoords.lat + (Math.random() * 2 - 1) * jitter,
+        lng: baseCoords.lng + (Math.random() * 2 - 1) * jitter
+      };
+
+      // 피해 면적
+      const affectedArea = typeof item.area === "number" ? item.area : 0;
+
+      // 고유 ID
+      const itemIndex = typeof item.index === "string" || typeof item.index === "number"
+        ? item.index
+        : i + 1;
+
+      processedData.push({
+        id: `ff-${String(itemIndex)}`,
+        location,
+        date: formattedDate,
+        severity,
+        status,
+        coordinates,
+        affectedArea,
+        province,
+        district,
+        extinguishPercentage,
+        responseLevelName,
+      });
+    }
+
+    return processedData;
+  }
+}
+
+// 통계 기능
 export const getForestFireStatistics = (fires: ForestFireData[]) => {
   const provinceStats = {} as Record<
     string,
     { count: number; active: number; contained: number; extinguished: number; totalArea: number }
   >;
-
 
   fires.forEach((fire) => {
     const province = fire.province ?? "기타";
@@ -506,7 +466,6 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
     else stats.extinguished += 1;
   });
 
-
   const severityStats = {
     critical: fires.filter((f) => f.severity === "critical").length,
     high: fires.filter((f) => f.severity === "high").length,
@@ -514,14 +473,12 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
     low: fires.filter((f) => f.severity === "low").length,
   };
 
-
   const statusStats = {
     total: fires.length,
     active: fires.filter((f) => f.status === "active").length,
     contained: fires.filter((f) => f.status === "contained").length,
     extinguished: fires.filter((f) => f.status === "extinguished").length,
   };
-
 
   const totalArea = fires.reduce((sum, fire) => sum + fire.affectedArea, 0);
 
@@ -532,3 +489,6 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
     totalArea,
   };
 };
+
+// 싱글톤 인스턴스
+export const forestFireService = new ForestFireService();

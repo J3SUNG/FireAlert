@@ -25,48 +25,6 @@ app.get("/api/fireList", async (req, res) => {
       console.error("API 호출 오류:", apiError.message);
       console.error("응답 상태 코드:", apiError.response?.status);
       console.error("응답 데이터:", apiError.response?.data);
-
-      // API 오류 시 더미 데이터 사용
-      console.log("더미 데이터 사용 중...");
-      data = {
-        fireShowInfoList: [
-          {
-            frfrSttmnAddr: "경상북도 안동시 와룡면",
-            frfrPotfrRt: "65%",
-            frfrStepIssuNm: "1단계",
-            frfrPrgrsStcdNm: "진화중",
-            frfrSttmnDt: "20250315",
-          },
-          {
-            frfrSttmnAddr: "강원도 평창군 대관령면",
-            frfrPotfrRt: "82%",
-            frfrStepIssuNm: "2단계",
-            frfrPrgrsStcdNm: "진화중",
-            frfrSttmnDt: "20250320",
-          },
-          {
-            frfrSttmnAddr: "충청북도 제천시 백운면",
-            frfrPotfrRt: "100%",
-            frfrStepIssuNm: "3단계",
-            frfrPrgrsStcdNm: "진화완료",
-            frfrSttmnDt: "20250312",
-          },
-          {
-            frfrSttmnAddr: "경기도 가평군 설악면",
-            frfrPotfrRt: "45%",
-            frfrStepIssuNm: "2단계",
-            frfrPrgrsStcdNm: "진화중",
-            frfrSttmnDt: "20250322",
-          },
-          {
-            frfrSttmnAddr: "전라남도 구례군 토지면",
-            frfrPotfrRt: "90%",
-            frfrStepIssuNm: "1단계",
-            frfrPrgrsStcdNm: "진화중",
-            frfrSttmnDt: "20250319",
-          },
-        ],
-      };
     }
 
     const fireShowInfoList = data.fireShowInfoList || [];
