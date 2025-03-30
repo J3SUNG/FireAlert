@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { ForestFireList } from "../features/forest-fire-list/ui/ForestFireList";
-import { ForestFireData } from "../shared/types/forestFire";
-import { ForestFireMap } from "../features/forest-fire-map";
-import { FireStatusSummary } from "./components/FireStatusSummary";
-import { useFireAlertData } from "./hooks/useFireAlertData";
-import { useCurrentTime } from "./hooks/useCurrentTime";
-import { useFireFilterAndSelection } from "./hooks/useFireFilterAndSelection";
-import "./styles/fire-alert.css";
+import React from "react";
+import { ForestFireList } from "../../forest-fire-list/ui/ForestFireList";
+import { ForestFireMap } from "../../forest-fire-map";
+import { FireStatusSummary } from "../../../shared/components/FireStatusSummary";
+import { useFireAlertData } from "../../fire-alert-data/api/useFireAlertData";
+import { useCurrentTime } from "../../../shared/hooks/useCurrentTime";
+import { useFireFilterAndSelection } from "../../../shared/hooks/useFireFilterAndSelection";
+import "./fire-alert.css";
 
 const FireAlertPage: React.FC = () => {
   // 데이터 로딩 로직을 훅으로 분리
-  const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } = useFireAlertData();
-  
+  const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } =
+    useFireAlertData();
+
   // 필터링 및 선택 상태 관리 훅
-  const { selectedFilter, setSelectedFilter, selectedFireId, setSelectedFireId, filteredData, handleFireSelect, getButtonClass, getFilterButtonLabels } = 
-    useFireFilterAndSelection(fires);
-    
+  const {
+    selectedFilter,
+    setSelectedFilter,
+    selectedFireId,
+    setSelectedFireId,
+    filteredData,
+    handleFireSelect,
+    getButtonClass,
+    getFilterButtonLabels,
+  } = useFireFilterAndSelection(fires);
+
   // 현재 시간 상태 관리 훅
   const { currentTime, formattedTime, formatDate } = useCurrentTime();
 
-
-
-
-
   // 필터 버튼 라벨 데이터
   const buttonLabels = getFilterButtonLabels(statusCounts);
-
-
-
-
 
   return (
     <div className="fire-alert">

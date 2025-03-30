@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ForestFireData } from '../../shared/types/forestFire';
-import { forestFireService } from '../../shared/services/forestFireService';
+import { ForestFireData } from '../../../shared/types/forestFire';
+import { forestFireService } from '../../../shared/services/forestFireService';
 
 /**
  * 산불 데이터 및 관련 상태를 관리하는 커스텀 훅 (SRP)

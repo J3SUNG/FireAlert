@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import FireAlertPage from './FireAlertPage';
+import FireAlertPage from '../features/fire-alert-page/ui/FireAlertPage';
 
 const Router: React.FC = () => {
   return (
