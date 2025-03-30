@@ -10,8 +10,14 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
 
   // 필터링 함수
   const filterFires = (fires: ForestFireData[]): ForestFireData[] => {
-    if (selectedFilter === "all") return fires;
-    return fires.filter((fire) => fire.status === selectedFilter);
+    // 먼저 "산불외종료" 데이터 무시
+    const validFires = fires.filter(fire => 
+      !(typeof fire.description === 'string' && fire.description.includes('산불외종료'))
+    );
+    
+    // 그 다음 선택된 필터에 따른 필터링 적용
+    if (selectedFilter === "all") return validFires;
+    return validFires.filter((fire) => fire.status === selectedFilter);
   };
 
   // 산불 선택 핸들러

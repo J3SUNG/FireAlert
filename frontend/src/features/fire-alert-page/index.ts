@@ -1,1 +1,0 @@
-export { default as FireAlertPage } from './ui/FireAlertPage';

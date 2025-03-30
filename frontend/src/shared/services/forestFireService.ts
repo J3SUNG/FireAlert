@@ -1,251 +1,35 @@
 import axios from "axios";
 import { ForestFireData } from "../types/forestFire";
-import { provinceShortNames } from "../utils/locationFormat";
+import { convertStatus, extractLocation, getResponseLevel } from "../utils/forestFireUtils";
+import { geoJsonService } from "./geoJsonService";
 
-const fetchData = async <T>(url: string): Promise<T> => {
-  const response = await axios.get<T>(url);
-  return response.data;
+/**
+ * API 요청에 사용하는 유틸리티 함수
+ */
+export const fetchData = async <T>(url: string): Promise<T> => {
+  try {
+    const response = await axios.get<T>(url);
+    return response.data;
+  } catch (error) {
+    console.error("API 요청 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-export const extractLocation = (location: string, sigungu?: string): { province: string; district: string } => {
-  if (!location || location === "") return { province: "기타", district: "" };
-
-  const provinceMap: Record<string, string> = {};
-  
-  for (const [fullName, shortName] of Object.entries(provinceShortNames)) {
-    provinceMap[shortName] = fullName;
-  }
-  
-  Object.assign(provinceMap, {
-    '강원': '강원도',
-    '경기': '경기도',
-    '경남': '경상남도',
-    '경북': '경상북도',
-    '광주': '광주광역시',
-    '대구': '대구광역시',
-    '대전': '대전광역시',
-    '부산': '부산광역시',
-    '서울': '서울특별시',
-    '세종': '세종특별자치시',
-    '울산': '울산광역시',
-    '인천': '인천광역시',
-    '전남': '전라남도',
-    '전북': '전라북도',
-    '제주': '제주특별자치도',
-    '충남': '충청남도',
-    '충북': '충청북도',
-  });
-
-  const parts = location.split(" ").filter(part => part.trim() !== "");
-  let province = "기타";
-  let district = "";
-
-  if (parts.length > 0) {
-    if (
-      parts[0].includes("도") ||
-      parts[0].includes("시") ||
-      parts[0].includes("특별") ||
-      parts[0].includes("광역")
-    ) {
-      province = parts[0];
-    } 
-    else if (provinceMap[parts[0]]) {
-      province = provinceMap[parts[0]];
-    }
-  }
-
-  if (sigungu && sigungu.trim().length > 0) {
-    district = sigungu.trim();
-  } else if (parts.length > 1) {
-    for (let i = 1; i < parts.length; i++) {
-      if (parts[i].endsWith("시") || parts[i].endsWith("군") || parts[i].endsWith("구")) {
-        district = parts[i];
-        break;
-      }
-    }
-  }
-
-  return { province, district };
-};
-
-export const convertStatus = (status: string, percentage: string): ForestFireData["status"] => {
-  if (percentage === "100") return "extinguished";
-  if (status === "") return "active";
-  if (status.includes("진화완료")) return "extinguished";
-  if (status.includes("진화중") || status.includes("진행")) return "active";
-  return "contained";
-};
-
-export const getResponseLevel = (issueName: string): ForestFireData["severity"] => {
-  if (issueName.includes("3단계")) return "critical";
-  if (issueName.includes("2단계")) return "high";
-  if (issueName.includes("1단계")) return "medium";
-  return "low";
-};
-
-export class GeoJsonService {
-  private geoJsonData: any = null;
-  private isLoading = false;
-  private loadPromise: Promise<void> | null = null;
-  private loadError = false;
-
-  async loadGeoJsonData(): Promise<void> {
-    if (this.geoJsonData) return;
-    if (this.loadError) return;
-    if (this.isLoading) return this.loadPromise!;
-
-    this.isLoading = true;
-    this.loadPromise = new Promise<void>((resolve) => {
-      const loadData = async () => {
-        try {
-          const response = await fetch('../assets/map/gadm41_KOR_2.json');
-          
-          if (!response.ok) {
-            throw new Error(`HTTP 오류: ${response.status}`);
-          }
-          
-          this.geoJsonData = await response.json();
-
-          this.isLoading = false;
-          resolve();
-        } catch (errorMsg) {
-          this.loadError = true;
-          this.isLoading = false;
-          resolve();
-        }
-      };
-
-      loadData().catch(() => {
-        this.loadError = true;
-        this.isLoading = false;
-        resolve();
-      });
-    });
-
-    return this.loadPromise;
-  }
-
-  async getCoordinatesByName(province: string, district?: string): Promise<{ lat: number; lng: number } | null> {
-    try {
-      await this.loadGeoJsonData();
-      
-      if (!this.geoJsonData?.features?.length) {
-        return null;
-      }
-
-      if (district) {
-        const districtFeatures = this.geoJsonData.features.filter((feature: any) => {
-          const props = feature.properties;
-          if (!props.NL_NAME_1 || !props.NL_NAME_2) return false;
-          
-          const matchProvince = props.NL_NAME_1.includes(province) || province.includes(props.NL_NAME_1);
-          const matchDistrict = props.NL_NAME_2.includes(district) || district.includes(props.NL_NAME_2);
-          
-          return matchProvince && matchDistrict;
-        });
-        
-        if (districtFeatures.length > 0) {
-          const coords = this.getCentroid(districtFeatures[0]);
-          return coords;
-        }
-      }
-
-      const provinceFeatures = this.geoJsonData.features.filter((feature: any) => {
-        const props = feature.properties;
-        return props.NL_NAME_1 && (props.NL_NAME_1.includes(province) || province.includes(props.NL_NAME_1));
-      });
-      
-      if (provinceFeatures.length > 0) {
-        let sumLat = 0;
-        let sumLng = 0;
-        let count = 0;
-        
-        provinceFeatures.forEach((feature: any) => {
-          const centroid = this.getCentroid(feature);
-          sumLat += centroid.lat;
-          sumLng += centroid.lng;
-          count++;
-        });
-        
-        if (count > 0) {
-          const avgCoords = {
-            lat: sumLat / count,
-            lng: sumLng / count
-          };
-
-          return avgCoords;
-        }
-      }
-
-      return null;
-      
-    } catch (errorMsg) {
-      return null;
-    }
-  }
-
-  private getCentroid(feature: any): { lat: number; lng: number } {
-    try {
-      if (!feature.geometry) {
-        throw new Error("지오메트리 정보 없음");
-      }
-      
-      if (feature.geometry.type === 'Point') {
-        const [lng, lat] = feature.geometry.coordinates;
-        return { lat, lng };
-      } 
-      
-      if (feature.geometry.type === 'Polygon') {
-        const coordinates = feature.geometry.coordinates[0];
-        const sumLat = coordinates.reduce((sum: number, coord: number[]) => sum + coord[1], 0);
-        const sumLng = coordinates.reduce((sum: number, coord: number[]) => sum + coord[0], 0);
-        const count = coordinates.length;
-        
-        return {
-          lat: sumLat / count,
-          lng: sumLng / count
-        };
-      }
-      
-      if (feature.geometry.type === 'MultiPolygon') {
-        let sumLat = 0;
-        let sumLng = 0;
-        let totalPoints = 0;
-        
-        feature.geometry.coordinates.forEach((polygon: number[][][]) => {
-          const ring = polygon[0];
-          ring.forEach((coord: number[]) => {
-            sumLng += coord[0];
-            sumLat += coord[1];
-            totalPoints++;
-          });
-        });
-        
-        if (totalPoints > 0) {
-          return {
-            lat: sumLat / totalPoints,
-            lng: sumLng / totalPoints
-          };
-        }
-      }
-
-      throw new Error(`지원되지 않는 지오메트리 형식: ${feature.geometry.type}`);
-    } catch (errorMsg) {
-      throw errorMsg;
-    }
-  }
-}
-
+/**
+ * 산불 데이터 서비스 구현체
+ */
 export class ForestFireService {
-  private readonly API_URL = "http://localhost:4000/api/fireList";
-  private readonly geoJsonService: GeoJsonService;
+  private readonly API_URL: string;
   private cachedFireData: ForestFireData[] | null = null;
   
-  constructor() {
-    this.geoJsonService = new GeoJsonService();
-    this.geoJsonService.loadGeoJsonData().catch(() => {});
+  constructor(apiUrl = "http://localhost:4000/api/fireList") {
+    this.API_URL = apiUrl;
   }
 
+  /**
+   * 모든 산불 데이터 조회
+   */
   async getForestFires(): Promise<ForestFireData[]> {
     if (this.cachedFireData) {
       return this.cachedFireData;
@@ -258,27 +42,47 @@ export class ForestFireService {
       this.cachedFireData = processedData;
       return processedData;
     } catch (error) {
+      console.error("산불 데이터 가져오기 실패:", error);
       return [];
     }
   }
 
+  /**
+   * 시/도별 산불 데이터 조회
+   */
   async getFiresByProvince(province: string): Promise<ForestFireData[]> {
     const fires = await this.getForestFires();
     return fires.filter((fire) => fire.province === province);
   }
 
+  /**
+   * 상태별 산불 데이터 조회
+   */
   async getFiresByStatus(status: ForestFireData["status"]): Promise<ForestFireData[]> {
     const fires = await this.getForestFires();
     return fires.filter((fire) => fire.status === status);
   }
 
+  /**
+   * ID로 산불 데이터 조회
+   */
   async getFireById(id: string): Promise<ForestFireData | undefined> {
     const fires = await this.getForestFires();
     return fires.find((fire) => fire.id === id);
   }
 
+  /**
+   * API 응답 데이터 처리
+   */
   private async processForestFireData(apiData: Record<string, unknown>[]): Promise<ForestFireData[]> {
     const processedData: ForestFireData[] = [];
+    
+    // 한국 GeoJSON 데이터 로드
+    const geoJsonData = await geoJsonService.loadGeoJsonData('/assets/map/gadm41_KOR_2.json');
+    if (!geoJsonData) {
+      console.error("GeoJSON 데이터 로드 실패");
+      return [];
+    }
     
     for (let i = 0; i < apiData.length; i++) {
       const item = apiData[i];
@@ -302,9 +106,10 @@ export class ForestFireService {
       const sigungu = typeof item.sigungu === "string" ? item.sigungu : undefined;
       const { province, district } = extractLocation(location, sigungu);
 
-      const coordinates = await this.geoJsonService.getCoordinatesByName(province, district);
+      const coordinates = geoJsonService.getCoordinatesByName(geoJsonData, province, district);
       
       if (!coordinates) {
+        console.warn(`위치 좌표를 찾을 수 없음: ${location}`);
         continue;
       }
 
@@ -326,6 +131,7 @@ export class ForestFireService {
         district,
         extinguishPercentage,
         responseLevelName,
+        description: typeof item.description === "string" ? item.description : undefined
       });
     }
 
@@ -333,55 +139,5 @@ export class ForestFireService {
   }
 }
 
-export const getForestFireStatistics = (fires: ForestFireData[]) => {
-  const provinceStats = {} as Record<
-    string,
-    { count: number; active: number; contained: number; extinguished: number; totalArea: number }
-  >;
-
-  fires.forEach((fire) => {
-    const province = fire.province ?? "기타";
-    if (!(province in provinceStats)) {
-      provinceStats[province] = {
-        count: 0,
-        active: 0,
-        contained: 0,
-        extinguished: 0,
-        totalArea: 0,
-      };
-    }
-
-    const stats = provinceStats[province];
-    stats.count += 1;
-    stats.totalArea += fire.affectedArea;
-
-    if (fire.status === "active") stats.active += 1;
-    else if (fire.status === "contained") stats.contained += 1;
-    else stats.extinguished += 1;
-  });
-
-  const severityStats = {
-    critical: fires.filter((f) => f.severity === "critical").length,
-    high: fires.filter((f) => f.severity === "high").length,
-    medium: fires.filter((f) => f.severity === "medium").length,
-    low: fires.filter((f) => f.severity === "low").length,
-  };
-
-  const statusStats = {
-    total: fires.length,
-    active: fires.filter((f) => f.status === "active").length,
-    contained: fires.filter((f) => f.status === "contained").length,
-    extinguished: fires.filter((f) => f.status === "extinguished").length,
-  };
-
-  const totalArea = fires.reduce((sum, fire) => sum + fire.affectedArea, 0);
-
-  return {
-    provinceStats,
-    severityStats,
-    statusStats,
-    totalArea,
-  };
-};
-
+// 서비스 싱글톤 인스턴스 생성
 export const forestFireService = new ForestFireService();

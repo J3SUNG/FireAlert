@@ -1,10 +1,9 @@
 import React from "react";
-import { ForestFireList } from "../../forest-fire-list/ui/ForestFireList";
-import { ForestFireMap } from "../../forest-fire-map";
-import { FireStatusSummary } from "../../../shared/components/FireStatusSummary";
-import { useFireAlertData } from "../../fire-alert-data/api/useFireAlertData";
-import { useCurrentTime } from "../../../shared/hooks/useCurrentTime";
-import { useFireFilterAndSelection } from "../../../shared/hooks/useFireFilterAndSelection";
+import { ForestFireList } from "../../features/forest-fire-list/ui/ForestFireList";
+import { ForestFireMap } from "../../features/forest-fire-map";
+import { FireStatusSummary } from "../../shared";
+import { useFireAlertData } from "../../features/fire-alert-data/api/useFireAlertData";
+import { useCurrentTime, useFireFilterAndSelection } from "../../shared";
 import "./fire-alert.css";
 
 const FireAlertPage: React.FC = () => {
@@ -112,6 +111,7 @@ const FireAlertPage: React.FC = () => {
                 level3Count={responseLevelCounts.level3}
                 level2Count={responseLevelCounts.level2}
                 level1Count={responseLevelCounts.level1}
+                initialCount={responseLevelCounts.initial}
               />
             </div>
 

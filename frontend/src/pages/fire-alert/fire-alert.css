@@ -218,20 +218,20 @@
   font-weight: 600;
 }
 
-.fire-alert__summary-value--total {
-  color: #111827;
+.fire-alert__summary-value--initial {
+  color: #0ea5e9; /* 연한 파랑색 */
 }
 
-.fire-alert__summary-value--active {
-  color: #dc2626;
+.fire-alert__summary-value--level1 {
+  color: #eab308; /* 노란색 */
 }
 
-.fire-alert__summary-value--contained {
-  color: #ea580c;
+.fire-alert__summary-value--level2 {
+  color: #ea580c; /* 주황색 */
 }
 
-.fire-alert__summary-value--extinguished {
-  color: #16a34a;
+.fire-alert__summary-value--level3 {
+  color: #dc2626; /* 빨간색 */
 }
 
 /* 로딩 상태 */

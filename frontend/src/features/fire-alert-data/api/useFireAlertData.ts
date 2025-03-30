@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react';
-import { ForestFireData } from '../../../shared/types/forestFire';
-import { forestFireService } from '../../../shared/services/forestFireService';
+import { useState, useEffect } from "react";
+import { ForestFireData } from "../../../shared/types/forestFire";
+import { forestFireService } from "../../../shared/services/forestFireService";
+import {
+  calculateResponseLevelCounts,
+  calculateStatusCounts,
+} from "../../../shared/utils/forestFireUtils";
 
 /**
  * 산불 데이터 및 관련 상태를 관리하는 커스텀 훅 (SRP)
@@ -9,13 +13,14 @@ export function useFireAlertData() {
   const [fires, setFires] = useState<ForestFireData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // 데이터 로딩
   useEffect(() => {
     const loadData = async (): Promise<void> => {
       try {
         setLoading(true);
         const data = await forestFireService.getForestFires();
+
         setFires(data);
         setError(null);
       } catch (err) {
@@ -29,20 +34,11 @@ export function useFireAlertData() {
     void loadData();
   }, []);
 
-  // 상태 카운트 계산 (ISP: 필요한 정보만 계산)
-  const statusCounts = {
-    total: fires.length,
-    active: fires.filter((fire) => fire.status === "active").length,
-    contained: fires.filter((fire) => fire.status === "contained").length,
-    extinguished: fires.filter((fire) => fire.status === "extinguished").length,
-  };
+  // 상태 카운트 계산 (유틸리티 함수로 분리)
+  const statusCounts = calculateStatusCounts(fires);
 
-  // 대응단계별 카운트
-  const responseLevelCounts = {
-    level3: fires.filter((f) => f.severity === "critical").length,
-    level2: fires.filter((f) => f.severity === "high").length,
-    level1: fires.filter((f) => f.severity === "medium" || f.severity === "low").length,
-  };
+  // 대응단계별 카운트 (유틸리티 함수로 분리)
+  const responseLevelCounts = calculateResponseLevelCounts(fires);
 
   // 화면 리로드 핸들러
   const handleReload = (): void => {
@@ -55,6 +51,6 @@ export function useFireAlertData() {
     error,
     statusCounts,
     responseLevelCounts,
-    handleReload
+    handleReload,
   };
 }
