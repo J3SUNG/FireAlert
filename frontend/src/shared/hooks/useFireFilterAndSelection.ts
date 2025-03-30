@@ -1,23 +1,20 @@
-import { useState } from 'react';
-import { ForestFireData } from '../types/forestFire';
+import { useState } from "react";
+import { ForestFireData } from "../types/forestFire";
 
 /**
  * 산불 필터링 및 선택 상태를 관리하는 커스텀 훅 (SRP)
  */
 export function useFireFilterAndSelection(fires: ForestFireData[]) {
-  const [selectedFilter, setSelectedFilter] = useState<"all" | "active" | "contained" | "extinguished">("all");
+  const [selectedFilter, setSelectedFilter] = useState<
+    "all" | "active" | "contained" | "extinguished"
+  >("all");
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
 
   // 필터링 함수
   const filterFires = (fires: ForestFireData[]): ForestFireData[] => {
-    // 먼저 "산불외종료" 데이터 무시
-    const validFires = fires.filter(fire => 
-      !(typeof fire.description === 'string' && fire.description.includes('산불외종료'))
-    );
-    
     // 그 다음 선택된 필터에 따른 필터링 적용
-    if (selectedFilter === "all") return validFires;
-    return validFires.filter((fire) => fire.status === selectedFilter);
+    if (selectedFilter === "all") return fires;
+    return fires.filter((fire) => fire.status === selectedFilter);
   };
 
   // 산불 선택 핸들러
@@ -65,6 +62,6 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
     filteredData,
     handleFireSelect,
     getButtonClass,
-    getFilterButtonLabels
+    getFilterButtonLabels,
   };
 }

@@ -9,17 +9,19 @@ export interface GeoJsonProperties {
   [key: string]: unknown;
 }
 
+export interface GeoJsonGeometry {
+  type: 'Point' | 'LineString' | 'Polygon' | 'MultiPolygon' | 'MultiPoint' | 'MultiLineString' | 'GeometryCollection';
+  coordinates: number[] | number[][] | number[][][] | number[][][][];
+}
+
 export interface GeoJsonFeature {
-  type: string;
+  type: 'Feature';
   properties: GeoJsonProperties;
-  geometry: {
-    type: string;
-    coordinates: unknown;
-  };
+  geometry: GeoJsonGeometry;
 }
 
 export interface GeoJsonData {
-  type: string;
+  type: 'FeatureCollection';
   features: GeoJsonFeature[];
 }
 

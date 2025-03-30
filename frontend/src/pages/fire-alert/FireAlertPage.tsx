@@ -107,7 +107,6 @@ const FireAlertPage: React.FC = () => {
               />
 
               <FireStatusSummary
-                totalCount={statusCounts.total}
                 level3Count={responseLevelCounts.level3}
                 level2Count={responseLevelCounts.level2}
                 level1Count={responseLevelCounts.level1}

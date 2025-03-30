@@ -1,4 +1,4 @@
-import L from 'leaflet';
+import L from "leaflet";
 
 // 지도 초기 설정
 export const MAP_INIT_OPTIONS = {
@@ -22,25 +22,28 @@ export const KOREA_BOUNDS = {
 
 // GeoJSON 파일 경로
 export const GEOJSON_PATHS = {
-  provinces: '/assets/map/gadm41_KOR_1.json',
-  districts: '/assets/map/gadm41_KOR_2.json',
+  provinces: "/assets/map/gadm41_KOR_1.json",
+  districts: "/assets/map/gadm41_KOR_2.json",
 };
 
-// GeoJSON 스타일 설정
+// 시도 경계선 스타일 설정
 export const PROVINCES_STYLE = {
-  color: "#333333", // 검정색 경계선
-  weight: 2, // 시도 경계선 두께
-  opacity: 0.8,
+  color: "#ffffff", // 하양색 경계선
+  weight: 2.5, // 시도 경계선 두께 증가
+  opacity: 1.0,
   fillColor: "#e0f2fe",
   fillOpacity: 0.95,
 };
 
 export const DISTRICTS_STYLE = {
-  color: "#666666", // 약간 더 밝은 경계선
-  weight: 1,
-  opacity: 0.7,
+  color: "#ffffff", // 경계선 하양색으로 변경
+  weight: 0.8, // 선 두께를 얄게 설정
+  opacity: 1.0, // 완전 불투명하게 설정
   fillColor: "transparent",
   fillOpacity: 0,
+  dashArray: null, // 점선 없음
+  lineCap: "butt", // 직선 끝 처리
+  lineJoin: "miter" // 선 연결 처리
 };
 
 // 심각도별 마커 크기

@@ -1,7 +1,6 @@
 import React from "react";
 
 interface FireStatusSummaryProps {
-  totalCount: number;
   level3Count: number;
   level2Count: number;
   level1Count: number;
@@ -12,7 +11,6 @@ interface FireStatusSummaryProps {
  * 산불 상태 요약 컴포넌트 (SRP)
  */
 export const FireStatusSummary: React.FC<FireStatusSummaryProps> = ({
-  totalCount,
   level3Count,
   level2Count,
   level1Count,

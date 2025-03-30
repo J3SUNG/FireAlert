@@ -25,70 +25,95 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
   onFireSelect,
   legendPosition = "bottomleft",
 }) => {
-  // 지도 컴포넌트 참조
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [mapReady, setMapReady] = useState(false);
+  // 고유 ID 생성 (렌더링 간 안정성 보장)
+  const instanceId = useMemo(() => `map-${Date.now()}`, []);
   
-  // 마커 관리자 안정성을 위한 키 생성
-  // 컴포넌트가 마운트될 때 한 번만 생성되고 변경되지 않음
-  const markerManagerKey = useMemo(() => `marker-manager-${Date.now()}`, []);
+  // 지도 컨테이너 DOM 참조
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  
+  // 지도 로드 상태 관리
+  const [mapReady, setMapReady] = useState(false);
+  const [geoJsonReady, setGeoJsonReady] = useState(false);
+  
+  // 컴포넌트 마운트 상태 추적
+  const mountedRef = useRef(true);
 
-  // useMap 훅을 사용한 지도 관리 - 메모이제이션으로 안정화
-  const mapOptions = useMemo(() => ({ 
+  // 맵 초기화 및 관리
+  const { map, isMapLoaded } = useMap({
     containerRef: mapContainerRef,
     legendPosition,
-  }), [legendPosition]);
-  
-  const { map, isMapLoaded } = useMap(mapOptions);
-  
-  // 지도가 로드되었을 때 DOM이 완전히 렌더링되었는지 확인
+  });
+
+  // 지도 로드 완료 시 준비 상태 업데이트
   useEffect(() => {
-    if (isMapLoaded && map) {
+    if (!mountedRef.current) return;
+    
+    if (isMapLoaded && map && mapContainerRef.current) {
+      // 지연을 통해 DOM이 완전히 렌더링될 때까지 대기
       const timer = setTimeout(() => {
-        try {
-          // 지도 컨테이너가 DOM에 있는지 확인
-          const container = map.getContainer();
-          if (container && document.body.contains(container)) {
-            setMapReady(true);
-          }
-        } catch (error) {
-          console.error('지도 렌더링 확인 중 오류:', error);
-          // 오류가 있어도 지도를 사용할 수 있도록 설정
+        if (mountedRef.current) {
           setMapReady(true);
         }
-      }, 200);
+      }, 300);
       
       return () => clearTimeout(timer);
     }
     
-    return () => {
-      // 컴포넌트 언마운트 시 맵 상태 리셋
-      setMapReady(false);
-    };
+    return undefined;
   }, [isMapLoaded, map]);
 
-  // GeoJSON 레이어 관리 - 지도가 준비되었을 때만 실행
-  const { isGeoJsonLoaded } = useGeoJsonLayers(mapReady ? map : null, {
-    provincesUrl: GEOJSON_PATHS.provinces,
-    districtsUrl: GEOJSON_PATHS.districts,
-  });
+  // GeoJSON 레이어 초기화 (지도가 준비된 경우에만)
+  const { isGeoJsonLoaded } = useGeoJsonLayers(
+    mapReady && map ? map : null,
+    {
+      provincesUrl: GEOJSON_PATHS.provinces,
+      districtsUrl: GEOJSON_PATHS.districts,
+    }
+  );
+
+  // GeoJSON 로드 상태 감지
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    
+    if (isGeoJsonLoaded) {
+      setGeoJsonReady(true);
+    }
+  }, [isGeoJsonLoaded]);
+
+  // 컴포넌트 마운트/언마운트 시 정리
+  useEffect(() => {
+    mountedRef.current = true;
+    
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // 마커 관리자 키 (안정적인 메모리 관리)
+  const markerManagerKey = useMemo(() => `markers-${instanceId}`, [instanceId]);
 
   return (
-    <div className="forest-fire-map">
-      <div ref={mapContainerRef} className="forest-fire-map__container"></div>
+    <div className="forest-fire-map" data-instance-id={instanceId}>
+      <div 
+        ref={mapContainerRef} 
+        className="forest-fire-map__container" 
+        data-map-instance={instanceId}
+      ></div>
 
-      {mapReady && map && (
+      {/* 지도와 GeoJSON이 모두 로드된 경우에만 마커 표시 */}
+      {mapReady && geoJsonReady && map && (
         <FireMarkerManager
-          key={markerManagerKey} // 안정성을 위해 고유 키 적용
+          key={markerManagerKey}
           map={map}
           fires={fires}
           selectedFireId={selectedFireId}
           onFireSelect={onFireSelect}
-          isGeoJsonLoaded={isGeoJsonLoaded}
+          isGeoJsonLoaded={true}
         />
       )}
 
-      <MapLoadingIndicator isLoading={!isMapLoaded || !isGeoJsonLoaded} />
+      {/* 로딩 표시기 */}
+      <MapLoadingIndicator isLoading={!mapReady || !geoJsonReady} />
     </div>
   );
 };

@@ -31,6 +31,8 @@ export default tseslint.config(
       // React 관련 규칙
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": "off",
+      // 추가: react-hooks/exhaustive-deps 규칙 비활성화 (의존성 배열 경고 제거)
+      "react-hooks/exhaustive-deps": "off",
       
       // 자주 방해되는 TypeScript 규칙 비활성화
       "@typescript-eslint/no-unsafe-assignment": "off",
@@ -48,11 +50,13 @@ export default tseslint.config(
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off", // || 대신 ?? 사용 권장 규칙 비활성화
       
+      // TypeScript 규칙 조정: 추가 규칙 비활성화
+      "@typescript-eslint/prefer-optional-chain": "off", // 옵셔널 체이닝 강제 규칙 비활성화
+      "@typescript-eslint/no-unnecessary-type-assertion": "off", // 불필요한 타입 단언 경고 비활성화
+      
       // 개발에 유용할 수 있는 규칙은 경고로 변경
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "warn", // 사용되지 않는 변수는 경고만 표시
       "@typescript-eslint/prefer-as-const": "warn",
-      "@typescript-eslint/prefer-optional-chain": "warn",
-      "@typescript-eslint/no-unnecessary-type-assertion": "warn",
       
       // 콘솔 로그는 개발 중에 유용하므로 허용
       "no-console": "off",

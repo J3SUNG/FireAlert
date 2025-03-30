@@ -28,6 +28,7 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
   const [isGeoJsonLoaded, setIsGeoJsonLoaded] = useState(false);
 
   // GeoJSON 로드 및 레이어 생성
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!map) return;
 
@@ -45,7 +46,8 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
 
           // 시도 레이어 생성
           const provincesLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
-            style: () => PROVINCES_STYLE
+            style: () => PROVINCES_STYLE,
+            className: 'province-boundary' // 시도 경계선 클래스 적용
           }).addTo(map);
 
           geoJsonLayersRef.current.provinces = provincesLayer;
@@ -101,7 +103,11 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
           
           // 시군구 레이어 생성 (초기에는 추가하지 않음)
           const districtsLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
-            style: () => DISTRICTS_STYLE
+            style: () => DISTRICTS_STYLE,
+            className: 'district-boundary', // 시군구 경계선 클래스 적용
+            smoothFactor: 0, // 경계선 시각화를 위한 값 (더 선명하게 보임)
+            interactive: false, // 마우스 이벤트 처리 안함
+            renderer: L.svg({ padding: 0 }) // 렌더링 패딩 최소화
           });
 
           geoJsonLayersRef.current.districts = districtsLayer;
@@ -122,7 +128,8 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
               // 광역시/특별시의 경우 시군구 레이블을 표시하지 않음
               if (!isBigCity) {
                 // 시군구 중심 좌표 계산 - GeoJSON feature로부터 직접 계산
-                const coordsList = feature.geometry.coordinates;
+                // 타입 단언을 추가하여 TypeScript 오류 해결
+                const coordsList = feature.geometry.coordinates as any[];
                 if (!coordsList || !coordsList.length) return;
                 
                 // 중심점 대략적 계산
@@ -130,9 +137,9 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
                 
                 // 다중 폴리곤 처리
                 if (feature.geometry.type === 'MultiPolygon') {
-                  coordsList.forEach(polygon => {
+                  (coordsList as any[][][]).forEach((polygon: any[][]) => {
                     if (polygon && polygon.length && polygon[0]) {
-                      polygon[0].forEach(coord => {
+                      polygon[0].forEach((coord: number[]) => {
                         if (coord && coord.length >= 2) {
                           lngSum += coord[0];
                           latSum += coord[1];
@@ -145,7 +152,7 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
                 // 단일 폴리곤 처리
                 else if (feature.geometry.type === 'Polygon') {
                   if (coordsList[0]) {
-                    coordsList[0].forEach(coord => {
+                    (coordsList[0] as any[]).forEach((coord: number[]) => {
                       if (coord && coord.length >= 2) {
                         lngSum += coord[0];
                         latSum += coord[1];
@@ -188,13 +195,37 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
             try {
               const currentZoom = map.getZoom();
               
-              // 시군구 레이어 토글
-              if (currentZoom >= 8 && districtsLayer) {
-                if (!map.hasLayer(districtsLayer)) {
-                  districtsLayer.addTo(map);
+              // 시군구 레이어 확대레벨에 따라 표시
+              if (districtsLayer) {
+                if (currentZoom >= 8) {
+                  // 확대 레벨 8 이상일 때만 시군구 경계선 표시
+                  if (!map.hasLayer(districtsLayer)) {
+                    districtsLayer.addTo(map);
+                  }
+                  
+                  // 확대 레벨에 따라 경계선 스타일 조정
+                  if (currentZoom >= 9) {
+                    districtsLayer.setStyle({
+                      ...DISTRICTS_STYLE,
+                      weight: 0.8,
+                      opacity: 1.0,
+                      color: "#ffffff" // 하양색으로 경계선 가시성 높이기
+                    });
+                  } else {
+                    districtsLayer.setStyle(DISTRICTS_STYLE);
+                  }
+                } else {
+                  // 확대레벨이 낮으면 시군구 경계선 제거
+                  if (map.hasLayer(districtsLayer)) {
+                    map.removeLayer(districtsLayer);
+                  }
                 }
-              } else if (districtsLayer && map.hasLayer(districtsLayer)) {
-                map.removeLayer(districtsLayer);
+                
+                // 시도 레이어를 항상 위로 가져옴 (z순서 조정)
+                const { provinces } = geoJsonLayersRef.current;
+                if (provinces && map.hasLayer(provinces)) {
+                  provinces.bringToFront();
+                }
               }
               
               // 시군구 레이블 마커 토글
@@ -210,6 +241,14 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
             }
           };
           
+          // 시도 레이어를 항상 위에 유지하는 함수 
+          const ensureProvinceOnTop = () => {
+            const { provinces } = geoJsonLayersRef.current;
+            if (provinces && map.hasLayer(provinces)) {
+              provinces.bringToFront();
+            }
+          };
+          
           // 초기 가시성 설정
           updateDistrictVisibility();
           
@@ -217,8 +256,18 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
           map.off('zoomend', updateDistrictVisibility); // 기존 핸들러 제거 (중복 방지)
           map.on('zoomend', updateDistrictVisibility);
           
+          // 맵 이동 완료 후 시도 레이어를 항상 위에 유지
+          map.off('moveend', ensureProvinceOnTop);
+          map.on('moveend', ensureProvinceOnTop);
+          
           // 로드 완료 처리
           setIsGeoJsonLoaded(true);
+          
+          // 시군구가 로드된 후 시도가 항상 위에 오도록 추가 보장
+          const { provinces } = geoJsonLayersRef.current;
+          if (provinces && map.hasLayer(provinces)) {
+            provinces.bringToFront();
+          }
         } catch (error) {
           console.error('시군구 GeoJSON 로드 오류:', error);
           setIsGeoJsonLoaded(true); // 오류가 있어도 로드 완료 처리
@@ -261,6 +310,7 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
         
         // 이벤트 핸들러 제거
         map.off('zoomend');
+        map.off('moveend');
       } catch (error) {
         console.error('레이어 제거 중 오류:', error);
       }

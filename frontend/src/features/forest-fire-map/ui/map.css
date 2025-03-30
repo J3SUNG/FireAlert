@@ -1,3 +1,24 @@
+/* 경계선 스타일 */
+.leaflet-overlay-pane path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 시도 경계선 그림자 효과 */
+.province-boundary path {
+  filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.5));
+  z-index: 500 !important;
+}
+
+/* 시군구 경계선 스타일 */
+.district-boundary path {
+  stroke-dasharray: none;
+  filter: none; /* 그림자 효과 제거로 선명도 향상 */
+  pointer-events: none;
+  shape-rendering: crispEdges; /* 선명한 SVG 렌더링 */
+  vector-effect: non-scaling-stroke; /* 확대/축소해도 선 두께 유지 */
+}
+
 /* 커스텀 마커 z-index 우선순위 */
 .fire-marker--high-priority {
   z-index: 900 !important;
@@ -430,4 +451,94 @@
 /* GeoJSON 관련 스타일 */
 .leaflet-interactive {
   cursor: pointer;
+}
+
+/* HTML에서 가져온 지도 마커 스타일 */
+.region-marker {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  pointer-events: auto;
+  transition: transform 0.2s;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.region-marker:hover {
+  transform: scale(1.05);
+  z-index: 1000;
+}
+
+.region-name {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.region-status {
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+.level-1 {
+  background-color: #fff9c4;
+  color: #5d4037;
+}
+
+.level-2 {
+  background-color: #ffcc80;
+  color: #5d4037;
+}
+
+.level-3 {
+  background-color: #ffab91;
+  color: #b71c1c;
+}
+
+.percent-low {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.percent-medium {
+  background-color: #fffde7;
+  color: #f57f17;
+}
+
+.percent-high {
+  background-color: #e8eaf6;
+  color: #303f9f;
+}
+
+.completed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.completed-text {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+/* 툴팁 스타일 */
+.region-tooltip {
+  font-size: 12px;
+}
+
+/* 미디어 쿼리 */
+@media (max-width: 768px) {
+  .region-marker {
+    padding: 4px;
+  }
+
+  .region-name {
+    font-size: 12px;
+  }
+
+  .region-status {
+    font-size: 10px;
+  }
 }
