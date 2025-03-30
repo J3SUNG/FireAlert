@@ -1,15 +1,7 @@
 import { FC, useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { ForestFireData } from '../../../shared/types/forestFire';
 import { createFireMarker } from '../utils/markerUtils';
-
-interface FireMarkerManagerProps {
-  map: L.Map | null;
-  fires: ForestFireData[];
-  selectedFireId?: string;
-  onFireSelect?: (fire: ForestFireData) => void;
-  isGeoJsonLoaded: boolean;
-}
+import { FireMarkerManagerProps } from '../model/types';
 
 /**
  * 산불 마커 관리 컴포넌트
@@ -30,7 +22,6 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = ({
   // 컴포넌트 언마운트 처리
   useEffect(() => {
     return () => {
-      console.log('FireMarkerManager unmounting - cleaning up markers');
       // 언마운트시에만 실행되는 클린업 코드
       if (map) {
         Object.values(markersRef.current).forEach(marker => {
@@ -74,8 +65,6 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = ({
   useEffect(() => {
     // 지도나 GeoJSON 레이어가 없으면 실행하지 않음
     if (!map || !isGeoJsonLoaded) return;
-
-    console.log('Markers rendering - fires changed');
     
     // "산불외종료" 데이터 무시
     const validFires = fires.filter(fire => {
@@ -116,8 +105,8 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = ({
         
         // 참조에 마커 저장
         markersRef.current[fire.id] = newMarker;
-      } catch (err) {
-        console.error(`마커 생성 오류 (${fire.id}):`, err);
+      } catch (_error) {
+        // 마커 생성 오류 처리
       }
     });
   }, [map, fires, onFireSelect, isGeoJsonLoaded]);
@@ -137,8 +126,8 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = ({
         // 지도 이동
         map.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
       }
-    } catch (error) {
-      console.error("선택된 마커 처리 중 오류 발생:", error);
+    } catch (_error) {
+      // 선택된 마커 처리 중 오류 처리
     }
   }, [selectedFireId, fires, map, isGeoJsonLoaded]);
   

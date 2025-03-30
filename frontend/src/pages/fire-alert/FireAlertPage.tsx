@@ -42,33 +42,25 @@ const FireAlertPage: React.FC = () => {
         <div className="fire-alert__filter-container">
           <button
             className={getButtonClass("all")}
-            onClick={(): void => {
-              setSelectedFilter("all");
-            }}
+            onClick={() => setSelectedFilter("all")}
           >
             {buttonLabels.all}
           </button>
           <button
             className={getButtonClass("active")}
-            onClick={(): void => {
-              setSelectedFilter("active");
-            }}
+            onClick={() => setSelectedFilter("active")}
           >
             {buttonLabels.active}
           </button>
           <button
             className={getButtonClass("contained")}
-            onClick={(): void => {
-              setSelectedFilter("contained");
-            }}
+            onClick={() => setSelectedFilter("contained")}
           >
             {buttonLabels.contained}
           </button>
           <button
             className={getButtonClass("extinguished")}
-            onClick={(): void => {
-              setSelectedFilter("extinguished");
-            }}
+            onClick={() => setSelectedFilter("extinguished")}
           >
             {buttonLabels.extinguished}
           </button>
@@ -88,10 +80,7 @@ const FireAlertPage: React.FC = () => {
             <p className="fire-alert__error-text">{error}</p>
             <button
               className="fire-alert__retry-button"
-              onClick={() => {
-                const result = handleReload();
-                return result;
-              }}
+              onClick={handleReload}
             >
               다시 시도
             </button>
@@ -136,6 +125,8 @@ const FireAlertPage: React.FC = () => {
                   showFilter={false}
                   selectedFireId={selectedFireId}
                   onFireSelect={handleFireSelect}
+                  filter={selectedFilter}
+                  onFilterChange={setSelectedFilter}
                 />
               </div>
             </div>

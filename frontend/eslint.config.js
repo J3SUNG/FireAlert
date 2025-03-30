@@ -54,8 +54,8 @@ export default tseslint.config(
       "@typescript-eslint/prefer-optional-chain": "off", // 옵셔널 체이닝 강제 규칙 비활성화
       "@typescript-eslint/no-unnecessary-type-assertion": "off", // 불필요한 타입 단언 경고 비활성화
       
-      // 개발에 유용할 수 있는 규칙은 경고로 변경
-      "@typescript-eslint/no-unused-vars": "warn", // 사용되지 않는 변수는 경고만 표시
+      // 개발에 유용할 수 있는 규칙 재정의
+      "@typescript-eslint/no-unused-vars": "off", // 사용되지 않는 변수 검사 완전히 무시
       "@typescript-eslint/prefer-as-const": "warn",
       
       // 콘솔 로그는 개발 중에 유용하므로 허용

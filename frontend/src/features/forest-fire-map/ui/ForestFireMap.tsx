@@ -1,20 +1,12 @@
 import React, { FC, useRef, useState, useEffect, useMemo } from "react";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { ForestFireData } from "../../../shared/types/forestFire";
 import { MapLoadingIndicator } from "../components/MapLoadingIndicator";
 import { useGeoJsonLayers } from "../hooks/useGeoJsonLayers";
 import { useMap } from "../hooks/useMap";
 import { GEOJSON_PATHS } from "../constants/mapSettings";
 import { FireMarkerManager } from "../components/FireMarkerManager";
+import { ForestFireMapProps } from "../model/types";
 import "./map.css";
-
-interface ForestFireMapProps {
-  fires: ForestFireData[];
-  selectedFireId?: string;
-  onFireSelect?: (fire: ForestFireData) => void;
-  legendPosition?: L.ControlPosition;
-}
 
 /**
  * 산불 지도 컴포넌트

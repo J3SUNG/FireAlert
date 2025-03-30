@@ -21,7 +21,7 @@ export const MapInitializer: FC<MapInitializerProps> = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map | null>(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // 지도 초기화 효과
   useEffect(() => {
     if (!mapContainerRef.current) return;
     if (map) return; // 이미 맵이 있으면 초기화하지 않음

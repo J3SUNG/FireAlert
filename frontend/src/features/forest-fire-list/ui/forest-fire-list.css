@@ -8,8 +8,8 @@
 
 .forest-fire-list__filter-container {
   padding: 12px 16px 8px;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-tertiary);
 }
 
 .forest-fire-list__button-group {
@@ -18,7 +18,7 @@
   overflow-x: auto;
   padding: 4px;
   border-radius: 18px;
-  background: #f1f5f9;
+  background: var(--color-bg-filter);
 }
 
 .forest-fire-list__button {
@@ -30,35 +30,35 @@
   outline: none;
   white-space: nowrap;
   transition: all 0.2s ease;
-  background-color: #e5e7eb;
+  background-color: var(--color-bg-button);
   font-weight: 500;
-  color: #4b5563;
+  color: var(--color-text-secondary);
 }
 
 .forest-fire-list__button--all-active {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--color-brand-primary);
+  color: var(--color-white);
 }
 
 .forest-fire-list__button--active-active {
-  background-color: #ef4444;
-  color: white;
+  background-color: var(--color-status-active);
+  color: var(--color-white);
 }
 
 .forest-fire-list__button--contained-active {
-  background-color: #f97316;
-  color: white;
+  background-color: var(--color-status-contained);
+  color: var(--color-white);
 }
 
 .forest-fire-list__button--extinguished-active {
-  background-color: #22c55e;
-  color: white;
+  background-color: var(--color-status-extinguished);
+  color: var(--color-white);
 }
 
 .forest-fire-list__content {
   padding: 12px;
   overflow-y: auto;
-  background-color: #ffffff;
+  background-color: var(--color-bg-primary);
 }
 
 .forest-fire-list__content--with-filter {
@@ -78,23 +78,23 @@
 .forest-fire-list__empty-message {
   padding: 16px;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-tertiary);
 }
 
 /* ForestFireItem 컴포넌트 */
 .forest-fire-item {
   padding: 14px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--color-bg-primary);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .forest-fire-item--selected {
-  border-color: #3b82f6;
-  background-color: #f0f7ff;
-  box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: var(--color-brand-primary);
+  background-color: var(--color-selected-bg);
+  box-shadow: var(--shadow-md);
 }
 
 .forest-fire-item__content {
@@ -110,7 +110,7 @@
 .forest-fire-item__title {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   margin-bottom: 6px;
   letter-spacing: -0.3px;
 }
@@ -119,7 +119,7 @@
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-text-tertiary);
 }
 
 .forest-fire-item__date {
@@ -150,23 +150,23 @@
 }
 
 .forest-fire-item__severity-badge--low {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: var(--color-severity-low-bg);
+  color: var(--color-severity-low-text);
 }
 
 .forest-fire-item__severity-badge--medium {
-  background-color: #fef9c3;
-  color: #854d0e;
+  background-color: var(--color-severity-medium-bg);
+  color: var(--color-severity-medium-text);
 }
 
 .forest-fire-item__severity-badge--high {
-  background-color: #ffedd5;
-  color: #9a3412;
+  background-color: var(--color-severity-high-bg);
+  color: var(--color-severity-high-text);
 }
 
 .forest-fire-item__severity-badge--critical {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: var(--color-severity-critical-bg);
+  color: var(--color-severity-critical-text);
 }
 
 .forest-fire-item__status-badge {
@@ -179,18 +179,18 @@
 }
 
 .forest-fire-item__status-badge--active {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: var(--color-severity-critical-bg);
+  color: var(--color-severity-critical-text);
 }
 
 .forest-fire-item__status-badge--contained {
-  background-color: #ffedd5;
-  color: #9a3412;
+  background-color: var(--color-severity-high-bg);
+  color: var(--color-severity-high-text);
 }
 
 .forest-fire-item__status-badge--extinguished {
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: var(--color-extinguished-bg);
+  color: var(--color-extinguished-text);
 }
 
 .forest-fire-item__status-icon {
@@ -202,21 +202,21 @@
 }
 
 .forest-fire-item__status-icon--active {
-  background-color: #ef4444;
+  background-color: var(--color-status-active);
   animation: pulse 1.5s infinite;
 }
 
 .forest-fire-item__status-icon--contained {
-  background-color: #f97316;
+  background-color: var(--color-status-contained);
 }
 
 .forest-fire-item__status-icon--extinguished {
-  background-color: #22c55e;
+  background-color: var(--color-status-extinguished);
 }
 
 .forest-fire-item__description {
   font-size: 12px;
-  color: #4b5563;
+  color: var(--color-text-secondary);
   margin-top: 8px;
   overflow: hidden;
   text-overflow: ellipsis;

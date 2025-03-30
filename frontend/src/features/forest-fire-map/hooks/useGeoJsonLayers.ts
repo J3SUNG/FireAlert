@@ -28,7 +28,6 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
   const [isGeoJsonLoaded, setIsGeoJsonLoaded] = useState(false);
 
   // GeoJSON 로드 및 레이어 생성
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!map) return;
 

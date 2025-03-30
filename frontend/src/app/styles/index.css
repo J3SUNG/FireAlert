@@ -1,3 +1,6 @@
+/* 변수 임포트 */
+@import './variables/colors.css';
+
 /* 기본 스타일 초기화 */
 * {
   box-sizing: border-box;

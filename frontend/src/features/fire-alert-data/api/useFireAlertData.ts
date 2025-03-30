@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ForestFireData } from "../../../shared/types/forestFire";
-import { forestFireService } from "../../../shared/services/forestFireService";
+import { forestFireService } from "../../../shared/services";
 import {
   calculateResponseLevelCounts,
   calculateStatusCounts,
@@ -14,25 +14,26 @@ export function useFireAlertData() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 데이터 로딩
-  useEffect(() => {
-    const loadData = async (): Promise<void> => {
-      try {
-        setLoading(true);
-        const data = await forestFireService.getForestFires();
+  // 데이터 로딩 함수
+  const loadData = useCallback(async (forceRefresh = false): Promise<void> => {
+    try {
+      setLoading(true);
+      const data = await forestFireService.getForestFires(forceRefresh);
 
-        setFires(data);
-        setError(null);
-      } catch (err) {
-        console.error("산불 데이터를 가져오는 중 오류 발생:", err);
-        setError("산불 데이터를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void loadData();
+      setFires(data);
+      setError(null);
+    } catch (_) {
+      // 산불 데이터 가져오기 오류 처리
+      setError("산불 데이터를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // 초기 데이터 로딩
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   // 상태 카운트 계산 (유틸리티 함수로 분리)
   const statusCounts = calculateStatusCounts(fires);
@@ -41,9 +42,10 @@ export function useFireAlertData() {
   const responseLevelCounts = calculateResponseLevelCounts(fires);
 
   // 화면 리로드 핸들러
-  const handleReload = (): void => {
-    window.location.reload();
-  };
+  const handleReload = useCallback((): void => {
+    forestFireService.clearCache();
+    void loadData(true);
+  }, [loadData]);
 
   return {
     fires,

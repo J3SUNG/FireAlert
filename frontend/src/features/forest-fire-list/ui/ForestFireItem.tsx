@@ -1,12 +1,7 @@
 import { FC } from 'react';
 import { ForestFireData } from '../../../shared/types/forestFire';
+import { ForestFireItemProps } from '../model/types';
 import './forest-fire-list.css';
-
-interface ForestFireItemProps {
-  fire: ForestFireData;
-  onSelect?: (fire: ForestFireData) => void;
-  isSelected?: boolean;
-}
 
 export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSelected }) => {
   const handleClick = () => {

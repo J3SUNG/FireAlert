@@ -22,7 +22,7 @@ export const GeoJsonLayerManager: FC<GeoJsonLayerManagerProps> = ({ map, onLayer
     districts?: L.GeoJSON;
   }>({});
   
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // GeoJSON 레이어 생성 효과
   useEffect(() => {
     if (!map) return;
     

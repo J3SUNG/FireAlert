@@ -1,8 +1,5 @@
 import React from 'react';
-
-interface MapLoadingIndicatorProps {
-  isLoading: boolean;
-}
+import { MapLoadingIndicatorProps } from '../model/types';
 
 /**
  * 지도 로딩 인디케이터 컴포넌트

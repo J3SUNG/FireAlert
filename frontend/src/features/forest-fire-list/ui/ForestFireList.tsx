@@ -1,27 +1,17 @@
-import { FC, useState } from 'react';
-import { ForestFireData } from '../../../shared/types/forestFire';
+import { FC } from 'react';
 import { ForestFireItem } from './ForestFireItem';
+import { ForestFireListProps } from '../model/types';
 import './forest-fire-list.css';
-
-interface ForestFireListProps {
-  fires: ForestFireData[];
-  onFireSelect?: (fire: ForestFireData) => void;
-  selectedFireId?: string;
-  showFilter?: boolean;
-}
 
 export const ForestFireList: FC<ForestFireListProps> = ({ 
   fires, 
   onFireSelect,
   selectedFireId,
-  showFilter = true
+  showFilter = true,
+  filter = 'all',
+  onFilterChange
 }) => {
-  const [filter, setFilter] = useState<'all' | 'active' | 'contained' | 'extinguished'>('all');
-  
-  const filteredFires = fires.filter(fire => {
-    if (filter === 'all') return true;
-    return fire.status === filter;
-  });
+  // 내부 필터링 상태 제거 - 부모로부터 받은 filter 사용
 
   const getButtonClass = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
     let className = 'forest-fire-list__button';
@@ -52,25 +42,25 @@ export const ForestFireList: FC<ForestFireListProps> = ({
           <div className="forest-fire-list__button-group">
             <button 
               className={getButtonClass('all')}
-              onClick={(): void => { setFilter('all'); }}
+              onClick={() => { if (onFilterChange) onFilterChange('all'); }}
             >
               전체
             </button>
             <button 
               className={getButtonClass('active')}
-              onClick={(): void => { setFilter('active'); }}
+              onClick={() => { if (onFilterChange) onFilterChange('active'); }}
             >
               진행중
             </button>
             <button 
               className={getButtonClass('contained')}
-              onClick={(): void => { setFilter('contained'); }}
+              onClick={() => { if (onFilterChange) onFilterChange('contained'); }}
             >
               통제중
             </button>
             <button 
               className={getButtonClass('extinguished')}
-              onClick={(): void => { setFilter('extinguished'); }}
+              onClick={() => { if (onFilterChange) onFilterChange('extinguished'); }}
             >
               진화완료
             </button>
@@ -79,9 +69,9 @@ export const ForestFireList: FC<ForestFireListProps> = ({
       )}
       
       <div className={getContentClass()}>
-        {filteredFires.length > 0 ? (
+        {fires.length > 0 ? (
           <div className="forest-fire-list__items">
-            {filteredFires.map(fire => (
+            {fires.map(fire => (
               <ForestFireItem 
                 key={fire.id} 
                 fire={fire} 
