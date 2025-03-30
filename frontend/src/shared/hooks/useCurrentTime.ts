@@ -30,7 +30,6 @@ export function useCurrentTime() {
 
   return {
     currentTime,
-    formattedTime: formatDate(currentTime),
     formatDate
   };
 }

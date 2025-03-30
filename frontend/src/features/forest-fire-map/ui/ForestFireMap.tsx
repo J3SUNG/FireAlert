@@ -324,7 +324,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
         const mapInstance = mapRef.current;
         if (!mapInstance) return;
 
-        const marker = L.marker([lat, lng], { icon }).addTo(mapInstance);
+        const newMarker = L.marker([lat, lng], { icon }).addTo(mapInstance);
 
         const severityText =
           fire.severity === "low"
@@ -362,7 +362,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
             : "";
 
         // 마커에 호버 시 나타내는 툴팁 내용 추가
-        marker.bindTooltip(`
+        newMarker.bindTooltip(`
           <div class="fire-popup">
             <h3 class="fire-popup__title">${formattedLocation}</h3>
             <p class="fire-popup__info"><span class="fire-popup__label">위치:</span> ${fire.location}</p>
@@ -381,7 +381,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
           opacity: 0.98
         });
 
-        marker.on("click", (e) => {
+        newMarker.on("click", (e) => {
           // 마커 클릭 시 이벤트가 지도까지 전파되지 않도록 설정
           L.DomEvent.stopPropagation(e);
         
@@ -393,7 +393,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
           }
         });
 
-        markersRef.current[fire.id] = marker;
+        markersRef.current[fire.id] = newMarker;
       });
     } catch (error) {
       console.error("마커 업데이트 중 오류 발생:", error);
@@ -407,8 +407,6 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
       if (!Object.prototype.hasOwnProperty.call(markersRef.current, selectedFireId)) {
         return;
       }
-
-      const marker = markersRef.current[selectedFireId];
 
       const fire = fires.find((f) => f.id === selectedFireId);
       if (fire) {

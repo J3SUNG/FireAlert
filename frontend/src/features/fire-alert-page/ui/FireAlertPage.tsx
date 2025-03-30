@@ -17,7 +17,6 @@ const FireAlertPage: React.FC = () => {
     selectedFilter,
     setSelectedFilter,
     selectedFireId,
-    setSelectedFireId,
     filteredData,
     handleFireSelect,
     getButtonClass,
@@ -25,7 +24,7 @@ const FireAlertPage: React.FC = () => {
   } = useFireFilterAndSelection(fires);
 
   // 현재 시간 상태 관리 훅
-  const { currentTime, formattedTime, formatDate } = useCurrentTime();
+  const { currentTime, formatDate } = useCurrentTime();
 
   // 필터 버튼 라벨 데이터
   const buttonLabels = getFilterButtonLabels(statusCounts);

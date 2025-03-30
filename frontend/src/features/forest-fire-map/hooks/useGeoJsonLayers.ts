@@ -27,9 +27,6 @@ interface UseGeoJsonLayersOptions {
   districtsUrl: string;
 }
 
-/**
- * GeoJSON 레이어를 로드하고 관리하기 위한 커스텀 훅
- */
 export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOptions) {
   const geoJsonLayersRef = useRef<{
     provinces?: L.GeoJSON;
@@ -38,22 +35,22 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
   const [isGeoJsonLoaded, setIsGeoJsonLoaded] = useState(false);
 
   useEffect(() => {
-    // 지도가 없으면 아무것도 하지 않음
     if (!map) {
       return;
     }
 
+    let provincesLayer: L.GeoJSON | undefined;
+    let districtsLayer: L.GeoJSON | undefined;
+
     const loadProvinces = async (): Promise<void> => {
       try {
-
         const response = await fetch(options.provincesUrl);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${String(response.status)}`);
         }
         const data = await response.json() as GeoJsonData;
 
-        // 시도 경계 GeoJSON 레이어 생성
-        const provincesLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
+        provincesLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
           style: () => ({
             color: '#3388ff',
             weight: 2,
@@ -73,30 +70,24 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
           }
         });
 
-        // 레이어가 생성된 후 지도에 추가
         provincesLayer.addTo(map);
         geoJsonLayersRef.current.provinces = provincesLayer;
         
-
-        
-        // 시도 로드 후 시군구 로드
         await loadDistricts();
-      } catch (error) {
+      } catch {
         setIsGeoJsonLoaded(true);
       }
     };
 
     const loadDistricts = async (): Promise<void> => {
       try {
-
         const response = await fetch(options.districtsUrl);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${String(response.status)}`);
         }
         const data = await response.json() as GeoJsonData;
         
-        // 시군구 경계 GeoJSON 레이어 생성
-        const districtsLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
+        districtsLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
           style: () => ({
             color: '#666',
             weight: 1,
@@ -118,67 +109,61 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
             tooltip.setContent(districtName);
             layer.bindTooltip(tooltip);
             
-            // 줌 레벨에 따라 표시 여부 설정
             map.on('zoomend', () => {
               try {
                 const currentZoom = map.getZoom();
-              if (currentZoom >= 9) {
-                const toolTip = layer.getTooltip();
+                if (currentZoom >= 9) {
+                  const toolTip = layer.getTooltip();
                   if (toolTip) toolTip.setOpacity(1);
-              } else {
-                const toolTip = layer.getTooltip();
+                } else {
+                  const toolTip = layer.getTooltip();
                   if (toolTip) toolTip.setOpacity(0);
+                }
+              } catch {
+                // 무시
               }
-            } catch (error) {
-              // 에러 발생 시 무시
-            }
             });
           }
         });
 
-        // 레이어는 생성하지만 바로 추가하지 않음
         geoJsonLayersRef.current.districts = districtsLayer;
 
-        // 줌 레벨에 따라 표시 여부 결정
         map.on('zoomend', () => {
           try {
             const currentZoom = map.getZoom();
-            if (currentZoom >= 8 && geoJsonLayersRef.current.districts) {
-              if (!map.hasLayer(geoJsonLayersRef.current.districts)) {
-                geoJsonLayersRef.current.districts.addTo(map);
+            if (currentZoom >= 8 && districtsLayer) {
+              if (!map.hasLayer(districtsLayer)) {
+                districtsLayer.addTo(map);
               }
-            } else if (geoJsonLayersRef.current.districts && map.hasLayer(geoJsonLayersRef.current.districts)) {
-              map.removeLayer(geoJsonLayersRef.current.districts);
+            } else if (districtsLayer && map.hasLayer(districtsLayer)) {
+              map.removeLayer(districtsLayer);
             }
-          } catch (error) {
-            // 에러 발생 시 무시
+          } catch {
+            // 무시
           }
         });
         
-
         setIsGeoJsonLoaded(true);
-      } catch (error) {
+      } catch {
         setIsGeoJsonLoaded(true);
       }
     };
 
-    // GeoJSON 로드 시작
-    loadProvinces().catch(error => {
+    loadProvinces().catch(() => {
       setIsGeoJsonLoaded(true);
     });
 
-    // 클린업 함수
     return () => {
       try {
-        if (geoJsonLayersRef.current.provinces && map.hasLayer(geoJsonLayersRef.current.provinces)) {
-          map.removeLayer(geoJsonLayersRef.current.provinces);
+        if (provincesLayer && map.hasLayer(provincesLayer)) {
+          map.removeLayer(provincesLayer);
         }
         
-        if (geoJsonLayersRef.current.districts && map.hasLayer(geoJsonLayersRef.current.districts)) {
-          map.removeLayer(geoJsonLayersRef.current.districts);
+        if (districtsLayer && map.hasLayer(districtsLayer)) {
+          map.removeLayer(districtsLayer);
         }
-      } catch (error) {
-        // 에러 발생 시 무시
+      } catch {
+        // 무시
       }
     };
   }, [map, options]);

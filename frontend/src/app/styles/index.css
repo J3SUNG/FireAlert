@@ -13,7 +13,7 @@ body {
   line-height: 1.5;
 }
 
-/* 애니메이션 */
+/* 애니메이션 - 전역으로 한 번만 정의 */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

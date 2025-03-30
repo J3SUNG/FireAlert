@@ -2,13 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './app';
 import './app/styles/index.css';
-import 'leaflet/dist/leaflet.css'; // Leaflet CSS 명시적 로드
+import 'leaflet/dist/leaflet.css';
 
-// leaflet 아이콘 관련 이슈 해결
 import L from 'leaflet';
 
-// leaflet 아이콘 경로 문제 해결
-// `any` 사용을 방지하기 위한 타입 정의
 interface IconDefault extends L.Icon.Default {
   _getIconUrl?: unknown;
 }
@@ -27,6 +24,4 @@ if (rootElement) {
       <App />
     </React.StrictMode>,
   );
-} else {
-  console.error('Root element not found');
 }
