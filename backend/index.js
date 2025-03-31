@@ -1,28 +1,30 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const { dummy } = require("./dummy");
 
 const app = express();
 app.use(cors());
 
 app.get("/api/fireList", async (req, res) => {
   try {
-    let data;
-    try {
-      const response = await axios.get(
-        "https://fd.forest.go.kr/ffas/pubConn/selectPublicFireShowList.do",
-        {
-          headers: {
-            "User-Agent": "Mozilla/5.0",
-          },
-          timeout: 5000,
-        }
-      );
-      data = response.data;
-    } catch (apiError) {
-      // API 오류 시 빈 응답 반환
-      return res.json([]);
-    }
+    // let data;
+    // try {
+    //   const response = await axios.get(
+    //     "https://fd.forest.go.kr/ffas/pubConn/selectPublicFireShowList.do",
+    //     {
+    //       headers: {
+    //         "User-Agent": "Mozilla/5.0",
+    //       },
+    //       timeout: 5000,
+    //     }
+    //   );
+    //   data = response.data;
+    // } catch (apiError) {
+    //   return res.json([]);
+    // }
+
+    data = dummy;
 
     const fireShowInfoList = data.fireShowInfoList || [];
 

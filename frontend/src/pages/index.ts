@@ -1,1 +1,1 @@
-export { FireAlertPage } from './fire-alert';
+export { FireAlertPage } from "./fire-alert";

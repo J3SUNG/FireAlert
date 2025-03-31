@@ -1,28 +1,21 @@
 import { useState, useMemo, useCallback } from "react";
 import { ForestFireData } from "../types/forestFire";
 
-/**
- * 산불 필터링 및 선택 상태를 관리하는 커스텀 훅 (SRP)
- */
 export function useFireFilterAndSelection(fires: ForestFireData[]) {
-  // 상태 관리
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | "active" | "contained" | "extinguished"
   >("all");
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
 
-  // 필터링 함수 - 메모이제이션 적용
   const filteredData = useMemo(() => {
     if (selectedFilter === "all") return fires;
     return fires.filter((fire) => fire.status === selectedFilter);
   }, [fires, selectedFilter]);
 
-  // 산불 선택 핸들러 - 메모이제이션 적용
   const handleFireSelect = useCallback((fire: ForestFireData): void => {
     setSelectedFireId((prevId) => (prevId === fire.id ? undefined : fire.id));
   }, []);
 
-  // 필터 버튼 클래스 계산 - 메모이제이션 적용
   const getButtonClass = useMemo(() => {
     return (filter: "all" | "active" | "contained" | "extinguished"): string => {
       const className = "fire-alert__button";
@@ -38,7 +31,6 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
     };
   }, [selectedFilter]);
 
-  // 필터 버튼 라벨 생성 - 메모이제이션 적용
   const getFilterButtonLabels = useMemo(() => {
     return (counts: {
       total: number;
@@ -53,13 +45,10 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
     });
   }, []);
 
-  // 현재 필터에 따라 데이터 필터링
-
   return {
     selectedFilter,
     setSelectedFilter,
     selectedFireId,
-    setSelectedFireId,
     filteredData,
     handleFireSelect,
     getButtonClass,

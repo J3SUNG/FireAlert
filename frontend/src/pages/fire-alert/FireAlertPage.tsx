@@ -2,16 +2,14 @@ import React from "react";
 import { ForestFireList } from "../../features/forest-fire-list/ui/ForestFireList";
 import { ForestFireMap } from "../../features/forest-fire-map";
 import { FireStatusSummary } from "../../shared";
-import { useFireAlertData } from "../../features/fire-alert-data/api/useFireAlertData";
+import { useForestFireData } from "../../features/forest-fire-data/api/useForestFireData";
 import { useCurrentTime, useFireFilterAndSelection } from "../../shared";
 import "./fire-alert.css";
 
 const FireAlertPage: React.FC = () => {
-  // 데이터 로딩 로직을 훅으로 분리
   const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } =
-    useFireAlertData();
+    useForestFireData();
 
-  // 필터링 및 선택 상태 관리 훅
   const {
     selectedFilter,
     setSelectedFilter,
@@ -22,10 +20,8 @@ const FireAlertPage: React.FC = () => {
     getFilterButtonLabels,
   } = useFireFilterAndSelection(fires);
 
-  // 현재 시간 상태 관리 훅
   const { currentTime, formatDate } = useCurrentTime();
 
-  // 필터 버튼 라벨 데이터
   const buttonLabels = getFilterButtonLabels(statusCounts);
 
   return (
@@ -34,22 +30,16 @@ const FireAlertPage: React.FC = () => {
         <div className="fire-alert__logo-container">
           <div className="fire-alert__logo-icon">🔥</div>
           <h1 className="fire-alert__logo-text">
-            <span className="fire-alert__logo-text--fire">Fire</span>Alert
+            <span className="fire-alert__logo-text--fire">불씨</span>알림
           </h1>
           <span className="fire-alert__subtitle">전국 산불 모니터링 시스템</span>
         </div>
 
         <div className="fire-alert__filter-container">
-          <button
-            className={getButtonClass("all")}
-            onClick={() => setSelectedFilter("all")}
-          >
+          <button className={getButtonClass("all")} onClick={() => setSelectedFilter("all")}>
             {buttonLabels.all}
           </button>
-          <button
-            className={getButtonClass("active")}
-            onClick={() => setSelectedFilter("active")}
-          >
+          <button className={getButtonClass("active")} onClick={() => setSelectedFilter("active")}>
             {buttonLabels.active}
           </button>
           <button
@@ -78,10 +68,7 @@ const FireAlertPage: React.FC = () => {
         ) : error !== null && error !== "" ? (
           <div className="fire-alert__error-container">
             <p className="fire-alert__error-text">{error}</p>
-            <button
-              className="fire-alert__retry-button"
-              onClick={handleReload}
-            >
+            <button className="fire-alert__retry-button" onClick={handleReload}>
               다시 시도
             </button>
           </div>

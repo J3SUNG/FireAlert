@@ -145,7 +145,7 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  z-index: 5;
+  z-index: 990;
 }
 
 .fire-alert__sidebar-header {
@@ -178,44 +178,101 @@
 /* 상태 요약 */
 .fire-alert__status-summary {
   position: absolute;
-  top: 16px;
+  bottom: 16px;
   left: 16px;
   background-color: var(--color-bg-primary);
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
   padding: 16px;
-  width: 240px;
-  z-index: 5;
+  width: 200px;
+  z-index: 5; /* z-index 수치 낮게 설정 */
   border: 1px solid var(--color-border);
+  opacity: 0.9;
 }
 
 .fire-alert__summary-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   color: var(--color-text-primary);
+  padding: 0 2px;
 }
 
 .fire-alert__summary-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 0;
 }
 
 .fire-alert__summary-item {
   display: flex;
   flex-direction: column;
+  border-radius: 8px;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  margin: 0;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.fire-alert__summary-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  transform: translateY(-1px);
+}
+
+.fire-alert__summary-item-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.fire-alert__label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fire-alert__color-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.fire-alert__color-indicator--initial {
+  background-color: var(--color-initial);
+}
+
+.fire-alert__color-indicator--level1 {
+  background-color: var(--color-level1);
+}
+
+.fire-alert__color-indicator--level2 {
+  background-color: var(--color-level2);
+}
+
+.fire-alert__color-indicator--level3 {
+  background-color: var(--color-brand-fire);
 }
 
 .fire-alert__summary-label {
-  font-size: 12px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 2px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .fire-alert__summary-value {
   font-size: 18px;
   font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+  line-height: 1;
 }
 
 .fire-alert__summary-value--initial {

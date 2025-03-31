@@ -36,7 +36,9 @@ export const GeoJsonLayerManager: FC<GeoJsonLayerManagerProps> = ({ map, onLayer
         const data = await response.json();
         
         const provincesLayer = L.geoJSON(data, {
-          style: () => PROVINCES_STYLE,
+          style: () => (PROVINCES_STYLE),
+          className: 'province-boundary',
+          interactive: true,
           onEachFeature: (feature, layer) => {
             const properties = feature.properties as GeoJsonProperties;
             const provinceName = properties.NL_NAME_1 ?? "알 수 없음";
@@ -69,7 +71,11 @@ export const GeoJsonLayerManager: FC<GeoJsonLayerManagerProps> = ({ map, onLayer
         const data = await response.json();
         
         const districtsLayer = L.geoJSON(data, {
-          style: () => DISTRICTS_STYLE,
+          style: () => (DISTRICTS_STYLE),
+          interactive: true, // 상호작용 가능하도록 설정
+          renderer: L.svg({ padding: 0 }), // SVG 렌더러 사용
+          pane: 'overlayPane', // 오버레이 패널 사용
+          bubblingMouseEvents: false,
           onEachFeature: (feature, layer) => {
             const properties = feature.properties as GeoJsonProperties;
             const districtName = properties.NL_NAME_2 ?? "알 수 없음";
@@ -78,29 +84,42 @@ export const GeoJsonLayerManager: FC<GeoJsonLayerManagerProps> = ({ map, onLayer
               permanent: true,
               direction: "center",
               className: "district-label",
-              opacity: 0,
+              opacity: 0, // 처음에는 보이지 않게 설정
             });
             
             tooltip.setContent(districtName);
             layer.bindTooltip(tooltip);
             
+            // 처음에는 투리핵 숨김
+            const toolTip = layer.getTooltip();
+            if (toolTip) toolTip.setOpacity(0);
+            
+            // 준 변경 시 확인
             map.on("zoomend", () => {
               const currentZoom = map.getZoom();
-              if (currentZoom >= 9) {
-                const toolTip = layer.getTooltip();
+              const toolTip = layer.getTooltip();
+              
+              if (currentZoom >= 7) { // 더 낮은 확대 수준에서도 시군구 이름 표시
+                // 확대 수준이 높을 때만 시군구 이름 표시
                 if (toolTip) toolTip.setOpacity(1);
               } else {
-                const toolTip = layer.getTooltip();
+                // 그 외에는 숨김
                 if (toolTip) toolTip.setOpacity(0);
               }
             });
           },
         });
         
+        // 처음 확인 - 현재 확대 수준이 7 이상이면 바로 추가
+        const initialZoom = map.getZoom();
+        if (initialZoom >= 7) {
+          districtsLayer.addTo(map);
+        }
+        
         // 줌 레벨에 따라 시군구 레이어 토글
         map.on("zoomend", () => {
           const currentZoom = map.getZoom();
-          if (currentZoom >= 8) {
+          if (currentZoom >= 7) { // 확대 수준 7 이상에서 시군구 경계 표시
             if (!map.hasLayer(districtsLayer)) {
               districtsLayer.addTo(map);
             }

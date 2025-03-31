@@ -14,7 +14,7 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = ({
   isGeoJsonLoaded
 }) => {
   // 마커 참조
-  const markersRef = useRef<Record<string, L.Marker>>({});
+  const markersRef = useRef<Record<string, L.LayerGroup>>({});
   
   // 마커 클릭 플래그
   const isMarkerClickRef = useRef(false);
@@ -85,51 +85,90 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = ({
       }
     });
 
-    // 새로운 혹은 변경된 마커만 추가
+    // 마커 생성 및 업데이트
     validFires.forEach((fire) => {
-      const existingMarker = markersRef.current[fire.id];
-      
-      // 이미 존재하는 마커는 건너뛰기
-      if (existingMarker) return;
-      
       try {
+        // 이미 존재하는 마커 처리
+        const existingMarker = markersRef.current[fire.id];
+        if (existingMarker) {
+          // 이미 선택된 마커인 경우 무시 (다른 useEffect에서 처리)
+          if (fire.id === selectedFireId) {
+            return;
+          }
+          
+          // 선택되지 않은 기존 마커는 그대로 유지
+          return;
+        }
+        
+        // 선택된 마커인지 확인
+        const isSelected = fire.id === selectedFireId;
+        
+        // 새 마커 생성
         const newMarker = createFireMarker(fire, {
+          isSelected,
           onClick: (selectedFire) => {
             if (onFireSelect) {
               // 마커 클릭 플래그 설정
               isMarkerClickRef.current = true;
               onFireSelect(selectedFire);
             }
-          }
-        }).addTo(map);
+          },
+          map: map // 지도 객체 전달
+        });
+        
+        // 지도에 레이어 그룹 추가
+        newMarker.addTo(map);
         
         // 참조에 마커 저장
         markersRef.current[fire.id] = newMarker;
-      } catch (_error) {
-        // 마커 생성 오류 처리
+      } catch (error) {
+        console.error(`Error creating marker for fire ID ${fire.id}:`, error);
       }
     });
   }, [map, fires, onFireSelect, isGeoJsonLoaded]);
   
-  // 선택된 산불로 지도 이동
+  // 선택된 산불로 지도 이동 및 마커 업데이트
   useEffect(() => {
-    if (typeof selectedFireId !== "string" || !map || !isGeoJsonLoaded) return;
+    if (!map || !isGeoJsonLoaded) return;
     
     try {
-      // 선택된 마커가 존재하는지 확인
-      if (!Object.prototype.hasOwnProperty.call(markersRef.current, selectedFireId)) {
-        return;
+      // 선택된 마커 처리
+      if (typeof selectedFireId === "string") {
+        const fire = fires.find((f) => f.id === selectedFireId);
+        
+        if (fire) {
+          const oldMarker = markersRef.current[selectedFireId];
+          if (oldMarker) {
+            // 기존 마커 제거 후 새로 만들기
+            map.removeLayer(oldMarker);
+          }
+          
+          // 선택된 마커는 isSelected를 true로 설정하여 크기 키움
+          const newMarker = createFireMarker(fire, {
+            isSelected: true,
+            onClick: (selectedFire) => {
+              if (onFireSelect) {
+                isMarkerClickRef.current = true;
+                onFireSelect(selectedFire);
+              }
+            },
+            map: map // 지도 객체 전달
+          });
+          
+          // 지도에 레이어 그룹 추가
+          newMarker.addTo(map);
+          
+          // 마커 참조 갱신
+          markersRef.current[selectedFireId] = newMarker;
+          
+          // 지도 이동
+          map.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
+        }
       }
-      
-      const fire = fires.find((f) => f.id === selectedFireId);
-      if (fire) {
-        // 지도 이동
-        map.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
-      }
-    } catch (_error) {
-      // 선택된 마커 처리 중 오류 처리
+    } catch (error) {
+      console.error("Error updating selected marker:", error);
     }
-  }, [selectedFireId, fires, map, isGeoJsonLoaded]);
+  }, [selectedFireId, fires, map, isGeoJsonLoaded, onFireSelect]);
   
   // 이 컴포넌트는 UI를 렌더링하지 않음
   return null;

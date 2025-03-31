@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import L from "leaflet";
 import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../constants/mapSettings";
-import { createLegendControl } from "../utils/legendUtils";
 import { UseMapOptions } from "../model/types";
 
 /**
@@ -39,7 +38,7 @@ export function useMap({
     if (mapRef.current) {
       try {
         mapRef.current.off();
-        mapRef.current.eachLayer(layer => {
+        mapRef.current.eachLayer((layer) => {
           try {
             mapRef.current?.removeLayer(layer);
           } catch (_error) {
@@ -55,38 +54,39 @@ export function useMap({
 
     // 컨테이너 강제 초기화
     try {
-      container.innerHTML = '';
-      
-      if ('_leaflet_id' in container) {
+      container.innerHTML = "";
+
+      if ("_leaflet_id" in container) {
         delete (container as any)._leaflet_id;
       }
-      
-      const leafletClasses = Array.from(container.classList)
-        .filter(cls => cls.startsWith('leaflet'));
-      
-      leafletClasses.forEach(cls => {
+
+      const leafletClasses = Array.from(container.classList).filter((cls) =>
+        cls.startsWith("leaflet")
+      );
+
+      leafletClasses.forEach((cls) => {
         container.classList.remove(cls);
       });
-      
+
       L.DomEvent.off(container);
     } catch (_error) {
       // 오류 무시
     }
 
     // 고유 ID 속성 추가
-    container.setAttribute('data-map-id', instanceIdRef.current);
+    container.setAttribute("data-map-id", instanceIdRef.current);
 
     // 새 맵 인스턴스 생성 시도
     try {
       container.style.backgroundColor = MAP_BACKGROUND_COLOR;
-      
+
       const mergedOptions = {
         ...MAP_INIT_OPTIONS,
         ...options,
         zoomControl: false,
-        attributionControl: false
+        attributionControl: false,
       };
-      
+
       const newMap = L.map(container, mergedOptions);
       mapRef.current = newMap;
 
@@ -96,26 +96,16 @@ export function useMap({
 
       L.control.zoom({ position: "topright" }).addTo(newMap);
       L.control.scale({ imperial: false, position: "bottomright" }).addTo(newMap);
-      
-      setTimeout(() => {
-        try {
-          if (mapRef.current === newMap && document.body.contains(container)) {
-            createLegendControl(legendPosition).addTo(newMap);
-          }
-        } catch (_error) {
-          // 오류 무시
-        }
-      }, 100);
 
       newMap.getContainer().style.background = MAP_BACKGROUND_COLOR;
 
       // 지도 로드 이벤트
-      newMap.once('load', () => {
+      newMap.once("load", () => {
         if (mapRef.current === newMap) {
           setIsMapLoaded(true);
         }
       });
-      
+
       // 안전을 위해 타임아웃으로도 로드 상태 설정
       setTimeout(() => {
         if (mapRef.current === newMap && !isMapLoaded) {
@@ -136,21 +126,21 @@ export function useMap({
   // 맵 제거 함수
   const destroyMap = useCallback(() => {
     if (!mapRef.current) return;
-    
+
     try {
       const mapInstance = mapRef.current;
-      
+
       mapInstance.off();
-      mapInstance.eachLayer(layer => {
+      mapInstance.eachLayer((layer) => {
         try {
           mapInstance.removeLayer(layer);
         } catch (_error) {
           // 무시
         }
       });
-      
+
       mapInstance.remove();
-      
+
       mapRef.current = null;
       isInitializedRef.current = false;
       setIsMapLoaded(false);
@@ -165,19 +155,21 @@ export function useMap({
   // 컴포넌트 마운트 시 맵 초기화
   useEffect(() => {
     initializeMap();
-    
+
     // 컴포넌트 언마운트 시 정리
     return () => {
       destroyMap();
     };
   }, []); // 의존성 배열 비우기
-  
+
   // 컨테이너 변경 감지
   useEffect(() => {
     // 컨테이너가 변경되었지만, 맵이 이미 존재하는 경우 재초기화
-    if (containerRef.current && 
-        mapRef.current && 
-        mapRef.current.getContainer() !== containerRef.current) {
+    if (
+      containerRef.current &&
+      mapRef.current &&
+      mapRef.current.getContainer() !== containerRef.current
+    ) {
       destroyMap();
       initializeMap();
     }

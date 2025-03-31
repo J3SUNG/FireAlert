@@ -11,8 +11,6 @@ export const ForestFireList: FC<ForestFireListProps> = ({
   filter = 'all',
   onFilterChange
 }) => {
-  // 내부 필터링 상태 제거 - 부모로부터 받은 filter 사용
-
   const getButtonClass = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
     let className = 'forest-fire-list__button';
     
