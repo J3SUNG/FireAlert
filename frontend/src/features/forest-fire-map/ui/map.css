@@ -25,21 +25,37 @@
 }
 
 /* 각 pane의 z-index 조정 - 마커가 항상 맨 위에 보이도록 */
-.leaflet-map-pane { z-index: 200; }
-.leaflet-tile-pane { z-index: 100; }
-.leaflet-overlay-pane { z-index: 500 !important; } /* 웅색 레이어 움직임 */
-.leaflet-shadow-pane { z-index: 600; }
-.leaflet-marker-pane { z-index: 10000 !important; }
-.leaflet-tooltip-pane { z-index: 10001 !important; }
-.leaflet-popup-pane { z-index: 10002 !important; }
-.leaflet-zoom-box { z-index: 400; }
+.leaflet-map-pane {
+  z-index: 200;
+}
+.leaflet-tile-pane {
+  z-index: 100;
+}
+.leaflet-overlay-pane {
+  z-index: 500 !important;
+} /* 웅색 레이어 움직임 */
+.leaflet-shadow-pane {
+  z-index: 600;
+}
+.leaflet-marker-pane {
+  z-index: 10000 !important;
+}
+.leaflet-tooltip-pane {
+  z-index: 10001 !important;
+}
+.leaflet-popup-pane {
+  z-index: 10002 !important;
+}
+.leaflet-zoom-box {
+  z-index: 400;
+}
 
 /* 마커와 관련 요소가 항상 다른 요소보다 위에 표시되도록 */
 .leaflet-marker-icon,
 .leaflet-marker-shadow,
-.leaflet-tooltip { 
+.leaflet-tooltip {
   pointer-events: auto !important;
-  z-index: 10000 !important; 
+  z-index: 10000 !important;
 }
 
 /* 마커 이름 레이블 스타일 - 말꼬리 모양 제거 */
@@ -173,78 +189,125 @@
   color: #4b5563;
 }
 
-/* 툴팁 스타일 */
-.fire-tooltip-hover {
-  background-color: rgba(255, 255, 255, 0.97) !important;
-  border: none !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
-  padding: 12px !important;
-  font-size: 12px !important;
-  max-width: 280px !important;
-  line-height: 1.5 !important;
-  pointer-events: none !important;
-  width: 260px;
-  z-index: 10003 !important; /* 호버 툴팁이 다른 요소보다 위에 표시되도록 */
-}
-
-.fire-tooltip-hover::before {
-  border-bottom-color: white !important;
-}
-
 /* 범례 스타일 */
 .map-legend {
   background-color: white;
-  padding: 8px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-size: 12px;
+  min-width: 220px;
 }
 
 .map-legend__title {
-  margin: 0 0 6px 0;
-  font-size: 12px;
+  margin: 0 0 10px 0;
+  font-size: 14px;
   font-weight: bold;
+  color: #1e40af;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
 }
 
 .map-legend__item {
   display: flex;
   align-items: center;
-  margin-bottom: 3px;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.map-legend__item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.map-legend__item:hover .map-legend__icon {
+  transform: scale(1.1);
 }
 
 .map-legend__item:last-child {
   margin-bottom: 0;
 }
 
+/* 각 단계별 배경색 */
+.map-legend__item--initial {
+  background-color: rgba(0, 128, 255, 0.1);
+}
+
+.map-legend__item--level1 {
+  background-color: rgba(234, 179, 8, 0.1);
+}
+
+.map-legend__item--level2 {
+  background-color: rgba(249, 115, 22, 0.1);
+}
+
+.map-legend__item--level3 {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.map-legend__content {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.map-legend__label {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.map-legend__count {
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 5px;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .map-legend__icon {
   border-radius: 50%;
   border: 2px solid white;
-  margin-right: 6px;
+  margin-right: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
 }
 
-.map-legend__icon--critical {
-  background-color: #ff0000;
+.map-legend__icon--initial,
+.map-legend__icon--level1,
+.map-legend__icon--level2,
+.map-legend__icon--level3 {
   width: 16px;
   height: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
 }
 
-.map-legend__icon--high {
-  background-color: #ff8000;
-  width: 14px;
-  height: 14px;
+/* 범례 아이콘 색상 */
+.map-legend__icon--initial {
+  background-color: #0080ff; /* 하늘색 */
 }
 
-.map-legend__icon--medium {
-  background-color: #ffff00;
-  width: 12px;
-  height: 12px;
+.map-legend__icon--level1 {
+  background-color: #eab308; /* 노랑색 */
 }
 
-.map-legend__icon--low {
-  background-color: #0080ff;
-  width: 10px;
-  height: 10px;
+.map-legend__icon--level2 {
+  background-color: #f97316; /* 주황색 */
+}
+
+.map-legend__icon--level3 {
+  background-color: #ef4444; /* 빨강색 */
 }
 
 /* Leaflet 관련 스타일 */
@@ -269,20 +332,19 @@
 
 /* 팝업 스타일 */
 .fire-popup {
-  width: 220px;
-  padding: 5px;
+  width: 180px;
+  padding: 2px;
 }
 
 .fire-popup__title {
   font-weight: bold;
-  margin-bottom: 5px;
   color: #333;
 }
 
 .fire-tooltip-hover .fire-popup__title {
   font-size: 14px;
-  margin: 0 0 8px 0;
-  padding-bottom: 6px;
+  margin: 2px 0 8px 0;
+  padding-bottom: 4px;
   border-bottom: 1px solid #eee;
   color: #1e40af;
 }
@@ -293,37 +355,31 @@
 }
 
 .fire-tooltip-hover .fire-popup__info {
-  font-size: 12px;
+  font-size: 14px;
+  margin: 0 0 6px 0;
 }
 
 .fire-popup__label {
   font-weight: bold;
+  margin-right: 2px;
 }
 
 .fire-tooltip-hover .fire-popup__label {
   display: inline-block;
-  min-width: 55px;
+  min-width: 48px;
   color: #444;
 }
 
-/* 상태 및 심각도 스타일 */
+/* 상태 및 대응단계 스타일 */
 .fire-popup__status--active,
 .fire-popup__status--contained,
-.fire-popup__status--extinguished,
-.fire-popup__severity--low,
-.fire-popup__severity--medium,
-.fire-popup__severity--high,
-.fire-popup__severity--critical {
+.fire-popup__status--extinguished {
   font-weight: bold;
 }
 
 .fire-tooltip-hover .fire-popup__status--active,
 .fire-tooltip-hover .fire-popup__status--contained,
-.fire-tooltip-hover .fire-popup__status--extinguished,
-.fire-tooltip-hover .fire-popup__severity--low,
-.fire-tooltip-hover .fire-popup__severity--medium,
-.fire-tooltip-hover .fire-popup__severity--high,
-.fire-tooltip-hover .fire-popup__severity--critical {
+.fire-tooltip-hover .fire-popup__status--extinguished {
   padding: 2px 5px;
   border-radius: 3px;
   display: inline-block;
@@ -348,35 +404,45 @@
   color: white;
 }
 
-.fire-popup__severity--low,
-.fire-tooltip-hover .fire-popup__severity--low {
-  background-color: #0080ff;
-  color: white;
-}
-
-.fire-popup__severity--medium,
-.fire-tooltip-hover .fire-popup__severity--medium {
-  background-color: #eab308;
-  color: white;
-}
-
-.fire-popup__severity--high,
-.fire-tooltip-hover .fire-popup__severity--high {
-  background-color: #f97316;
-  color: white;
-}
-
-.fire-popup__severity--critical,
-.fire-tooltip-hover .fire-popup__severity--critical {
-  background-color: #ef4444;
-  color: white;
-}
-
 .fire-popup__description {
   margin: 8px 0 0;
   font-style: italic;
   color: #666;
   font-size: 0.9em;
+}
+
+/* 대응단계 스타일 */
+.fire-tooltip-hover .fire-popup__response--초기대응,
+.fire-tooltip-hover .fire-popup__response--초기진화 {
+  background-color: #0080ff;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.fire-tooltip-hover .fire-popup__response--1 {
+  background-color: #eab308;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.fire-tooltip-hover .fire-popup__response--2 {
+  background-color: #f97316;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.fire-tooltip-hover .fire-popup__response--3 {
+  background-color: #ef4444;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: inline-block;
 }
 
 .province-label-container {

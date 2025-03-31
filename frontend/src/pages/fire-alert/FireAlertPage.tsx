@@ -36,21 +36,23 @@ const FireAlertPage: React.FC = () => {
         </div>
 
         <div className="fire-alert__filter-container">
-          <button className={getButtonClass("all")} onClick={() => setSelectedFilter("all")}>
+          <button className={getButtonClass("all")} onClick={() => setSelectedFilter("all")} data-filter="all">
             {buttonLabels.all}
           </button>
-          <button className={getButtonClass("active")} onClick={() => setSelectedFilter("active")}>
+          <button className={getButtonClass("active")} onClick={() => setSelectedFilter("active")} data-filter="active">
             {buttonLabels.active}
           </button>
           <button
             className={getButtonClass("contained")}
             onClick={() => setSelectedFilter("contained")}
+            data-filter="contained"
           >
             {buttonLabels.contained}
           </button>
           <button
             className={getButtonClass("extinguished")}
             onClick={() => setSelectedFilter("extinguished")}
+            data-filter="extinguished"
           >
             {buttonLabels.extinguished}
           </button>
@@ -87,6 +89,8 @@ const FireAlertPage: React.FC = () => {
                 level2Count={responseLevelCounts.level2}
                 level1Count={responseLevelCounts.level1}
                 initialCount={responseLevelCounts.initial}
+                selectedFilter={selectedFilter}
+                filteredFires={filteredData}
               />
             </div>
 
