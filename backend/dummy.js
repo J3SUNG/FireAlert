@@ -18,7 +18,7 @@ const dummy = {
       frfrSttmnAddr: "전라남도 순천시 해룡면",
       frfrPotfrRt: "40%",
       frfrSttmnDt: "2025-03-31",
-      frfrStepIssuNm: "0단계",
+      frfrStepIssuNm: "초기대응",
       frfrPrgrsStcdNm: "통제중",
     },
     {
@@ -60,7 +60,7 @@ const dummy = {
       frfrSttmnAddr: "세종특별자치시 조치원읍",
       frfrPotfrRt: "20%",
       frfrSttmnDt: "2025-03-28",
-      frfrStepIssuNm: "0단계",
+      frfrStepIssuNm: "초기대응",
       frfrPrgrsStcdNm: "진화완료",
     },
     {

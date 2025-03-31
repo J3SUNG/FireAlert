@@ -45,9 +45,16 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
     });
   }, []);
 
+  // 필터 변경 시 선택된 산불 해제
+  const handleFilterChange = useCallback((newFilter: "all" | "active" | "contained" | "extinguished") => {
+    setSelectedFilter(newFilter);
+    // 필터 변경시 선택된 산불 해제
+    setSelectedFireId(undefined);
+  }, []);
+
   return {
     selectedFilter,
-    setSelectedFilter,
+    setSelectedFilter: handleFilterChange, // 기본 setter 대신 새 함수 사용
     selectedFireId,
     filteredData,
     handleFireSelect,

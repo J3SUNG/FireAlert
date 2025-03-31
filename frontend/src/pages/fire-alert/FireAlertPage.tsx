@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ForestFireList } from "../../features/forest-fire-list/ui/ForestFireList";
 import { ForestFireMap } from "../../features/forest-fire-map";
 import { FireStatusSummary } from "../../shared";
@@ -23,6 +23,11 @@ const FireAlertPage: React.FC = () => {
   const { currentTime, formatDate } = useCurrentTime();
 
   const buttonLabels = getFilterButtonLabels(statusCounts);
+
+  // 선택된 필터와 산불 아이디 변경 로그
+  useEffect(() => {
+    console.log('Main page - selectedFilter:', selectedFilter, 'selectedFireId:', selectedFireId);
+  }, [selectedFilter, selectedFireId]);
 
   return (
     <div className="fire-alert">

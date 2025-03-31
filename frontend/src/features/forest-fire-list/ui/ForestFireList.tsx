@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { ForestFireItem } from './ForestFireItem';
 import { ForestFireListProps } from '../model/types';
 import './forest-fire-list.css';
@@ -11,13 +11,10 @@ export const ForestFireList: FC<ForestFireListProps> = ({
   filter = 'all',
   onFilterChange
 }) => {
-  const getButtonClass = (buttonFilter: 'all' | 'active' | 'contained' | 'extinguished') => {
-    // 기본 클래스만 반환하고 fire-button으로 스타일을 적용
-    // fire-button 요소가 fire-button--active-all 등의 클래스를 이미 받기 때문에
-    // 추가 클래스는 필요 없음
-    return '';
-  };
-
+  // 선택된 아이디가 변경되면 콘솔로그 추가
+  useEffect(() => {
+    console.log('List component - selectedFireId:', selectedFireId);
+  }, [selectedFireId]);
   const getContentClass = () => {
     let className = 'forest-fire-list__content';
     
