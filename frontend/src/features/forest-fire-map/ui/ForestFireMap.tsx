@@ -1,10 +1,10 @@
 import React, { FC, useRef, useState, useEffect, useMemo } from "react";
 import "leaflet/dist/leaflet.css";
-import { MapLoadingIndicator } from "../components/MapLoadingIndicator";
+import { MapLoadingIndicator } from "./MapLoadingIndicator";
 import { useGeoJsonLayers } from "../hooks/useGeoJsonLayers";
 import { useMap } from "../hooks/useMap";
 import { GEOJSON_PATHS } from "../constants/mapSettings";
-import { FireMarkerManager } from "../components/FireMarkerManager";
+import { FireMarkerManager } from "./FireMarkerManager";
 import { ForestFireMapProps } from "../model/types";
 import "./map.css";
 

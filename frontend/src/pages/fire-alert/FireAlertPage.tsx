@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { ForestFireList } from "../../features/forest-fire-list/ui/ForestFireList";
+import { ForestFireList } from "../../features/forest-fire-list";
 import { ForestFireMap } from "../../features/forest-fire-map";
 import { FireStatusSummary } from "../../shared";
-import { useForestFireData } from "../../features/forest-fire-data/api/useForestFireData";
+import { useForestFireData } from "../../features/forest-fire-data";
 import { useCurrentTime, useFireFilterAndSelection } from "../../shared";
 import "./fire-alert.css";
 

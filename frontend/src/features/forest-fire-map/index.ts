@@ -1,9 +1,9 @@
-// UI 컴포넌트 내보내기
+// Public API - UI 컴포넌트 내보내기
 export { ForestFireMap } from "./ui/ForestFireMap";
 
-// 유틸리티 함수 내보내기
-export { createFireMarker } from "./utils/markerUtils";
+// Public API - 모델 내보내기
+export * from "./model";
 
-// 훅 내보내기
+// Public API - 훅 내보내기
 export { useMap } from "./hooks/useMap";
 export { useGeoJsonLayers } from "./hooks/useGeoJsonLayers";

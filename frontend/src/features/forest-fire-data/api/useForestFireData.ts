@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ForestFireData } from "../../../shared/types/forestFire";
-import { forestFireService } from "../../../shared/services";
+import { forestFireApi } from "./forestFireApi";
 import {
   calculateResponseLevelCounts,
   calculateStatusCounts,
@@ -14,7 +14,7 @@ export function useForestFireData() {
   const loadData = useCallback(async (forceRefresh = false): Promise<void> => {
     try {
       setLoading(true);
-      const data = await forestFireService.getForestFires(forceRefresh);
+      const data = await forestFireApi.getForestFires(forceRefresh);
 
       setFires(data);
       setError(null);
@@ -34,7 +34,7 @@ export function useForestFireData() {
   const responseLevelCounts = calculateResponseLevelCounts(fires);
 
   const handleReload = useCallback((): void => {
-    forestFireService.clearCache();
+    forestFireApi.clearCache();
     void loadData(true);
   }, [loadData]);
 
