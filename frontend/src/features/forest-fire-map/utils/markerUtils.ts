@@ -1,103 +1,218 @@
 import L from "leaflet";
 import { ForestFireData } from "../../../shared/types/forestFire";
-import { MARKER_SIZES, SEVERITY_TEXT, STATUS_TEXT } from "../constants/mapSettings";
-import { formatLocationName } from "../../../shared/utils/locationFormat";
-import { getExtinguishPercentageColor } from "../../../shared/utils/forestFireUtils";
 
-interface CreateFireMarkerOptions {
-  onClick?: (fire: ForestFireData) => void;
-  isMarkerClickRef?: React.MutableRefObject<boolean>;
+// 시도명 축약 맵핑
+const PROVINCE_ABBR: Record<string, string> = {
+  "서울특별시": "서울",
+  "부산특별시": "부산",
+  "대구특별시": "대구",
+  "인천특별시": "인천",
+  "광주특별시": "광주",
+  "대전특별시": "대전",
+  "울산특별시": "울산",
+  "세종특별자치시": "세종",
+  "경기도": "경기",
+  "강원도": "강원",
+  "충청북도": "충북",
+  "충청남도": "충남",
+  "전라북도": "전북",
+  "전라남도": "전남",
+  "경상북도": "경북",
+  "경상남도": "경남",
+  "제주특별자치도": "제주"
+};
+
+// 마커 색상 설정
+const FIRE_MARKER_COLORS: Record<string, string> = {
+  critical: "#ef4444", // 빨강색
+  high: "#f97316", // 주황색
+  medium: "#eab308", // 노랑색
+  low: "#22c55e", // 초록색
+  initial: "#6b7280", // 회색
+};
+
+// 대응단계별 색상 설정
+const RESPONSE_LEVEL_COLORS: Record<string, string> = {
+  "초기대응": "#0080ff", // 파란색
+  "1단계": "#eab308", // 노랑색 (주의)
+  "2단계": "#f97316", // 주황색 (경계)
+  "3단계": "#ef4444", // 빨강색 (심각)
+  "default": "#6b7280" // 기본 회색
+};
+
+const SELECTED_MARKER_SCALE = 1.4;
+
+// 마커 이름 포맷팅 함수
+function formatLocationName(fire: ForestFireData): string {
+  if (!fire.location) return '알 수 없는 위치';
+  
+  // 시도와 시군구 정보가 있는 경우
+  if (fire.province && fire.district) {
+    const provinceName = PROVINCE_ABBR[fire.province] || fire.province;
+    // 시군구에서 '시' 또는 '군' 부분만 추출
+    const districtMatch = fire.district.match(/([^\s]+\s?(?:\uad70|\uc2dc|\uad6c))/i);
+    const districtName = districtMatch ? districtMatch[0] : fire.district;
+    return `${provinceName} ${districtName}`;
+  }
+  
+  // fire.location에서 파싱 시도
+  const locationParts = fire.location.split(' ');
+  if (locationParts.length >= 2) {
+    // 처음 두 부분이 시도와 시군구인 경우가 많음
+    const province = locationParts[0];
+    const district = locationParts[1];
+    
+    const provinceName = PROVINCE_ABBR[province] || province;
+    return `${provinceName} ${district}`;
+  }
+  
+  // 파싱할 수 없는 경우 원래 위치 반환
+  return fire.location;
 }
 
-/**
- * 산불 마커를 생성하는 유틸리티 함수
- */
+// 툴팁 내용 생성 함수
+function createTooltipContent(fire: ForestFireData): string {
+  const status = fire.status === 'active' ? '진행중' : 
+                fire.status === 'contained' ? '통제중' : '진화완료';
+  
+  const severity = fire.severity === 'critical' ? '심각' : 
+                  fire.severity === 'high' ? '높음' : 
+                  fire.severity === 'medium' ? '중간' : '낮음';
+  
+  return `
+    <div class="fire-popup">
+      <div class="fire-popup__title">${fire.location || '알 수 없는 위치'}</div>
+      <div class="fire-popup__info">
+        <span class="fire-popup__label">상태:</span>
+        <span class="fire-popup__status--${fire.status}">${status}</span>
+      </div>
+      <div class="fire-popup__info">
+        <span class="fire-popup__label">심각도:</span>
+        <span class="fire-popup__severity--${fire.severity}">${severity}</span>
+      </div>
+      <div class="fire-popup__info">
+        <span class="fire-popup__label">발생일:</span> ${fire.date || '정보 없음'}
+      </div>
+      <div class="fire-popup__info">
+        <span class="fire-popup__label">면적:</span> ${fire.affectedArea ? `${fire.affectedArea}ha` : '정보 없음'}
+      </div>
+      ${fire.extinguishPercentage ? `
+      <div class="fire-popup__info">
+        <span class="fire-popup__label">진화율:</span> ${fire.extinguishPercentage}
+      </div>` : ''}
+      ${fire.responseLevelName ? `
+      <div class="fire-popup__info">
+        <span class="fire-popup__label">대응단계:</span> ${fire.responseLevelName}
+      </div>` : ''}
+      ${fire.description ? `
+      <div class="fire-popup__description">${fire.description}</div>` : ''}
+    </div>
+  `;
+}
+
+interface FireMarkerOptions {
+  onClick?: (selectedFire: ForestFireData) => void;
+  isSelected?: boolean;
+  map?: L.Map;
+}
+
 export function createFireMarker(
   fire: ForestFireData,
-  options: CreateFireMarkerOptions = {}
-): L.Marker {
-  const { lat, lng } = fire.coordinates;
-
-  // 마커 크기 설정
-  const markerSize = MARKER_SIZES[fire.severity] || MARKER_SIZES.low;
-
-  // 위치명 포맷팅
-  const formattedLocation = formatLocationName(fire.location);
-
-  // 마커 클래스명 설정
-  const markerClassName = `fire-marker__container fire-marker__container--${fire.severity}`;
-  const activeClass = fire.status === "active" ? " fire-marker__container--active" : "";
-
-  // 마커 아이콘 생성
-  const icon = L.divIcon({
-    className: "custom-div-icon",
-    html: `
-      <div class="${markerClassName}${activeClass}"></div>
-      <div class="fire-marker__location">${formattedLocation}</div>
-    `,
-    iconSize: [markerSize, markerSize + 20],
-    iconAnchor: [markerSize / 2, markerSize / 2 + 10],
-  });
-
-  // 마커 생성
-  const marker = L.marker([lat, lng], { icon });
-
-  // 상태 및 심각도 텍스트
-  const severityText = SEVERITY_TEXT[fire.severity] || "낮음";
-  const statusText = STATUS_TEXT[fire.status] || "진행중";
-
-  // CSS 클래스
-  const statusClass = `fire-popup__status--${fire.status}`;
-  const severityClass = `fire-popup__severity--${fire.severity}`;
-
-  // 설명 내용
-  let descriptionContent = "";
-  if (typeof fire.description === "string" && fire.description.length > 0) {
-    descriptionContent = `<p class="fire-popup__description">${fire.description}</p>`;
+  options?: boolean | FireMarkerOptions
+): L.LayerGroup {
+  // 대응단계에 따른 색상 설정
+  let color = FIRE_MARKER_COLORS[fire.severity] || FIRE_MARKER_COLORS.initial;
+  
+  // 대응단계가 있으면 그에 따른 색상 우선 적용
+  if (fire.responseLevelName) {
+    color = RESPONSE_LEVEL_COLORS[fire.responseLevelName] || color;
   }
-
-  // 진화율 내용
-  const extinguishContent =
-    fire.status !== "extinguished"
-      ? `<p class="fire-popup__info"><span class="fire-popup__label">진화율:</span> <span style="color: ${getExtinguishPercentageColor(
-          fire.extinguishPercentage || "0"
-        )}">${fire.extinguishPercentage || "0"}%</span></p>`
-      : "";
-
-  // 툴팁 내용
-  marker.bindTooltip(
-    `
-    <div class="fire-popup">
-      <h3 class="fire-popup__title">${formattedLocation}</h3>
-      <p class="fire-popup__info"><span class="fire-popup__label">위치:</span> ${fire.location}</p>
-      <p class="fire-popup__info"><span class="fire-popup__label">발생일:</span> ${fire.date}</p>
-      <p class="fire-popup__info"><span class="fire-popup__label">상태:</span> <span class="${statusClass}">${statusText}</span></p>
-      ${extinguishContent}
-      <p class="fire-popup__info"><span class="fire-popup__label">심각도:</span> <span class="${severityClass}">${severityText}</span></p>
-      <p class="fire-popup__info"><span class="fire-popup__label">영향 면적:</span> ${String(
-        fire.affectedArea
-      )}ha</p>
-      ${descriptionContent}
+  
+  // 옵션 처리
+  let isSelected = false;
+  if (typeof options === 'boolean') {
+    isSelected = options;
+  } else if (options && 'isSelected' in options) {
+    isSelected = !!options.isSelected;
+  }
+  
+  const radius = isSelected ? 10 * SELECTED_MARKER_SCALE : 10;
+  const weight = isSelected ? 3 : 2;
+  
+  const opacity = fire.status === "extinguished" ? 0.7 : 1;
+  const fillOpacity = fire.status === "extinguished" ? 0.4 : 0.6;
+  
+  // LayerGroup 생성
+  const layerGroup = L.layerGroup();
+  
+  // 활성 화재 여부 확인 (active 상태면 펄스 애니메이션 적용)
+  const isActive = fire.status === 'active';
+  
+  // 마커 이름 표시
+  const locationName = formatLocationName(fire);
+  const nameHtml = `<div class="marker-name" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 4px; white-space: nowrap; background-color: rgba(255, 255, 255, 0.9); padding: 1px 4px; border-radius: 3px; font-size: 11px; font-weight: bold; border: 1px solid rgba(0, 0, 0, 0.2);">${locationName}</div>`;
+  
+  // 마커 아이콘 생성 (circleMarker 대신 divIcon 사용)
+  const iconHtml = `
+    <div style="position: relative;">
+      <div class="custom-marker-container ${isActive ? 'active' : ''}" style="
+        width: ${radius * 2}px;
+        height: ${radius * 2}px;
+        border-radius: 50%;
+        background-color: ${color};
+        border: ${weight}px solid white;
+        box-shadow: 0 0 3px rgba(0,0,0,0.5);
+        opacity: ${opacity};
+      "></div>
+      ${nameHtml}
     </div>
-  `,
-    {
-      permanent: false,
-      direction: "top",
-      offset: [0, -25],
-      className: "fire-tooltip-hover",
-      opacity: 0.98,
-    }
-  );
-
-  // 클릭 이벤트 핸들러 등록
-  if (options.onClick) {
-    marker.on("click", (e) => {
-      L.DomEvent.stopPropagation(e);
+  `;
+  
+  const icon = L.divIcon({
+    html: iconHtml,
+    className: 'custom-fire-marker',
+    iconSize: [radius * 2 + 4, radius * 2 + 20], // 높이를 늘려 이름 텍스트를 포함
+    iconAnchor: [radius + 2, radius + 2]
+  });
+  
+  // 마커 생성
+  const marker = L.marker([fire.coordinates.lat, fire.coordinates.lng], {
+    icon: icon,
+    interactive: true,
+    bubblingMouseEvents: false,
+    zIndexOffset: isSelected ? 2000 : 1000
+  });
+  
+  // 호버 시 상세 팝업 표시 - 이전 코드에서 사용하던 툴팁
+  const popupContent = createTooltipContent(fire);
+  const popup = L.popup({
+    closeButton: false,
+    className: 'fire-tooltip-hover',
+    offset: [0, -5],
+    autoPan: false
+  }).setContent(popupContent);
+  
+  // 마커 호버 이벤트 처리
+  marker.on('mouseover', function(e) {
+    // 팝업을 마커에 바인딩하지 않고 직접 특정 위치에 열기
+    popup.setLatLng(e.latlng).openOn(e.target._map);
+  });
+  
+  marker.on('mouseout', function(e) {
+    e.target._map.closePopup(popup);
+  });
+  
+  // 클릭 이벤트 처리
+  if (options && typeof options === 'object' && options.onClick) {
+    marker.on('click', () => {
       if (options.onClick) {
         options.onClick(fire);
       }
     });
   }
-
-  return marker;
+  
+  // 레이어 그룹에 추가
+  layerGroup.addLayer(marker);
+  
+  return layerGroup;
 }

@@ -1,1 +1,0 @@
-export { useFireAlertData } from './api/useFireAlertData';

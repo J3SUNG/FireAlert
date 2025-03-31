@@ -1,0 +1,1 @@
+export { useForestFireData } from './api/useForestFireData';
