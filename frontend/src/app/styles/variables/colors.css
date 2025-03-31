@@ -44,9 +44,10 @@
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
 
   /* 레벨 색상 */
-  --color-initial: #0ea5e9;
-  --color-level1: #eab308;
-  --color-level2: #ea580c;
+  --color-initial: #0080ff; /* 초기대응 - 파란색 */
+  --color-level1: #eab308; /* 1단계 - 노란색 */
+  --color-level2: #f97316; /* 2단계 - 주황색 */
+  --color-level3: #ef4444; /* 3단계 - 빨간색 */
   
   /* 진화완료 색상 */
   --color-extinguished-bg: #dcfce7;

@@ -18,13 +18,13 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
 
   const getButtonClass = useMemo(() => {
     return (filter: "all" | "active" | "contained" | "extinguished"): string => {
-      const className = "fire-alert__button";
+      const className = "fire-button";
   
       if (filter === selectedFilter) {
-        if (filter === "all") return `${className} fire-alert__button--active`;
-        if (filter === "active") return `${className} fire-alert__button--active-red`;
-        if (filter === "contained") return `${className} fire-alert__button--active-orange`;
-        return `${className} fire-alert__button--active-green`;
+        if (filter === "all") return `${className} fire-button--active-all`;
+        if (filter === "active") return `${className} fire-button--active-red`;
+        if (filter === "contained") return `${className} fire-button--active-orange`;
+        return `${className} fire-button--active-green`;
       }
   
       return className;

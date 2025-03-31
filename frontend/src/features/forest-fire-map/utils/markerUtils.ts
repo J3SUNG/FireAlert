@@ -22,22 +22,22 @@ const PROVINCE_ABBR: Record<string, string> = {
   "제주특별자치도": "제주"
 };
 
-// 마커 색상 설정
+// CSS 변수에 매핑되는 마커 색상 설정
 const FIRE_MARKER_COLORS: Record<string, string> = {
-  critical: "#ef4444", // 빨강색
-  high: "#f97316", // 주황색
-  medium: "#eab308", // 노랑색
-  low: "#0080ff", // 파란색 (초록색에서 변경)
+  critical: "#ef4444", // 빨강색 (CSS 변수: --color-level3)
+  high: "#f97316", // 주황색 (CSS 변수: --color-level2)
+  medium: "#eab308", // 노랑색 (CSS 변수: --color-level1)
+  low: "#0080ff", // 파란색 (CSS 변수: --color-initial)
   initial: "#6b7280", // 회색
 };
 
-// 대응단계별 색상 설정
+// 대응단계별 색상 설정 - CSS 변수 값과 동일하게 유지
 const RESPONSE_LEVEL_COLORS: Record<string, string> = {
-  "초기대응": "#0080ff", // 파란색
+  "초기대응": "#0080ff", // 파란색 (CSS 변수: --color-initial)
   "초기진화단계": "#0080ff", // 파란색
-  "1단계": "#eab308", // 노랑색 (주의)
-  "2단계": "#f97316", // 주황색 (경계)
-  "3단계": "#ef4444", // 빨강색 (심각)
+  "1단계": "#eab308", // 노랑색 (CSS 변수: --color-level1)
+  "2단계": "#f97316", // 주황색 (CSS 변수: --color-level2)
+  "3단계": "#ef4444", // 빨강색 (CSS 변수: --color-level3)
   "default": "#6b7280" // 기본 회색
 };
 
@@ -149,18 +149,16 @@ export function createFireMarker(
   
   // 마커 이름 표시
   const locationName = formatLocationName(fire);
-  const nameHtml = `<div class="marker-name" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 4px; white-space: nowrap; background-color: rgba(255, 255, 255, 0.9); padding: 1px 4px; border-radius: 3px; font-size: 11px; font-weight: bold; border: 1px solid rgba(0, 0, 0, 0.2);">${locationName}</div>`;
+  const nameHtml = `<div class="marker-name">${locationName}</div>`;
   
   // 마커 아이콘 생성 (circleMarker 대신 divIcon 사용)
   const iconHtml = `
-    <div style="position: relative;">
+    <div class="marker-wrapper">
       <div class="custom-marker-container ${isActive ? 'active' : ''}" style="
         width: ${radius * 2}px;
         height: ${radius * 2}px;
-        border-radius: 50%;
         background-color: ${color};
-        border: ${weight}px solid white;
-        box-shadow: 0 0 3px rgba(0,0,0,0.5);
+        border-width: ${weight}px;
         opacity: ${opacity};
       "></div>
       ${nameHtml}

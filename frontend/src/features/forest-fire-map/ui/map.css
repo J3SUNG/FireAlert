@@ -3,7 +3,7 @@
 
 /* 기본 시도 레이어 관련 스타일 (특별한 DOM 조작 위한 선택자만 유지) */
 .province-boundary {
-  /* 성능 최적화 관련 속성만 유지 */
+  /* 성능 최적화 관련 속성만 유지 - Leaflet 라이브러리와의 충돌때문에 important 유지 */
   pointer-events: none !important;
   shape-rendering: crispEdges !important;
   vector-effect: none !important;
@@ -12,7 +12,7 @@
 
 /* 기본 시군구 레이어 관련 스타일 (특별한 DOM 조작 위한 선택자만 유지) */
 .district-boundary {
-  /* 성능 최적화 관련 속성만 유지 */
+  /* 성능 최적화 관련 속성만 유지 - Leaflet 라이브러리와의 충돌때문에 important 유지 */
   pointer-events: none !important;
   shape-rendering: crispEdges !important;
   vector-effect: none !important;
@@ -21,10 +21,10 @@
 
 /* 커스텀 마커 z-index 우선순위 */
 .fire-marker--high-priority {
-  z-index: 900 !important;
+  z-index: 900;
 }
 
-/* 각 pane의 z-index 조정 - 마커가 항상 맨 위에 보이도록 */
+/* 각 pane의 z-index 조정 - 마커가 항상 맨 위에 보이도록 - Leaflet 라이브러리와의 충돌때문에 일부 important 유지 */
 .leaflet-map-pane {
   z-index: 200;
 }
@@ -50,33 +50,33 @@
   z-index: 400;
 }
 
-/* 마커와 관련 요소가 항상 다른 요소보다 위에 표시되도록 */
+/* 마커와 관련 요소가 항상 다른 요소보다 위에 표시되도록 - Leaflet 라이브러리와의 충돌때문에 일부 important 유지 */
 .leaflet-marker-icon,
 .leaflet-marker-shadow,
 .leaflet-tooltip {
   pointer-events: auto !important;
-  z-index: 10000 !important;
+  z-index: 10000;
 }
 
 /* 마커 이름 레이블 스타일 - 말꼬리 모양 제거 */
 .fire-marker-label {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  color: #333 !important;
-  font-weight: bold !important;
-  font-size: 11px !important;
-  white-space: nowrap !important;
-  padding: 2px 5px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-  pointer-events: none !important;
-  z-index: 9100 !important;
-  border-radius: 4px !important;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: #333;
+  font-weight: bold;
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 2px 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 9100;
+  border-radius: 4px;
 }
 
 /* 말꼬리 화살표 제거 */
 .fire-marker-label:before,
 .fire-marker-label:after {
-  display: none !important;
+  display: none;
 }
 
 /* 텍스트 및 마커에 적용되는 동일한 transition 속성 */
@@ -86,14 +86,19 @@
 
 /* 사용자 정의 마커 스타일 */
 .custom-fire-marker {
-  background: transparent !important;
-  border: none !important;
-  pointer-events: auto !important;
+  background: transparent;
+  border: none;
+  pointer-events: auto;
 }
 
 .custom-marker-container {
-  cursor: pointer !important;
+  cursor: pointer;
   transition: transform 0.2s ease;
+  position: relative;
+  border-radius: 50%;
+  background-color: var(--color-brand-fire);
+  border: 2px solid white;
+  box-shadow: 0 0 3px rgba(0,0,0,0.5);
 }
 
 .custom-marker-container:hover {
@@ -102,30 +107,31 @@
 
 /* 활성 마커 애니메이션 */
 .custom-marker-container.active {
-  animation: pulse 1.5s infinite;
+  animation: pulse-shadow 1.5s infinite;
 }
 
-/* 애니메이션 */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+/* 마커 래퍼 스타일 */
+.marker-wrapper {
+  position: relative;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+/* 마커 위치 텍스트 - 인라인 스타일로부터 변환 */
+.marker-name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  white-space: nowrap;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
+
+/* 애니메이션은 index.css에서 전역으로 정의함 */
 
 /* 페이드 효과 */
 .fade-enter {
@@ -325,9 +331,9 @@
 /* 툴팁 기본 배경색 제거 */
 .leaflet-tooltip.province-label,
 .leaflet-tooltip.district-label {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 /* 팝업 스타일 */
@@ -446,15 +452,15 @@
 }
 
 .province-label-container {
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
 }
 
 /* 시도 레이블 스타일 */
 .province-label {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
   color: #0c4a6e;
   font-size: 16px;
   font-weight: bold;
@@ -472,15 +478,15 @@
 }
 
 .district-label-container {
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
 }
 
 /* 시군구 레이블 스타일 */
 .district-label {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
   color: #075985;
   font-size: 10px;
   font-weight: 600;

@@ -71,54 +71,25 @@
   border-radius: 24px;
 }
 
-/* 기본 버튼 스타일 */
-.fire-alert__button {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700; /* 볼드 처리 */
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  background-color: transparent;
-  color: var(--color-text-secondary);
-}
-
 /* 버튼 필터별 배경색 스타일 - 연한 배경색 */
-.fire-alert__button[data-filter="all"]:not(.fire-alert__button--active) {
+.fire-button[data-filter="all"]:not(.fire-button--active-all) {
   background-color: rgba(59, 130, 246, 0.07);
+  font-weight: 700;
 }
 
-.fire-alert__button[data-filter="active"]:not(.fire-alert__button--active-red) {
+.fire-button[data-filter="active"]:not(.fire-button--active-red) {
   background-color: rgba(239, 68, 68, 0.07);
+  font-weight: 700;
 }
 
-.fire-alert__button[data-filter="contained"]:not(.fire-alert__button--active-orange) {
+.fire-button[data-filter="contained"]:not(.fire-button--active-orange) {
   background-color: rgba(249, 115, 22, 0.07);
+  font-weight: 700;
 }
 
-.fire-alert__button[data-filter="extinguished"]:not(.fire-alert__button--active-green) {
+.fire-button[data-filter="extinguished"]:not(.fire-button--active-green) {
   background-color: rgba(34, 197, 94, 0.07);
-}
-
-.fire-alert__button--active {
-  background-color: var(--color-brand-primary);
-  color: var(--color-white);
-}
-
-.fire-alert__button--active-red {
-  background-color: var(--color-status-active);
-  color: var(--color-white);
-}
-
-.fire-alert__button--active-orange {
-  background-color: var(--color-status-contained);
-  color: var(--color-white);
-}
-
-.fire-alert__button--active-green {
-  background-color: var(--color-status-extinguished);
-  color: var(--color-white);
+  font-weight: 700;
 }
 
 .fire-alert__timestamp {
@@ -151,7 +122,7 @@
 
 /* 사이드바 */
 .fire-alert__sidebar {
-  width: 350px;
+  width: 370px;
   background-color: var(--color-bg-primary);
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
   border-left: 1px solid var(--color-border);

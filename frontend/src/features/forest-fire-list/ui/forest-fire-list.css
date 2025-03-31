@@ -12,6 +12,7 @@
   background-color: var(--color-bg-tertiary);
 }
 
+/* 버튼 그룹 스타일 */
 .forest-fire-list__button-group {
   display: flex;
   gap: 8px;
@@ -21,39 +22,8 @@
   background: var(--color-bg-filter);
 }
 
-.forest-fire-list__button {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  background-color: var(--color-bg-button);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-}
-
-.forest-fire-list__button--all-active {
-  background-color: var(--color-brand-primary);
-  color: var(--color-white);
-}
-
-.forest-fire-list__button--active-active {
-  background-color: var(--color-status-active);
-  color: var(--color-white);
-}
-
-.forest-fire-list__button--contained-active {
-  background-color: var(--color-status-contained);
-  color: var(--color-white);
-}
-
-.forest-fire-list__button--extinguished-active {
-  background-color: var(--color-status-extinguished);
-  color: var(--color-white);
-}
+/* 리스트용 버튼은 공통 fire-button 스타일 사용 */
+/* 추가 스타일이 필요하다면 여기에 추가 */
 
 .forest-fire-list__content {
   padding: 12px;
@@ -178,23 +148,7 @@
   font-weight: 500;
 }
 
-/* 진화율과 진화완료 배경색 제거 */
-/*
-.forest-fire-item__status-badge--active {
-  background-color: var(--color-severity-critical-bg);
-  color: var(--color-severity-critical-text);
-}
-
-.forest-fire-item__status-badge--contained {
-  background-color: var(--color-severity-high-bg);
-  color: var(--color-severity-high-text);
-}
-
-.forest-fire-item__status-badge--extinguished {
-  background-color: var(--color-extinguished-bg);
-  color: var(--color-extinguished-text);
-}
-*/
+/* 상태 배지는 배경색 없이 아이콘으로만 표시 */
 
 .forest-fire-item__status-icon {
   display: inline-block;
