@@ -34,6 +34,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
   const { map, isMapLoaded } = useMap({
     containerRef: mapContainerRef,
     legendPosition,
+    fires, // 산불 데이터 전달
   });
 
   // 지도 로드 완료 시 준비 상태 업데이트

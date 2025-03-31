@@ -29,6 +29,7 @@ export interface UseMapOptions {
   containerRef: React.RefObject<HTMLDivElement>;
   legendPosition?: L.ControlPosition;
   options?: Partial<any>; // MAP_INIT_OPTIONS의 타입을 any로 간단히 표현
+  fires?: ForestFireData[];
 }
 
 /**

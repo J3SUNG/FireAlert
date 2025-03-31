@@ -11,6 +11,7 @@ export function useMap({
   containerRef,
   legendPosition = "bottomleft",
   options = {},
+  fires = [],
 }: UseMapOptions) {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
@@ -19,6 +20,11 @@ export function useMap({
 
   // 맵 초기화 함수 - 클린업 로직 포함
   const initializeMap = useCallback(() => {
+    // 이미 초기화된 경우에도 fires 데이터가 변경되면 범례 업데이트
+    if (isInitializedRef.current && mapRef.current && window && (window as any).updateFireLegend) {
+      (window as any).updateFireLegend();
+      return mapRef.current;
+    }
     // 이미 초기화된 경우 중복 초기화 방지
     if (isInitializedRef.current && mapRef.current) {
       return mapRef.current;
@@ -121,7 +127,7 @@ export function useMap({
       setIsMapLoaded(true); // 오류가 발생해도 로딩 상태는 완료로 처리
       return null;
     }
-  }, [containerRef, legendPosition, options, isMapLoaded]);
+  }, [containerRef, legendPosition, options, isMapLoaded, fires]);
 
   // 맵 제거 함수
   const destroyMap = useCallback(() => {
@@ -161,6 +167,16 @@ export function useMap({
       destroyMap();
     };
   }, []); // 의존성 배열 비우기
+  
+  // 산불 데이터가 변경될 때마다 범례 업데이트
+  useEffect(() => {
+    if (isMapLoaded && mapRef.current && fires.length > 0) {
+      // 전역 범례 업데이트 함수가 있다면 호출
+      if (window && (window as any).updateFireLegend) {
+        (window as any).updateFireLegend();
+      }
+    }
+  }, [isMapLoaded, fires]);
 
   // 컨테이너 변경 감지
   useEffect(() => {

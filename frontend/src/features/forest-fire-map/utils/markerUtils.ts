@@ -27,13 +27,14 @@ const FIRE_MARKER_COLORS: Record<string, string> = {
   critical: "#ef4444", // 빨강색
   high: "#f97316", // 주황색
   medium: "#eab308", // 노랑색
-  low: "#22c55e", // 초록색
+  low: "#0080ff", // 파란색 (초록색에서 변경)
   initial: "#6b7280", // 회색
 };
 
 // 대응단계별 색상 설정
 const RESPONSE_LEVEL_COLORS: Record<string, string> = {
   "초기대응": "#0080ff", // 파란색
+  "초기진화단계": "#0080ff", // 파란색
   "1단계": "#eab308", // 노랑색 (주의)
   "2단계": "#f97316", // 주황색 (경계)
   "3단계": "#ef4444", // 빨강색 (심각)
@@ -75,10 +76,6 @@ function createTooltipContent(fire: ForestFireData): string {
   const status = fire.status === 'active' ? '진행중' : 
                 fire.status === 'contained' ? '통제중' : '진화완료';
   
-  const severity = fire.severity === 'critical' ? '심각' : 
-                  fire.severity === 'high' ? '높음' : 
-                  fire.severity === 'medium' ? '중간' : '낮음';
-  
   return `
     <div class="fire-popup">
       <div class="fire-popup__title">${fire.location || '알 수 없는 위치'}</div>
@@ -86,10 +83,11 @@ function createTooltipContent(fire: ForestFireData): string {
         <span class="fire-popup__label">상태:</span>
         <span class="fire-popup__status--${fire.status}">${status}</span>
       </div>
+      ${fire.responseLevelName ? `
       <div class="fire-popup__info">
-        <span class="fire-popup__label">심각도:</span>
-        <span class="fire-popup__severity--${fire.severity}">${severity}</span>
-      </div>
+        <span class="fire-popup__label">대응:</span>
+        <span>${fire.responseLevelName}</span>
+      </div>` : ''}
       <div class="fire-popup__info">
         <span class="fire-popup__label">발생일:</span> ${fire.date || '정보 없음'}
       </div>
@@ -98,11 +96,7 @@ function createTooltipContent(fire: ForestFireData): string {
       </div>
       ${fire.extinguishPercentage ? `
       <div class="fire-popup__info">
-        <span class="fire-popup__label">진화율:</span> ${fire.extinguishPercentage}
-      </div>` : ''}
-      ${fire.responseLevelName ? `
-      <div class="fire-popup__info">
-        <span class="fire-popup__label">대응단계:</span> ${fire.responseLevelName}
+        <span class="fire-popup__label">진화율:</span> ${fire.extinguishPercentage}%
       </div>` : ''}
       ${fire.description ? `
       <div class="fire-popup__description">${fire.description}</div>` : ''}
@@ -125,7 +119,12 @@ export function createFireMarker(
   
   // 대응단계가 있으면 그에 따른 색상 우선 적용
   if (fire.responseLevelName) {
-    color = RESPONSE_LEVEL_COLORS[fire.responseLevelName] || color;
+    // 해당 대응단계에 맞는 색상처리
+    if (fire.responseLevelName.includes('초기') || fire.responseLevelName.includes('초기진화')) {
+      color = "#0080ff"; // 초기대응/초기진화단계는 파란색으로 고정
+    } else {
+      color = RESPONSE_LEVEL_COLORS[fire.responseLevelName] || color;
+    }
   }
   
   // 옵션 처리
@@ -189,7 +188,9 @@ export function createFireMarker(
     closeButton: false,
     className: 'fire-tooltip-hover',
     offset: [0, -5],
-    autoPan: false
+    autoPan: false,
+    maxWidth: 220,
+    minWidth: 200
   }).setContent(popupContent);
   
   // 마커 호버 이벤트 처리
