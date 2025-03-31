@@ -4,7 +4,7 @@ import { ForestFireData } from "../types/forestFire";
 export function useFireFilterAndSelection(fires: ForestFireData[]) {
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | "active" | "contained" | "extinguished"
-  >("all");
+  >("active"); // 기본값을 "active"(진화중)로 변경
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
 
   const filteredData = useMemo(() => {

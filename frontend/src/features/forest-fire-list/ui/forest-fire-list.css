@@ -178,6 +178,8 @@
   font-weight: 500;
 }
 
+/* 진화율과 진화완료 배경색 제거 */
+/*
 .forest-fire-item__status-badge--active {
   background-color: var(--color-severity-critical-bg);
   color: var(--color-severity-critical-text);
@@ -192,6 +194,7 @@
   background-color: var(--color-extinguished-bg);
   color: var(--color-extinguished-text);
 }
+*/
 
 .forest-fire-item__status-icon {
   display: inline-block;
