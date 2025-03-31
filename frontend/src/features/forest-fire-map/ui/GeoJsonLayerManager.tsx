@@ -4,7 +4,7 @@ import {
   GEOJSON_PATHS,
   PROVINCES_STYLE,
   DISTRICTS_STYLE 
-} from '../constants/mapSettings';
+} from '../model/mapSettings';
 import { GeoJsonProperties } from '../../../shared/types/geoJson';
 
 interface GeoJsonLayerManagerProps {

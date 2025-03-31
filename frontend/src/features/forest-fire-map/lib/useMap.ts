@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import L from "leaflet";
-import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../constants/mapSettings";
+import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../model/mapSettings";
 import { UseMapOptions } from "../model/types";
 
 /**

@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { createFireMarker } from '../utils/markerUtils';
+import { createFireMarker } from '../lib/markerUtils';
 import { FireMarkerManagerProps } from '../model/types';
 
 /**

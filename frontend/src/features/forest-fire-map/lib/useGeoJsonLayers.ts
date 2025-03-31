@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import { geoJsonStyles, GEOJSON_PATHS } from "../constants/mapSettings";
+import { geoJsonStyles, GEOJSON_PATHS } from "../model/mapSettings";
 import { GeoJsonData, GeoJsonProperties } from "../../../shared/types/geoJson";
-import { findProvinceLocation } from "../constants/provinceLocations";
+import { findProvinceLocation } from "../model/provinceLocations";
 
 interface UseGeoJsonLayersOptions {
   provincesUrl: string;
