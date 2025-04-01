@@ -55,7 +55,11 @@ export default tseslint.config(
       "@typescript-eslint/no-unnecessary-type-assertion": "off", // 불필요한 타입 단언 경고 비활성화
       
       // 개발에 유용할 수 있는 규칙 재정의
-      "@typescript-eslint/no-unused-vars": "off", // 사용되지 않는 변수 검사 완전히 무시
+      "@typescript-eslint/no-unused-vars": ["warn", { 
+        "argsIgnorePattern": "^_", 
+        "varsIgnorePattern": "^_", 
+        "caughtErrorsIgnorePattern": "^_" 
+      }],  // 사용되지 않는 변수 경고 (_로 시작하는 변수 제외)
       "@typescript-eslint/prefer-as-const": "warn",
       
       // 콘솔 로그는 개발 중에 유용하므로 허용
