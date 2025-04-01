@@ -14,13 +14,16 @@
 ## 🌟 핵심 구현 사항
 
 1. **FSD(Feature-Sliced Design) 아키텍처** 적용
+
    - app, pages, features, shared 레이어 구조화
    - 모듈별 명확한 책임 분리와 재사용성 향상
    - shared 레이어를 feature와 일관된 api, ui, lib, model 구조로 재설계
 
 2. **프론트엔드 SOLID 원칙 적용**
+
    - 단일 책임 원칙: 각 컴포넌트와 훅이 단일 책임을 가짐
    - 개방-폐쇄 원칙: 기존 코드를 수정하지 않고 기능 확장 가능
+   - 리스코프 치환 원칙: 컴포넌트 간 일관된 인터페이스로 대체 가능성 보장
    - 인터페이스 분리: 작고 집중된 컴포넌트 구성
    - 의존성 역전: 추상화에 의존하는 구조
 
@@ -32,13 +35,15 @@
 ## 🛠️ 기술 스택
 
 ### 프론트엔드
+
 - React 18
 - TypeScript
 - Vite
 - Leaflet (지도 시각화)
-- CSS (BEM 방법론)
+- CSS
 
 ### 백엔드
+
 - Node.js
 - Express
 - Axios
@@ -74,6 +79,7 @@ FireAlert/
 ## 🚀 시작하기
 
 ### 요구 사항
+
 - Node.js 16 이상
 - npm 또는 yarn
 
@@ -93,32 +99,4 @@ npm start
 
 ## 📱 실행 화면
 
-![FireAlert Dashboard](https://example.com/firealert-screenshot.png)
-*(이미지를 첨부하려면 프로젝트에 실제 스크린샷을 추가하세요)*
-
-## 📚 학습 포인트
-
-- FSD 아키텍처를 적용한 효율적인 프로젝트 구조화
-  - shared 레이어를 feature와 일관된 구조로 재설계하여 코드 탐색성 및 유지보수성 향상
-- 프론트엔드에 적합한 SOLID 원칙 구현
-  - UI 컴포넌트, 상태 관리, 에러 처리 등 각 영역에 SOLID 원칙 적용
-- React와 TypeScript를 활용한 타입 안정성 확보
-  - 도메인 모델과 공통 타입을 정의하여 개발 단계에서 오류 방지
-- 지도 데이터 시각화 구현 방법
-  - Leaflet 라이브러리를 활용한 지도 및 마커 시각화
-- 백엔드와 프론트엔드 간 효율적인 데이터 흐름 설계
-  - 캐싱 전략과 에러 처리를 통한 안정적인 데이터 흐름 구현
-
-## ⚖️ 라이센스
-
-MIT 라이센스에 따라 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 👥 기여자
-
-- [J3SUNG](https://github.com/J3SUNG) - 개발자
-
-## 🔗 참고 자료
-
-- [Feature-Sliced Design](https://feature-sliced.design/)
-- [SOLID Principles for React](https://konstantinlebedev.com/solid-in-react/)
-- [Leaflet Documentation](https://leafletjs.com/reference.html)
+![Image](https://github.com/user-attachments/assets/a4dbccf5-f46f-44d3-915a-c2c931e9675a)

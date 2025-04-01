@@ -30,6 +30,7 @@ GET /api/fireList
 ```
 
 **응답 예시**:
+
 ```json
 [
   {
@@ -57,23 +58,25 @@ GET /api/fireList
 
 ### 산불 데이터 객체
 
-| 필드 | 설명 | 타입 |
-|------|------|------|
-| index | 데이터 인덱스 | string |
-| location | 산불 발생 위치 | string |
-| sigungu | 시군구 정보 | string |
-| percentage | 진화율 (%) | string |
-| date | 발생 일자 (YYYYMMDD) | string |
-| issueName | 대응 단계 (1~3단계) | string |
-| status | 현재 상태 (진행중, 통제중, 진화완료) | string |
+| 필드       | 설명                                 | 타입   |
+| ---------- | ------------------------------------ | ------ |
+| index      | 데이터 인덱스                        | string |
+| location   | 산불 발생 위치                       | string |
+| sigungu    | 시군구 정보                          | string |
+| percentage | 진화율 (%)                           | string |
+| date       | 발생 일자 (YYYYMMDD)                 | string |
+| issueName  | 대응 단계 (1~3단계)                  | string |
+| status     | 현재 상태 (진행중, 통제중, 진화완료) | string |
 
 ## 🏗️ 주요 기능
 
 1. **데이터 제공**
+
    - 산불 데이터를 JSON 형태로 가공하여 제공
    - CORS 설정으로 프론트엔드에서 API 호출 가능
 
 2. **데이터 정제**
+
    - 위치 정보에서 시군구 데이터 추출
    - 진화율 데이터 정규화 (% 기호 제거)
 
@@ -92,46 +95,3 @@ node index.js
 ```
 
 기본적으로 서버는 **4000번 포트**에서 실행됩니다 (http://localhost:4000).
-
-## 📝 개발 및 확장 방향
-
-### 현재 구현 상태
-
-- 기본적인 산불 데이터 API 제공
-- 더미 데이터를 활용한 개발 환경 구성
-
-### 향후 개선 사항
-
-- 실시간 데이터 업데이트 기능 강화
-- 데이터베이스 연동을 통한 히스토리 관리
-- 인증 및 보안 기능 추가
-- 로깅 시스템 구현
-
-## ⚠️ 주의사항
-
-현재 버전에서는 더미 데이터를 사용하고 있습니다. 실제 산림청 API를 활용하려면 해당 주석 처리된 코드를 활성화하고 적절한 에러 처리를 추가해야 합니다.
-
-```javascript
-// index.js에서 실제 API 사용 시 주석 해제
-try {
-  const response = await axios.get(
-    "https://fd.forest.go.kr/ffas/pubConn/selectPublicFireShowList.do",
-    {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-      },
-      timeout: 5000,
-    }
-  );
-  data = response.data;
-} catch (apiError) {
-  return res.json([]);
-}
-```
-
-## 📚 참고 자료
-
-- [Express 공식 문서](https://expressjs.com/)
-- [Node.js 공식 문서](https://nodejs.org/en/docs/)
-- [Axios 공식 문서](https://axios-http.com/docs/intro)
-- [Cheerio 공식 문서](https://cheerio.js.org/)
