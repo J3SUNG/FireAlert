@@ -18,3 +18,6 @@ export { FireStatusSummary } from './components/FireStatusSummary';
 // 훅 내보내기
 export { useCurrentTime } from './hooks/useCurrentTime';
 export { useFireFilterAndSelection } from './hooks/useFireFilterAndSelection';
+
+// 에러 처리 내보내기
+export * from './errors';

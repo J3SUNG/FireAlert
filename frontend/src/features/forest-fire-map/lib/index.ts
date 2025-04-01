@@ -1,3 +1,12 @@
 export { useMap } from './useMap';
 export { useGeoJsonLayers } from './useGeoJsonLayers';
 export { createFireMarker } from './markerUtils';
+export { useMarkerState } from './useMarkerState';
+export { useMarkerCreation } from './useMarkerCreation';
+export { useMarkerManager } from './useMarkerManager';
+export { useGeoJsonState } from './useGeoJsonState';
+export { useGeoJsonManager } from './useGeoJsonManager';
+export { LeafletMapService } from './LeafletMapService';
+export { useMapService } from './useMapService';
+export { createMapService, getMapService, resetMapService, MapServiceType } from './mapServiceFactory';
+export { useMapErrorHandling } from './useMapErrorHandling';
