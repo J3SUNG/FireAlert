@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { ForestFireItem } from './ForestFireItem';
 import { ForestFireListProps } from '../model/types';
 import './forest-fire-list.css';
@@ -11,10 +11,13 @@ export const ForestFireList: FC<ForestFireListProps> = ({
   filter = 'all',
   onFilterChange
 }) => {
-  // 선택된 아이디가 변경되면 콘솔로그 추가
-  useEffect(() => {
-    console.log('List component - selectedFireId:', selectedFireId);
-  }, [selectedFireId]);
+
+  /**
+   * 컨텐츠 영역의 CSS 클래스명 계산
+   * 필터 표시 여부에 따라 적절한 클래스를 반환합니다.
+   * 
+   * @returns {string} CSS 클래스명
+   */
   const getContentClass = () => {
     let className = 'forest-fire-list__content';
     
@@ -75,8 +78,8 @@ export const ForestFireList: FC<ForestFireListProps> = ({
         ) : (
           <div className="forest-fire-list__empty-message">
             {filter === 'all' 
-              ? '산불 데이터가 없습니다.'
-              : `${filter === 'active' ? '진행중인' : filter === 'contained' ? '통제중인' : '진화완료된'} 산불이 없습니다.`
+              ? '현재 진행 중인 산불이 없습니다.'
+              : `현재 ${filter === 'active' ? '진화중인' : filter === 'contained' ? '통제중인' : '진화완료된'} 산불이 없습니다.`
             }
           </div>
         )}

@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 import L from 'leaflet';
-import { GeoJsonProperties } from '../../../shared/types/geoJson';
+// GeoJsonProperties는 사용되지 않음
 
 /**
  * GeoJSON 레이어 상태 관리 훅

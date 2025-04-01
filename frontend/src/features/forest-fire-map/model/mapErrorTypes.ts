@@ -2,7 +2,7 @@ import {
   ErrorCategory, 
   ErrorSeverity, 
   AppError 
-} from '../../../shared/errors/errorTypes';
+} from '../../../shared/lib/errors/errorTypes';
 
 /**
  * 지도 특화 에러 카테고리
@@ -68,7 +68,7 @@ export function createMapError(
   
   // 에러 카테고리 매핑
   let category: ErrorCategory = ErrorCategory.GENERAL;
-  let mapCategory: MapErrorCategory;
+  let mapCategory: MapErrorCategory = MapErrorCategory.MAP_INITIALIZATION; // 기본값 설정
   
   if (code.startsWith('MAP')) {
     category = ErrorCategory.UI;

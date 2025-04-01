@@ -47,13 +47,13 @@ export function useMap({
         mapRef.current.eachLayer((layer) => {
           try {
             mapRef.current?.removeLayer(layer);
-          } catch (_error) {
+          } catch (_) {
             // 무시
           }
         });
         mapRef.current.remove();
         mapRef.current = null;
-      } catch (_error) {
+      } catch (_) {
         mapRef.current = null;
       }
     }
@@ -75,7 +75,7 @@ export function useMap({
       });
 
       L.DomEvent.off(container);
-    } catch (_error) {
+    } catch (_) {
       // 오류 무시
     }
 
@@ -121,7 +121,7 @@ export function useMap({
 
       isInitializedRef.current = true;
       return newMap;
-    } catch (_error) {
+    } catch (_) {
       isInitializedRef.current = false;
       mapRef.current = null;
       setIsMapLoaded(true); // 오류가 발생해도 로딩 상태는 완료로 처리
@@ -140,7 +140,7 @@ export function useMap({
       mapInstance.eachLayer((layer) => {
         try {
           mapInstance.removeLayer(layer);
-        } catch (_error) {
+        } catch (_) {
           // 무시
         }
       });
@@ -150,7 +150,7 @@ export function useMap({
       mapRef.current = null;
       isInitializedRef.current = false;
       setIsMapLoaded(false);
-    } catch (_error) {
+    } catch (_) {
       // 강제로 참조 초기화
       mapRef.current = null;
       isInitializedRef.current = false;

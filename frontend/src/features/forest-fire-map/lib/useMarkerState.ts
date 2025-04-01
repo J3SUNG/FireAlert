@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 import L from 'leaflet';
-import { ForestFireData } from '../../../shared/types/forestFire';
+// ForestFireData 타입은 사용되지 않음
 
 /**
  * 마커 상태 관리 훅

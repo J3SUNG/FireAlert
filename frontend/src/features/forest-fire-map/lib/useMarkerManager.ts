@@ -7,7 +7,7 @@ import { useMarkerCreation } from './useMarkerCreation';
 interface UseMarkerManagerProps {
   map: L.Map | null;
   fires: ForestFireData[];
-  selectedFireId: string | null;
+  selectedFireId: string | undefined | null;
   onFireSelect?: (fire: ForestFireData) => void;
   isGeoJsonLoaded: boolean;
 }

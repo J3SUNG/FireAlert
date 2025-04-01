@@ -2,7 +2,7 @@ import {
   ErrorCategory, 
   ErrorSeverity, 
   AppError 
-} from '../../../shared/errors/errorTypes';
+} from '../../../shared/lib/errors/errorTypes';
 
 /**
  * 데이터 관련 에러 코드

@@ -139,7 +139,8 @@ export function createFireMarker(
   const weight = isSelected ? 3 : 2;
   
   const opacity = fire.status === "extinguished" ? 0.7 : 1;
-  const fillOpacity = fire.status === "extinguished" ? 0.4 : 0.6;
+  // fillOpacity - 사용되지 않는 변수이지만 추후 사용을 위해 남겨둡
+  const _fillOpacity = fire.status === "extinguished" ? 0.4 : 0.6;
   
   // LayerGroup 생성
   const layerGroup = L.layerGroup();

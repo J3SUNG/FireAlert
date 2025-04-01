@@ -5,7 +5,7 @@ import {
   MapPosition,
   MapBounds,
   MarkerOptions,
-  LayerStyle,
+  // LayerStyle - 사용되지 않음
   MapEventType
 } from '../model/mapTypes';
 import { ForestFireData } from '../../../shared/types/forestFire';
@@ -161,7 +161,7 @@ export class LeafletMapService implements MapService {
     }
   }
 
-  updateMarker(id: string, options: MarkerOptions): void {
+  updateMarker(id: string, _options: MarkerOptions): void {
     if (!this.map) return;
     
     // 기존 마커 제거 후 새로 생성 (Leaflet은 직접적인 마커 업데이트가 제한적)
@@ -173,7 +173,7 @@ export class LeafletMapService implements MapService {
     }
   }
 
-  async loadGeoJson(url: string, options: any = {}): Promise<string> {
+  async loadGeoJson(url: string, _options: any = {}): Promise<string> {
     if (!this.map) throw new Error('Map is not initialized');
     
     try {
@@ -187,12 +187,12 @@ export class LeafletMapService implements MapService {
       
       // GeoJSON 레이어 생성
       const layer = L.geoJSON(data, {
-        style: options.style || {},
-        onEachFeature: options.onEachFeature,
+        style: _options.style || {},
+        onEachFeature: _options.onEachFeature,
       });
       
       // 맵에 추가
-      if (options.addToMap !== false) {
+      if (_options.addToMap !== false) {
         layer.addTo(this.map);
       }
       
@@ -253,7 +253,7 @@ export class LeafletMapService implements MapService {
     return id;
   }
 
-  updateFireMarker(id: string, isSelected: boolean): void {
+  updateFireMarker(id: string, _isSelected: boolean): void {
     if (!this.map) return;
     
     // 기존 마커 찾기

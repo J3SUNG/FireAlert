@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import { geoJsonStyles, GEOJSON_PATHS } from "../model/mapSettings";
+import { geoJsonStyles } from "../model/mapSettings"; // GEOJSON_PATHS 사용되지 않음
 import { GeoJsonData, GeoJsonProperties } from "../../../shared/types/geoJson";
 import { findProvinceLocation } from "../model/provinceLocations";
 

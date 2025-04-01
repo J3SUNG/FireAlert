@@ -9,6 +9,11 @@ import "./map.css";
 
 /**
  * 산불 지도 컴포넌트
+ * 지도에 산불 데이터를 마커로 표시하고, 지역 경계를 GeoJSON으로 렌더링합니다.
+ * Leaflet 지도 라이브러리를 기반으로 구현되었습니다.
+ * 
+ * @param {ForestFireMapProps} props 지도 관련 속성
+ * @returns {JSX.Element} 지도 컴포넌트
  */
 export const ForestFireMap: FC<ForestFireMapProps> = ({
   fires,

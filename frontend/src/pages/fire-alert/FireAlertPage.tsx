@@ -1,11 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { ForestFireList } from "../../features/forest-fire-list";
 import { ForestFireMap } from "../../features/forest-fire-map";
 import { FireStatusSummary } from "../../shared";
 import { useForestFireData } from "../../features/forest-fire-data";
-import { useCurrentTime, useFireFilterAndSelection } from "../../shared";
+import { useCurrentTime, useFireFilterAndSelection } from "../../shared/lib";
 import "./fire-alert.css";
 
+/**
+ * 산불 알림 메인 페이지 컴포넌트
+ * 전국의 산불 현황을 지도와 목록 형태로 보여주며, 상태별 필터링을 제공합니다.
+ * @returns {JSX.Element} 산불 알림 페이지 UI
+ */
 const FireAlertPage: React.FC = () => {
   const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } =
     useForestFireData();
@@ -24,10 +29,7 @@ const FireAlertPage: React.FC = () => {
 
   const buttonLabels = getFilterButtonLabels(statusCounts);
 
-  // 선택된 필터와 산불 아이디 변경 로그
-  useEffect(() => {
-    console.log('Main page - selectedFilter:', selectedFilter, 'selectedFireId:', selectedFireId);
-  }, [selectedFilter, selectedFireId]);
+
 
   return (
     <div className="fire-alert">
@@ -103,15 +105,15 @@ const FireAlertPage: React.FC = () => {
               <div className="fire-alert__sidebar-header">
                 <h2 className="fire-alert__sidebar-title">산불 데이터 현황</h2>
                 <p className="fire-alert__sidebar-subtitle">
-                  {selectedFilter === "all"
-                    ? `현재 ${String(filteredData.length)}건의 산불 정보가 표시되고 있습니다.`
-                    : `현재 ${
-                        selectedFilter === "active"
-                          ? "진화중인"
-                          : selectedFilter === "contained"
-                          ? "통제중인"
-                          : "진화완료된"
-                      } 산불 ${String(filteredData.length)}건이 표시되고 있습니다.`}
+                  {filteredData.length === 0 ? (
+                    selectedFilter === "all" ?
+                      "현재 진행 중인 산불이 없습니다." :
+                      `현재 ${selectedFilter === "active" ? "진화중인" : selectedFilter === "contained" ? "통제중인" : "진화완료된"} 산불이 없습니다.`
+                  ) : (
+                    selectedFilter === "all" ?
+                      `현재 ${String(filteredData.length)}건의 산불 정보가 표시되고 있습니다.` :
+                      `현재 ${selectedFilter === "active" ? "진화중인" : selectedFilter === "contained" ? "통제중인" : "진화완료된"} 산불 ${String(filteredData.length)}건이 표시되고 있습니다.`
+                  )}
                 </p>
               </div>
 

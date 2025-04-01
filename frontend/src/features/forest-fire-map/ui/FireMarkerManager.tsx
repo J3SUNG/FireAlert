@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import L from 'leaflet';
+// L은 사용되지 않음
 import { FireMarkerManagerProps } from '../model/types';
 import { useMarkerManager } from '../lib/useMarkerManager';
 

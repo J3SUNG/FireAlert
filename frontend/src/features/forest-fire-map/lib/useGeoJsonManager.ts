@@ -48,12 +48,19 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
       // 시도 레이어 생성
       const provincesLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
         style: () => PROVINCES_STYLE,
-        className: 'province-boundary',
         interactive: true,
-        onEachFeature: (feature, layer) => {
+        onEachFeature: (_feature, _layer) => {
           // 툴팁 레이블 제거 - 마커 기반 레이블만 사용
         },
       }).addTo(map);
+      
+      // 클래스 이름 추가 (Leaflet 옵션으로는 불가능하므로 DOM 조작으로 추가)
+      const provincePaths = provincesLayer.getPane()?.querySelectorAll('path');
+      if (provincePaths) {
+        provincePaths.forEach(path => {
+          path.classList.add('province-boundary');
+        });
+      }
       
       // SVG 스타일 적용
       setTimeout(() => {
@@ -127,13 +134,16 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
       const districtsLayer = L.geoJSON(data as GeoJSON.GeoJsonObject, {
         style: () => DISTRICTS_STYLE,
         interactive: true,
-        renderer: L.svg({ padding: 0 }),
         pane: 'overlayPane',
         bubblingMouseEvents: false,
-        onEachFeature: (feature, layer) => {
+        onEachFeature: (_feature, _layer) => {
           // 툴팁 레이블 제거 - 마커 기반 레이블만 사용
         },
       });
+      
+      // SVG 렌더러 설정은 이렇게 직접 적용
+      const svg = L.svg({ padding: 0 });
+      svg.addTo(map);
       
       // 상태에 레이어 저장
       setDistrictLayer(districtsLayer);
