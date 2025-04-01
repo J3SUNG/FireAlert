@@ -1,7 +1,7 @@
 import React, { FC, useRef, useState, useEffect, useMemo } from "react";
 import "leaflet/dist/leaflet.css";
 import { MapLoadingIndicator } from "./MapLoadingIndicator";
-import { useGeoJsonLayers, useMap } from "../lib";
+import { useMap, useGeoJsonManager } from "../lib";
 import { GEOJSON_PATHS } from "../model/mapSettings";
 import { FireMarkerManager } from "./FireMarkerManager";
 import { ForestFireMapProps } from "../model/types";
@@ -55,7 +55,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
   }, [isMapLoaded, map]);
 
   // GeoJSON 레이어 초기화 (지도가 준비된 경우에만)
-  const { isGeoJsonLoaded } = useGeoJsonLayers(
+  const { isGeoJsonLoaded } = useGeoJsonManager(
     mapReady && map ? map : null,
     {
       provincesUrl: GEOJSON_PATHS.provinces,
