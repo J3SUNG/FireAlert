@@ -1,8 +1,18 @@
-import { ForestFireData } from "../types/forestFire";
+/**
+ * 산불 관련 유틸리티 함수 모음
+ * 산불 데이터 처리와 관련된 다양한 함수를 제공합니다.
+ */
+
+import { ForestFireData } from "../model/forestFire";
 import { provinceShortNames } from "./locationFormat";
 
 /**
  * 위치 문자열에서 시도와 시군구 추출
+ * 주소 문자열에서 시도(또는 신청자치시/광역시)와 시군구를 파싱합니다.
+ * 
+ * @param {string} location 전체 주소 문자열
+ * @param {string} [sigungu] 시군구 정보
+ * @returns {{ province: string; district: string }} 시도와 시군구 정보
  */
 export const extractLocation = (location: string, sigungu?: string): { province: string; district: string } => {
   if (!location || location === "") return { province: "기타", district: "" };
@@ -67,6 +77,11 @@ export const extractLocation = (location: string, sigungu?: string): { province:
 
 /**
  * 산불 상태 코드 변환
+ * 시스템에서 사용하는 상태 코드로 변환합니다.
+ * 
+ * @param {string} status 원본 상태 명칭
+ * @param {string} percentage 진화율
+ * @returns {ForestFireData["status"]} 변환된 상태 코드
  */
 export const convertStatus = (status: string, percentage: string): ForestFireData["status"] => {
   if (percentage === "100") return "extinguished";
@@ -77,7 +92,11 @@ export const convertStatus = (status: string, percentage: string): ForestFireDat
 };
 
 /**
- * 대응 단계 이름으로 심각도 결정
+ * 대응 단계 이름으로 위험도 결정
+ * 산불 대응 단계 이름을 기준으로 시스템에서 사용하는 위험도 태그로 변환합니다.
+ * 
+ * @param {string} issueName 대응 단계 이름
+ * @returns {ForestFireData["severity"]} 위험도 태그
  */
 export const getResponseLevel = (issueName: string): ForestFireData["severity"] => {
   if (issueName.includes("3단계")) return "critical";
@@ -87,7 +106,11 @@ export const getResponseLevel = (issueName: string): ForestFireData["severity"] 
 };
 
 /**
- * 진화율 색상 코드 결정
+ * 진화율에 따라 색상 코드 결정
+ * 진화율 값에 따라 적절한 표시 색상을 반환합니다.
+ * 
+ * @param {string} percentage 진화율 문자열
+ * @returns {string} 표시할 16진수 색상 코드
  */
 export const getExtinguishPercentageColor = (percentage: string): string => {
   const percentageNum = parseInt(percentage, 10);
@@ -98,6 +121,10 @@ export const getExtinguishPercentageColor = (percentage: string): string => {
 
 /**
  * 산불 데이터 통계 계산
+ * 지역별, 위험도별, 상태별 통계를 계산합니다.
+ * 
+ * @param {ForestFireData[]} fires 산불 데이터 배열
+ * @returns 산불 통계 정보 객체
  */
 export const getForestFireStatistics = (fires: ForestFireData[]) => {
   const provinceStats = {} as Record<
@@ -152,6 +179,10 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
 
 /**
  * 상태별 카운트 계산
+ * 산불 상태별(진행중, 통제중, 진화완료) 개수를 계산합니다.
+ * 
+ * @param {ForestFireData[]} fires 산불 데이터 배열
+ * @returns {{ total: number, active: number, contained: number, extinguished: number }} 상태별 카운트
  */
 export const calculateStatusCounts = (fires: ForestFireData[]) => {
   return {
@@ -164,6 +195,10 @@ export const calculateStatusCounts = (fires: ForestFireData[]) => {
 
 /**
  * 대응 단계별 카운트 계산
+ * 산불 대응 단계별 개수를 계산합니다.
+ * 
+ * @param {ForestFireData[]} fires 산불 데이터 배열
+ * @returns {{ level3: number, level2: number, level1: number, initial: number }} 대응 단계별 카운트
  */
 export const calculateResponseLevelCounts = (fires: ForestFireData[]) => {
   return {

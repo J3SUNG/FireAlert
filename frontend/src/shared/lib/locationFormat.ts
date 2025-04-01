@@ -18,4 +18,3 @@ export const provinceShortNames: Record<string, string> = {
   "경상남도": "경남",
   "제주특별자치도": "제주"
 };
-

@@ -1,6 +1,9 @@
 import React from "react";
-import { ForestFireData } from "../types/forestFire";
+import { ForestFireData } from "../model/forestFire";
 
+/**
+ * FireStatusSummary 컴포넌트 프롭스 인터페이스
+ */
 interface FireStatusSummaryProps {
   level3Count: number;
   level2Count: number;
@@ -11,7 +14,12 @@ interface FireStatusSummaryProps {
 }
 
 /**
- * 산불 상태 요약 컴포넌트 (SRP)
+ * 산불 상태 요약 컴포넌트
+ * 단일 책임 원칙(SRP)에 따라 산불 상태 요약 정보만 표시합니다.
+ * 중요도(단계)별 산불 개수를 시각화합니다.
+ * 
+ * @param {FireStatusSummaryProps} props 컴포넌트 프롭스
+ * @returns {JSX.Element} 산불 상태 요약 UI
  */
 export const FireStatusSummary: React.FC<FireStatusSummaryProps> = ({
   level3Count,
@@ -21,7 +29,10 @@ export const FireStatusSummary: React.FC<FireStatusSummaryProps> = ({
   selectedFilter = "all",
   filteredFires = []
 }) => {
-  // 선택된 필터에 따라 표시할 데이터 계산
+  /**
+   * 선택된 필터에 따라 표시할 데이터 계산
+   * @returns {{ initial: number, level1: number, level2: number, level3: number }} 필터링된 단계별 개수
+   */
   const calculateFilteredCounts = () => {
     if (selectedFilter === "all") {
       return {

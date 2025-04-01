@@ -1,23 +1,11 @@
-// 모든 shared 모듈을 한 곳에서 내보내기
+// UI 컴포넌트 내보내기
+export * from './ui';
 
-// 타입 내보내기
-export * from './types/forestFire';
-export * from './types/geoJson';
+// API 내보내기
+export * from './api';
 
-// 유틸리티 내보내기
-export * from './utils/forestFireUtils';
-export * from './utils/locationFormat';
+// 라이브러리 내보내기
+export * from './lib';
 
-// 서비스 내보내기
-export { forestFireService } from './services/forestFireService';
-export { geoJsonService } from './services/geoJsonService';
-
-// 컴포넌트 내보내기
-export { FireStatusSummary } from './components/FireStatusSummary';
-
-// 훅 내보내기
-export { useCurrentTime } from './hooks/useCurrentTime';
-export { useFireFilterAndSelection } from './hooks/useFireFilterAndSelection';
-
-// 에러 처리 내보내기
-export * from './errors';
+// 모델 내보내기
+export * from './model';

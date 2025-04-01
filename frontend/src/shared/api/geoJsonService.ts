@@ -1,13 +1,20 @@
-import { GeoJsonData, GeoJsonFeature, Coordinates } from '../types/geoJson';
+import { GeoJsonData, GeoJsonFeature, Coordinates } from '../model/geoJson';
 
-// 캐시 상태
+/** 캐시된 GeoJSON 데이터 */
 let geoJsonData: GeoJsonData | null = null;
+/** 데이터 로딩 상태 */
 let isLoading = false;
+/** 로딩 Promise 객체 */
 let loadPromise: Promise<void> | null = null;
+/** 로딩 오류 발생 여부 */
 let loadError = false;
 
 /**
  * GeoJSON 피처의 중심점 계산
+ * 다양한 지오메트리 형태(Point, Polygon, MultiPolygon)에 대한 중심점을 계산합니다.
+ * 
+ * @param {GeoJsonFeature} feature 중심점을 계산할 GeoJSON 피처
+ * @returns {Coordinates | null} 계산된 중심점 좌표 또는 계산 실패 시 null
  */
 const getCentroid = (feature: GeoJsonFeature): Coordinates | null => {
   try {
@@ -55,7 +62,7 @@ const getCentroid = (feature: GeoJsonFeature): Coordinates | null => {
     }
 
     return null;
-  } catch (_error) {
+  } catch (_) {
     // 중심점 계산 중 오류 처리
     return null;
   }
@@ -64,7 +71,11 @@ const getCentroid = (feature: GeoJsonFeature): Coordinates | null => {
 // GeoJSON 서비스 객체
 export const geoJsonService = {
   /**
-   * GeoJSON 데이터를 로드합니다.
+   * GeoJSON 데이터 로드
+   * 지정된 URL에서 GeoJSON 데이터를 가져오고 캐싱합니다.
+   * 
+   * @param {string} url GeoJSON 파일의 URL
+   * @returns {Promise<GeoJsonData | null>} 로드된 GeoJSON 데이터 또는 오류 시 null
    */
   async loadGeoJsonData(url: string): Promise<GeoJsonData | null> {
     if (geoJsonData) return geoJsonData;
@@ -88,7 +99,7 @@ export const geoJsonService = {
 
           isLoading = false;
           resolve();
-        } catch (_error) {
+        } catch (_) {
           // GeoJSON 데이터 로드 중 오류 처리
           loadError = true;
           isLoading = false;
@@ -96,7 +107,7 @@ export const geoJsonService = {
         }
       };
 
-      loadData().catch((_error) => {
+      loadData().catch((_) => {
         // GeoJSON 데이터 로드 중 오류 처리
         loadError = true;
         isLoading = false;
@@ -110,6 +121,12 @@ export const geoJsonService = {
 
   /**
    * 지역 이름으로 좌표 찾기
+   * 시도 및 시군구 이름을 기반으로 GeoJSON 데이터에서 좌표를 검색합니다.
+   * 
+   * @param {GeoJsonData} geoJsonData GeoJSON 데이터
+   * @param {string} province 시도 이름
+   * @param {string} [district] 시군구 이름 (선택적)
+   * @returns {Coordinates | null} 찾은 좌표 또는 좌표를 찾지 못한 경우 null
    */
   getCoordinatesByName(
     geoJsonData: GeoJsonData,
@@ -166,7 +183,7 @@ export const geoJsonService = {
       }
 
       return null;
-    } catch (_error) {
+    } catch (_) {
       // 좌표 검색 중 오류 처리
       return null;
     }
