@@ -1,6 +1,6 @@
-import { ForestFireData } from '../../../shared/types/forestFire';
+import { ForestFireData } from "../../../shared/model/forestFire";
 
-export type FireFilterType = 'all' | 'active' | 'contained' | 'extinguished';
+export type FireFilterType = "all" | "active" | "contained" | "extinguished";
 
 /**
  * 산불 목록 컴포넌트 Props

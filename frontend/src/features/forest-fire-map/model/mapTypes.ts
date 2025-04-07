@@ -3,7 +3,7 @@
  * Leaflet 같은 특정 라이브러리 의존성을 추상화
  */
 
-import { ForestFireData } from "../../../shared/types/forestFire";
+import { ForestFireData } from "../../../shared/model/forestFire";
 
 export interface MapPosition {
   lat: number;
@@ -47,24 +47,24 @@ export interface MapService {
   destroy(): void;
   setView(position: MapPosition): void;
   setBounds(bounds: MapBounds): void;
-  
+
   // 이벤트 관리
   on(event: string, handler: (...args: any[]) => void): void;
   off(event: string, handler?: (...args: any[]) => void): void;
-  
+
   // 레이어 관리
   addMarker(position: MapPosition, data: any, options?: MarkerOptions): string;
   removeMarker(id: string): void;
   updateMarker(id: string, options: MarkerOptions): void;
-  
+
   // GeoJSON 관리
   loadGeoJson(url: string, options?: any): Promise<string>;
   removeGeoJson(id: string): void;
-  
+
   // 유틸리티
   getZoom(): number;
   panTo(position: MapPosition): void;
-  
+
   // 산불 데이터 전용 메서드
   addFireMarker(fire: ForestFireData, options?: MarkerOptions): string;
   updateFireMarker(id: string, isSelected: boolean): void;
@@ -77,11 +77,11 @@ export interface MapPosition {
 }
 
 export enum MapEventType {
-  CLICK = 'click',
-  ZOOM_CHANGE = 'zoomchange',
-  DRAG_END = 'dragend',
-  LAYER_ADD = 'layeradd',
-  LAYER_REMOVE = 'layerremove',
+  CLICK = "click",
+  ZOOM_CHANGE = "zoomchange",
+  DRAG_END = "dragend",
+  LAYER_ADD = "layeradd",
+  LAYER_REMOVE = "layerremove",
 }
 
 // 맵 상태 인터페이스

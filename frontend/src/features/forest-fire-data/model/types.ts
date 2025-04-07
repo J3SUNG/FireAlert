@@ -1,4 +1,4 @@
-import { ForestFireData } from "../../../shared/types/forestFire";
+import { ForestFireData } from "../../../shared/model/forestFire";
 
 export interface ForestFireDataState {
   fires: ForestFireData[];

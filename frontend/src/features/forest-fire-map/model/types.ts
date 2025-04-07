@@ -1,5 +1,5 @@
-import L from 'leaflet';
-import { ForestFireData } from '../../../shared/types/forestFire';
+import L from "leaflet";
+import { ForestFireData } from "../../../shared/model/forestFire";
 
 /**
  * 산불 지도 컴포넌트 Props

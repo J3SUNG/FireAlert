@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import { geoJsonStyles } from "../model/mapSettings"; // GEOJSON_PATHS 사용되지 않음
-import { GeoJsonData, GeoJsonProperties } from "../../../shared/types/geoJson";
+import { geoJsonStyles } from "../model/mapSettings";
+import { GeoJsonData, GeoJsonProperties } from "../../../shared/model/geoJson";
 import { findProvinceLocation } from "../model/provinceLocations";
 
 interface UseGeoJsonLayersOptions {
@@ -242,7 +242,8 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
 
               // 시군구 레이어 확대레벨에 따라 표시
               if (districtsLayer) {
-                if (currentZoom >= 8) { // 8 이상의 줌 레벨에서 표시
+                if (currentZoom >= 8) {
+                  // 8 이상의 줌 레벨에서 표시
                   if (!map.hasLayer(districtsLayer)) {
                     districtsLayer.addTo(map);
                   }
@@ -261,7 +262,7 @@ export function useGeoJsonLayers(map: L.Map | null, options: UseGeoJsonLayersOpt
                 if (map.hasLayer(districtsLayer)) {
                   // 중앙 스타일 시스템의 강제 적용 함수 사용
                   geoJsonStyles.forceApplyDistrictStyle(districtsLayer, map);
-                  
+
                   // 레이어 순서 조정 - 시군구 레이어를 맨 위로
                   districtsLayer.bringToFront();
                 }

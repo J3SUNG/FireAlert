@@ -1,7 +1,7 @@
 import { FC, useRef, useState, useEffect } from "react";
 import L from "leaflet";
 import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../model/mapSettings";
-import { ForestFireData } from "../../../shared/types/forestFire";
+import { ForestFireData } from "../../../shared/model/forestFire";
 
 interface MapInitializerProps {
   legendPosition?: L.ControlPosition;

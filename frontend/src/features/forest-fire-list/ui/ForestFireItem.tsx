@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { ForestFireData } from "../../../shared/types/forestFire";
+import { ForestFireData } from "../../../shared/model/forestFire";
 import { ForestFireItemProps } from "../model/types";
 import "./forest-fire-list.css";
 
@@ -7,7 +7,7 @@ import "./forest-fire-list.css";
  * 산불 항목 컴포넌트
  * 개별 산불 데이터를 표시하는 카드 형태의 컴포넌트입니다.
  * 산불 위치, 발생 일자, 영향 면적, 대응 단계, 진화율 등의 정보를 포함합니다.
- * 
+ *
  * @param {ForestFireItemProps} props 산불 항목 속성
  * @returns {JSX.Element} 산불 항목 컴포넌트
  */
@@ -25,7 +25,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
   /**
    * 산불 위험도에 따른 대응단계 라벨 가져오기
    * 산불 위험 등급을 한글 대응단계로 변환합니다.
-   * 
+   *
    * @param {ForestFireData["severity"]} severity 산불 위험도
    * @returns {string} 대응단계 라벨
    */
@@ -47,7 +47,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
   /**
    * 산불 상태 라벨 가져오기
    * 산불 상태에 따른 한글 라벨을 반환합니다.
-   * 
+   *
    * @param {ForestFireData["status"]} status 산불 상태
    * @returns {string} 산불 상태 라벨
    */
@@ -67,7 +67,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
   /**
    * 산불 위험도에 따른 배지 클래스 가져오기
    * 위험도에 따라 다른 스타일을 적용하기 위한 CSS 클래스를 반환합니다.
-   * 
+   *
    * @param {ForestFireData["severity"]} severity 산불 위험도
    * @returns {string} CSS 클래스명
    */
@@ -94,7 +94,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
 
   /**
    * 산불 상태 배지 클래스 가져오기
-   * 
+   *
    * @param {ForestFireData["status"]} status 산불 상태
    * @param {string} [percentage] 진화율
    * @returns {string} CSS 클래스명
@@ -107,7 +107,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
   /**
    * 산불 상태 아이콘 클래스 가져오기
    * 산불 상태에 따른 아이콘 스타일을 적용하기 위한 CSS 클래스를 반환합니다.
-   * 
+   *
    * @param {ForestFireData["status"]} status 산불 상태
    * @returns {string} CSS 클래스명
    */
@@ -132,7 +132,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
   /**
    * 산불 위험도 배지 렌더링
    * 산불의 대응단계를 표시하는 배지를 렌더링합니다.
-   * 
+   *
    * @param {ForestFireData} fire 산불 데이터
    * @returns {JSX.Element} 위험도 배지 컴포넌트
    */
@@ -148,7 +148,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = ({ fire, onSelect, isSele
    * 산불 상태 배지 렌더링
    * 산불의 현재 상태와 진화율을 표시하는 배지를 렌더링합니다.
    * 진행중/통제중인 산불는 진화율을, 진화완료된 산불는 상태를 표시합니다.
-   * 
+   *
    * @param {ForestFireData} fire 산불 데이터
    * @returns {JSX.Element} 상태 배지 컴포넌트
    */
