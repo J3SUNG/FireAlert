@@ -1,5 +1,5 @@
 /* 변수 임포트 */
-@import './variables/colors.css';
+@import "./variables/colors.css";
 
 /* 기본 스타일 초기화 */
 * {
@@ -8,7 +8,9 @@
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -17,8 +19,8 @@ html, body, #root {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
   background-color: var(--color-bg-secondary);
   color: var(--color-text-primary);
   line-height: 1.5;
@@ -26,73 +28,39 @@ body {
 
 /* 애니메이션 - 전역으로 한 번만 정의 */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 플로잉 효과의 pulse 애니메이션 */
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* 상태 표시용 pulse 애니메이션 - 상태 부분에 사용 */
 @keyframes pulse-shadow {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-/* 공통 버튼 스타일 - 서비스 전체에서 사용하는 공통 버튼 */
-.fire-button {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  background-color: var(--color-bg-button);
-  color: var(--color-text-secondary);
-}
-
-.fire-button:hover {
-  filter: brightness(0.95);
-}
-
-/* 상태별 버튼 활성화 스타일 - 진한 배경색 사용 */
-.fire-button--active-all {
-  background-color: var(--color-brand-primary);
-  color: var(--color-white);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-  font-weight: 700;
-}
-
-.fire-button--active-red {
-  background-color: var(--color-status-active);
-  color: var(--color-white);
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-  font-weight: 700;
-}
-
-.fire-button--active-orange {
-  background-color: var(--color-status-contained);
-  color: var(--color-white);
-  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
-  font-weight: 700;
-}
-
-.fire-button--active-green {
-  background-color: var(--color-status-extinguished);
-  color: var(--color-white);
-  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
-  font-weight: 700;
-}
-
-/* 버튼 크기 변이션 - 리스트용 작은 버튼 */
-.fire-button--small {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
 }

@@ -71,27 +71,6 @@
   border-radius: 24px;
 }
 
-/* 버튼 필터별 배경색 스타일 - 연한 배경색 */
-.fire-button[data-filter="all"]:not(.fire-button--active-all) {
-  background-color: rgba(59, 130, 246, 0.07);
-  font-weight: 700;
-}
-
-.fire-button[data-filter="active"]:not(.fire-button--active-red) {
-  background-color: rgba(239, 68, 68, 0.07);
-  font-weight: 700;
-}
-
-.fire-button[data-filter="contained"]:not(.fire-button--active-orange) {
-  background-color: rgba(249, 115, 22, 0.07);
-  font-weight: 700;
-}
-
-.fire-button[data-filter="extinguished"]:not(.fire-button--active-green) {
-  background-color: rgba(34, 197, 94, 0.07);
-  font-weight: 700;
-}
-
 .fire-alert__timestamp {
   font-size: 14px;
   color: var(--color-text-quaternary);
@@ -345,4 +324,78 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+}
+
+/* 공통 버튼 스타일 - 서비스 전체에서 사용하는 공통 버튼 */
+.fire-button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  background-color: var(--color-bg-button);
+  color: var(--color-text-secondary);
+}
+
+.fire-button:hover {
+  filter: brightness(0.95);
+}
+
+/* 상태별 버튼 활성화 스타일 - 진한 배경색 사용 */
+.fire-button--active-all {
+  background-color: var(--color-brand-primary);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  font-weight: 700;
+}
+
+.fire-button--active-red {
+  background-color: var(--color-status-active);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  font-weight: 700;
+}
+
+.fire-button--active-orange {
+  background-color: var(--color-status-contained);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+  font-weight: 700;
+}
+
+.fire-button--active-green {
+  background-color: var(--color-status-extinguished);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+  font-weight: 700;
+}
+
+/* 버튼 크기 변이션 - 리스트용 작은 버튼 */
+.fire-button--small {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+}
+
+/* 버튼 필터별 배경색 스타일 - 연한 배경색 */
+.fire-button[data-filter="all"]:not(.fire-button--active-all) {
+  background-color: rgba(59, 130, 246, 0.07);
+  font-weight: 700;
+}
+
+.fire-button[data-filter="active"]:not(.fire-button--active-red) {
+  background-color: rgba(239, 68, 68, 0.07);
+  font-weight: 700;
+}
+
+.fire-button[data-filter="contained"]:not(.fire-button--active-orange) {
+  background-color: rgba(249, 115, 22, 0.07);
+  font-weight: 700;
+}
+
+.fire-button[data-filter="extinguished"]:not(.fire-button--active-green) {
+  background-color: rgba(34, 197, 94, 0.07);
+  font-weight: 700;
 }

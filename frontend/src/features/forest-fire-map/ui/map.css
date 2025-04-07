@@ -3,92 +3,17 @@
 
 /* 기본 시도 레이어 관련 스타일 (특별한 DOM 조작 위한 선택자만 유지) */
 .province-boundary {
-  /* 성능 최적화 관련 속성만 유지 - Leaflet 라이브러리와의 충돌때문에 important 유지 */
-  pointer-events: none !important;
-  shape-rendering: crispEdges !important;
-  vector-effect: none !important;
-  visibility: visible !important;
+  pointer-events: none;
+  shape-rendering: crispEdges;
+  visibility: visible;
 }
 
 /* 기본 시군구 레이어 관련 스타일 (특별한 DOM 조작 위한 선택자만 유지) */
 .district-boundary {
   /* 성능 최적화 관련 속성만 유지 - Leaflet 라이브러리와의 충돌때문에 important 유지 */
-  pointer-events: none !important;
-  shape-rendering: crispEdges !important;
-  vector-effect: none !important;
-  visibility: visible !important;
-}
-
-/* 커스텀 마커 z-index 우선순위 */
-.fire-marker--high-priority {
-  z-index: 900;
-}
-
-/* 각 pane의 z-index 조정 - 마커가 항상 맨 위에 보이도록 - Leaflet 라이브러리와의 충돌때문에 일부 important 유지 */
-.leaflet-map-pane {
-  z-index: 200;
-}
-.leaflet-tile-pane {
-  z-index: 100;
-}
-.leaflet-overlay-pane {
-  z-index: 500 !important;
-} /* 웅색 레이어 움직임 */
-.leaflet-shadow-pane {
-  z-index: 600;
-}
-.leaflet-marker-pane {
-  z-index: 10000 !important;
-}
-.leaflet-tooltip-pane {
-  z-index: 10001 !important;
-}
-.leaflet-popup-pane {
-  z-index: 10002 !important;
-}
-.leaflet-zoom-box {
-  z-index: 400;
-}
-
-/* 마커와 관련 요소가 항상 다른 요소보다 위에 표시되도록 - Leaflet 라이브러리와의 충돌때문에 일부 important 유지 */
-.leaflet-marker-icon,
-.leaflet-marker-shadow,
-.leaflet-tooltip {
-  pointer-events: auto !important;
-  z-index: 10000;
-}
-
-/* 마커 이름 레이블 스타일 - 말꼬리 모양 제거 */
-.fire-marker-label {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  color: #333;
-  font-weight: bold;
-  font-size: 11px;
-  white-space: nowrap;
-  padding: 2px 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   pointer-events: none;
-  z-index: 9100;
-  border-radius: 4px;
-}
-
-/* 말꼬리 화살표 제거 */
-.fire-marker-label:before,
-.fire-marker-label:after {
-  display: none;
-}
-
-/* 텍스트 및 마커에 적용되는 동일한 transition 속성 */
-.leaflet-marker-pane > * {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-/* 사용자 정의 마커 스타일 */
-.custom-fire-marker {
-  background: transparent;
-  border: none;
-  pointer-events: auto;
+  shape-rendering: crispEdges;
+  visibility: visible;
 }
 
 .custom-marker-container {
@@ -98,7 +23,7 @@
   border-radius: 50%;
   background-color: var(--color-brand-fire);
   border: 2px solid white;
-  box-shadow: 0 0 3px rgba(0,0,0,0.5);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
 .custom-marker-container:hover {
@@ -129,27 +54,6 @@
   font-size: 11px;
   font-weight: bold;
   border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-/* 애니메이션은 index.css에서 전역으로 정의함 */
-
-/* 페이드 효과 */
-.fade-enter {
-  opacity: 0;
-}
-
-.fade-enter-active {
-  opacity: 1;
-  transition: opacity 300ms;
-}
-
-.fade-exit {
-  opacity: 1;
-}
-
-.fade-exit-active {
-  opacity: 0;
-  transition: opacity 300ms;
 }
 
 /* Leaflet 맵 컴포넌트 스타일 */
@@ -316,26 +220,6 @@
   background-color: #ef4444; /* 빨강색 */
 }
 
-/* Leaflet 관련 스타일 */
-.leaflet-tooltip {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  padding: 5px 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-  font-size: 12px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-/* 툴팁 기본 배경색 제거 */
-.leaflet-tooltip.province-label,
-.leaflet-tooltip.district-label {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-}
-
 /* 팝업 스타일 */
 .fire-popup {
   width: 180px;
@@ -345,9 +229,6 @@
 .fire-popup__title {
   font-weight: bold;
   color: #333;
-}
-
-.fire-tooltip-hover .fire-popup__title {
   font-size: 14px;
   margin: 2px 0 8px 0;
   padding-bottom: 4px;
@@ -358,9 +239,6 @@
 .fire-popup__info {
   margin: 4px 0;
   color: #555;
-}
-
-.fire-tooltip-hover .fire-popup__info {
   font-size: 14px;
   margin: 0 0 6px 0;
 }
@@ -368,9 +246,6 @@
 .fire-popup__label {
   font-weight: bold;
   margin-right: 2px;
-}
-
-.fire-tooltip-hover .fire-popup__label {
   display: inline-block;
   min-width: 48px;
   color: #444;
@@ -381,31 +256,26 @@
 .fire-popup__status--contained,
 .fire-popup__status--extinguished {
   font-weight: bold;
-}
-
-.fire-tooltip-hover .fire-popup__status--active,
-.fire-tooltip-hover .fire-popup__status--contained,
-.fire-tooltip-hover .fire-popup__status--extinguished {
   padding: 2px 5px;
   border-radius: 3px;
   display: inline-block;
-  color: white; /* 글자색을 화이트로 통일 */
+  color: white;
 }
 
 .fire-popup__status--active,
-.fire-tooltip-hover .fire-popup__status--active {
+.fire-popup__status--active {
   background-color: #ef4444;
   color: white;
 }
 
 .fire-popup__status--contained,
-.fire-tooltip-hover .fire-popup__status--contained {
+.fire-popup__status--contained {
   background-color: #f97316;
   color: white;
 }
 
 .fire-popup__status--extinguished,
-.fire-tooltip-hover .fire-popup__status--extinguished {
+.fire-popup__status--extinguished {
   background-color: #22c55e;
   color: white;
 }
@@ -415,40 +285,6 @@
   font-style: italic;
   color: #666;
   font-size: 0.9em;
-}
-
-/* 대응단계 스타일 */
-.fire-tooltip-hover .fire-popup__response--초기대응,
-.fire-tooltip-hover .fire-popup__response--초기진화 {
-  background-color: #0080ff;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.fire-tooltip-hover .fire-popup__response--1 {
-  background-color: #eab308;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.fire-tooltip-hover .fire-popup__response--2 {
-  background-color: #f97316;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.fire-tooltip-hover .fire-popup__response--3 {
-  background-color: #ef4444;
-  color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-block;
 }
 
 .province-label-container {
@@ -502,35 +338,4 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-}
-
-/* 마커 위치 텍스트 스타일 */
-.fire-marker__location {
-  font-size: 11px;
-  color: #333;
-  font-weight: bold;
-  text-align: center;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 4px;
-  padding: 2px 4px;
-  white-space: nowrap;
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  text-shadow: 0 0 1px white;
-  z-index: 1000;
-  bottom: -18px;
-  line-height: 1.2;
-  letter-spacing: -0.3px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* GeoJSON 관련 스타일 */
-.leaflet-interactive {
-  cursor: pointer;
 }
