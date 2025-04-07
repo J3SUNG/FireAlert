@@ -2,7 +2,6 @@
 /* 이 CSS 파일에서는 마커, 레이블, 레이아웃 관련 스타일만 유지합니다. */
 
 /* 기본 시도 레이어 관련 스타일 (특별한 DOM 조작 위한 선택자만 유지) */
-.forest-fire-map__province-boundary,
 .province-boundary {
   pointer-events: none;
   shape-rendering: crispEdges;
@@ -10,7 +9,6 @@
 }
 
 /* 기본 시군구 레이어 관련 스타일 (특별한 DOM 조작 위한 선택자만 유지) */
-.forest-fire-map__district-boundary,
 .district-boundary {
   /* 성능 최적화 관련 속성만 유지 - Leaflet 라이브러리와의 충돌때문에 important 유지 */
   pointer-events: none;
@@ -18,8 +16,7 @@
   visibility: visible;
 }
 
-.forest-fire-map__marker,
-.custom-marker-container {
+.custom-marker {
   cursor: pointer;
   transition: transform 0.2s ease;
   position: relative;
@@ -29,32 +26,21 @@
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
-.forest-fire-map__marker:hover,
-.custom-marker-container:hover {
+.custom-marker:hover {
   transform: scale(1.1);
 }
 
 /* 활성 마커 애니메이션 */
-.forest-fire-map__marker--active,
-.custom-marker-container.active {
+.custom-marker.active {
   animation: pulse-shadow 1.5s infinite;
 }
 
-/* 마커 아이콘 스타일 */
-.forest-fire-map__marker-icon {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
 /* 마커 래퍼 스타일 */
-.forest-fire-map__marker-wrapper,
 .marker-wrapper {
   position: relative;
 }
 
 /* 마커 위치 텍스트 - 인라인 스타일로부터 변환 */
-.forest-fire-map__marker-name,
 .marker-name {
   position: absolute;
   top: 100%;
@@ -94,11 +80,11 @@
   z-index: 10;
 }
 
-.forest-fire-map__loading-container {
+.forest-fire-map__loading-content {
   text-align: center;
 }
 
-.forest-fire-map__loading-spinner {
+.forest-fire-map__spinner {
   display: inline-block;
   height: 32px;
   width: 32px;
@@ -108,13 +94,12 @@
   animation: spin 1s linear infinite;
 }
 
-.forest-fire-map__loading-message {
+.forest-fire-map__loading-text {
   margin-top: 8px;
   color: #4b5563;
 }
 
 /* 범례 스타일 */
-.forest-fire-map__legend,
 .map-legend {
   background-color: white;
   padding: 12px;
@@ -124,7 +109,6 @@
   min-width: 220px;
 }
 
-.forest-fire-map__legend-title,
 .map-legend__title {
   margin: 0 0 10px 0;
   font-size: 14px;
@@ -135,7 +119,6 @@
   text-align: center;
 }
 
-.forest-fire-map__legend-item,
 .map-legend__item {
   display: flex;
   align-items: center;
@@ -145,44 +128,36 @@
   transition: all 0.2s ease;
 }
 
-.forest-fire-map__legend-item:hover,
 .map-legend__item:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.forest-fire-map__legend-item:hover .forest-fire-map__legend-icon,
 .map-legend__item:hover .map-legend__icon {
   transform: scale(1.1);
 }
 
-.forest-fire-map__legend-item:last-child,
 .map-legend__item:last-child {
   margin-bottom: 0;
 }
 
 /* 각 단계별 배경색 */
-.forest-fire-map__legend-item--initial,
 .map-legend__item--initial {
   background-color: rgba(0, 128, 255, 0.1);
 }
 
-.forest-fire-map__legend-item--level1,
 .map-legend__item--level1 {
   background-color: rgba(234, 179, 8, 0.1);
 }
 
-.forest-fire-map__legend-item--level2,
 .map-legend__item--level2 {
   background-color: rgba(249, 115, 22, 0.1);
 }
 
-.forest-fire-map__legend-item--level3,
 .map-legend__item--level3 {
   background-color: rgba(239, 68, 68, 0.1);
 }
 
-.forest-fire-map__legend-content,
 .map-legend__content {
   display: flex;
   flex: 1;
@@ -190,14 +165,12 @@
   align-items: center;
 }
 
-.forest-fire-map__legend-label,
 .map-legend__label {
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
 
-.forest-fire-map__legend-count,
 .map-legend__count {
   font-weight: bold;
   font-size: 14px;
@@ -212,7 +185,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.forest-fire-map__legend-icon,
 .map-legend__icon {
   border-radius: 50%;
   border: 2px solid white;
@@ -221,10 +193,6 @@
   transition: transform 0.2s ease;
 }
 
-.forest-fire-map__legend-icon--initial,
-.forest-fire-map__legend-icon--level1,
-.forest-fire-map__legend-icon--level2,
-.forest-fire-map__legend-icon--level3,
 .map-legend__icon--initial,
 .map-legend__icon--level1,
 .map-legend__icon--level2,
@@ -236,110 +204,28 @@
 }
 
 /* 범례 아이콘 색상 */
-.forest-fire-map__legend-icon--initial,
 .map-legend__icon--initial {
   background-color: #0080ff; /* 하늘색 */
 }
 
-.forest-fire-map__legend-icon--level1,
 .map-legend__icon--level1 {
   background-color: #eab308; /* 노랑색 */
 }
 
-.forest-fire-map__legend-icon--level2,
 .map-legend__icon--level2 {
   background-color: #f97316; /* 주황색 */
 }
 
-.forest-fire-map__legend-icon--level3,
 .map-legend__icon--level3 {
   background-color: #ef4444; /* 빨강색 */
 }
 
-/* 팝업 스타일 */
-.forest-fire-map__popup,
-.fire-popup {
-  width: 200px;
-  padding: 2px;
-}
-
-.forest-fire-map__popup-title,
-.fire-popup__title {
-  font-weight: bold;
-  color: #333;
-  font-size: 14px;
-  margin: 2px 0 8px 0;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #eee;
-  color: #1e40af;
-}
-
-.forest-fire-map__popup-info,
-.fire-popup__info {
-  margin: 4px 0;
-  color: #555;
-  font-size: 14px;
-  margin: 0 0 6px 0;
-}
-
-.forest-fire-map__popup-label,
-.fire-popup__label {
-  font-weight: bold;
-  margin-right: 2px;
-  display: inline-block;
-  min-width: 48px;
-  color: #444;
-}
-
-/* 상태 및 대응단계 스타일 */
-.forest-fire-map__popup-status--active,
-.forest-fire-map__popup-status--contained,
-.forest-fire-map__popup-status--extinguished,
-.fire-popup__status--active,
-.fire-popup__status--contained,
-.fire-popup__status--extinguished {
-  font-weight: bold;
-  padding: 2px 5px;
-  border-radius: 3px;
-  display: inline-block;
-  color: white;
-}
-
-.forest-fire-map__popup-status--active,
-.fire-popup__status--active {
-  background-color: #ef4444;
-  color: white;
-}
-
-.forest-fire-map__popup-status--contained,
-.fire-popup__status--contained {
-  background-color: #f97316;
-  color: white;
-}
-
-.forest-fire-map__popup-status--extinguished,
-.fire-popup__status--extinguished {
-  background-color: #22c55e;
-  color: white;
-}
-
-.forest-fire-map__popup-description,
-.fire-popup__description {
-  margin: 8px 0 0;
-  font-style: italic;
-  color: #666;
-  font-size: 0.9em;
-}
-
-.forest-fire-map__province-label-container,
-.province-label-container {
-  z-index: 600 !important;
+.province-label__container {
   background: transparent;
   border: none;
 }
 
 /* 시도 레이블 스타일 */
-.forest-fire-map__province-label,
 .province-label {
   background-color: transparent;
   border: none;
@@ -360,15 +246,12 @@
   transform: translate(-50%, -50%);
 }
 
-.forest-fire-map__district-label-container,
 .district-label-container {
-  z-index: 500 !important;
   background: transparent;
   border: none;
 }
 
 /* 시군구 레이블 스타일 */
-.forest-fire-map__district-label,
 .district-label {
   background-color: transparent;
   border: none;

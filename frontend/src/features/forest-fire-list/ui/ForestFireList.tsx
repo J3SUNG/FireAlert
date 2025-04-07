@@ -36,25 +36,25 @@ export const ForestFireList: FC<ForestFireListProps> = ({
         <div className="forest-fire-list__filter-container">
           <div className="forest-fire-list__button-group">
             <button 
-              className={filter === 'all' ? 'fire-button fire-button--small fire-button--active-all' : 'fire-button fire-button--small'}
+              className={filter === 'all' ? 'fire-alert__button fire-alert__button--small fire-alert__button--active-all' : 'fire-alert__button fire-alert__button--small'}
               onClick={() => { if (onFilterChange) onFilterChange('all'); }}
             >
               전체
             </button>
             <button 
-              className={filter === 'active' ? 'fire-button fire-button--small fire-button--active-red' : 'fire-button fire-button--small'}
+              className={filter === 'active' ? 'fire-alert__button fire-alert__button--small fire-alert__button--active-red' : 'fire-alert__button fire-alert__button--small'}
               onClick={() => { if (onFilterChange) onFilterChange('active'); }}
             >
               진행중
             </button>
             <button 
-              className={filter === 'contained' ? 'fire-button fire-button--small fire-button--active-orange' : 'fire-button fire-button--small'}
+              className={filter === 'contained' ? 'fire-alert__button fire-alert__button--small fire-alert__button--active-orange' : 'fire-alert__button fire-alert__button--small'}
               onClick={() => { if (onFilterChange) onFilterChange('contained'); }}
             >
               통제중
             </button>
             <button 
-              className={filter === 'extinguished' ? 'fire-button fire-button--small fire-button--active-green' : 'fire-button fire-button--small'}
+              className={filter === 'extinguished' ? 'fire-alert__button fire-alert__button--small fire-alert__button--active-green' : 'fire-alert__button fire-alert__button--small'}
               onClick={() => { if (onFilterChange) onFilterChange('extinguished'); }}
             >
               진화완료

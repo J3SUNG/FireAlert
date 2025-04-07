@@ -13,8 +13,6 @@ body,
 #root {
   height: 100%;
   width: 100%;
-  margin: 0;
-  padding: 0;
   overflow: hidden;
 }
 
@@ -27,6 +25,8 @@ body {
 }
 
 /* 애니메이션 - 전역으로 한 번만 정의 */
+
+/* 로딩 회전 애니메이션 */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -36,7 +36,7 @@ body {
   }
 }
 
-/* 플로잉 효과의 pulse 애니메이션 */
+/* 마커용 pulse 애니메이션 */
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -52,7 +52,7 @@ body {
   }
 }
 
-/* 상태 표시용 pulse 애니메이션 - 상태 부분에 사용 */
+/* 상태 표시용 pulse 애니메이션 */
 @keyframes pulse-shadow {
   0% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);

@@ -9,9 +9,9 @@ export const MapLoadingIndicator: React.FC<MapLoadingIndicatorProps> = ({ isLoad
   
   return (
     <div className="forest-fire-map__loading">
-      <div className="forest-fire-map__loading-content">
-        <div className="forest-fire-map__spinner"></div>
-        <p className="forest-fire-map__loading-text">지도를 불러오는 중...</p>
+      <div className="forest-fire-map__loading-container">
+        <div className="forest-fire-map__loading-spinner"></div>
+        <p className="forest-fire-map__loading-message">지도를 불러오는 중...</p>
       </div>
     </div>
   );

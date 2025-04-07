@@ -77,41 +77,41 @@ function createTooltipContent(fire: ForestFireData): string {
     fire.status === "active" ? "진행중" : fire.status === "contained" ? "통제중" : "진화완료";
 
   return `
-    <div class="fire-popup">
-      <div class="fire-popup__title">${fire.location || "알 수 없는 위치"}</div>
-      <div class="fire-popup__info">
-        <span class="fire-popup__label">상태:</span>
-        <span class="fire-popup__status--${fire.status}">${status}</span>
+    <div class="forest-fire-map__popup">
+      <div class="forest-fire-map__popup-title">${fire.location || "알 수 없는 위치"}</div>
+      <div class="forest-fire-map__popup-info">
+        <span class="forest-fire-map__popup-label">상태:</span>
+        <span class="forest-fire-map__popup-status--${fire.status}">${status}</span>
       </div>
       ${
         fire.responseLevelName
           ? `
-      <div class="fire-popup__info">
-        <span class="fire-popup__label">대응:</span>
+      <div class="forest-fire-map__popup-info">
+        <span class="forest-fire-map__popup-label">대응:</span>
         <span>${fire.responseLevelName}</span>
       </div>`
           : ""
       }
-      <div class="fire-popup__info">
-        <span class="fire-popup__label">발생일:</span> ${fire.date || "정보 없음"}
+      <div class="forest-fire-map__popup-info">
+        <span class="forest-fire-map__popup-label">발생일:</span> ${fire.date || "정보 없음"}
       </div>
-      <div class="fire-popup__info">
-        <span class="fire-popup__label">면적:</span> ${
+      <div class="forest-fire-map__popup-info">
+        <span class="forest-fire-map__popup-label">면적:</span> ${
           fire.affectedArea ? `${fire.affectedArea}ha` : "정보 없음"
         }
       </div>
       ${
         fire.extinguishPercentage
           ? `
-      <div class="fire-popup__info">
-        <span class="fire-popup__label">진화율:</span> ${fire.extinguishPercentage}%
+      <div class="forest-fire-map__popup-info">
+        <span class="forest-fire-map__popup-label">진화율:</span> ${fire.extinguishPercentage}%
       </div>`
           : ""
       }
       ${
         fire.description
           ? `
-      <div class="fire-popup__description">${fire.description}</div>`
+      <div class="forest-fire-map__popup-description">${fire.description}</div>`
           : ""
       }
     </div>
@@ -164,12 +164,12 @@ export function createFireMarker(
 
   // 마커 이름 표시
   const locationName = formatLocationName(fire);
-  const nameHtml = `<div class="marker-name">${locationName}</div>`;
+  const nameHtml = `<div class="forest-fire-map__marker-name">${locationName}</div>`;
 
   // 마커 아이콘 생성 (circleMarker 대신 divIcon 사용)
   const iconHtml = `
-    <div class="marker-wrapper">
-      <div class="custom-marker-container ${isActive ? "active" : ""}" style="
+    <div class="forest-fire-map__marker-wrapper">
+      <div class="forest-fire-map__marker ${isActive ? "forest-fire-map__marker--active" : ""}" style="
         width: ${radius * 2}px;
         height: ${radius * 2}px;
         background-color: ${color};
@@ -182,7 +182,7 @@ export function createFireMarker(
 
   const icon = L.divIcon({
     html: iconHtml,
-    className: "custom-fire-marker",
+    className: "forest-fire-map__marker-icon",
     iconSize: [radius * 2 + 4, radius * 2 + 20], // 높이를 늘려 이름 텍스트를 포함
     iconAnchor: [radius + 2, radius + 2],
   });

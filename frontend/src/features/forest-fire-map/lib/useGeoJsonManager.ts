@@ -274,17 +274,20 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
         const provinces = getProvinceLayer();
         const districts = getDistrictLayer();
 
+        if (districts && map.hasLayer(districts)) {
+          districts.bringToBack();
+        }
+        
         if (provinces && map.hasLayer(provinces)) {
           provinces.bringToFront();
-
-          if (districts && map.hasLayer(districts)) {
-            districts.bringToFront();
-          }
         }
       };
 
       // 이벤트 리스너 등록
       map.on("moveend", maintainLayerOrder);
+      
+      // 초기 레이어 순서 적용
+      maintainLayerOrder();
     } catch (error) {
       console.error("시군구 GeoJSON 로드 오류:", error);
       throw error;
@@ -303,6 +306,18 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
 
         // 시군구 GeoJSON 로드
         await loadDistricts();
+
+        // 레이어 순서 조정 
+        const provinces = getProvinceLayer();
+        const districts = getDistrictLayer();
+        
+        if (districts && map.hasLayer(districts)) {
+          districts.bringToBack();
+        }
+        
+        if (provinces && map.hasLayer(provinces)) {
+          provinces.bringToFront();
+        }
 
         // 로드 완료 상태 설정
         setIsGeoJsonLoaded(true);
