@@ -7,8 +7,10 @@ import { geoJsonService } from "./geoJsonService";
 let cachedFireData: ForestFireData[] | null = null;
 /** 캐시 타임스탬프 */
 let cacheTimestamp: number | null = null;
-/** 캐시 유효 기간 (5분) */
-const CACHE_DURATION = 5 * 60 * 1000;
+import { CACHE_DURATION_MS, FIRE_LIST_ENDPOINT, GEO_JSON_PATH } from '../constants/api';
+
+/** 캐시 유효 기간 (상수에서 가져옴) */
+const CACHE_DURATION = CACHE_DURATION_MS;
 
 /**
  * 데이터 가져오기 유틸리티 함수
@@ -32,7 +34,7 @@ const isCacheValid = (): boolean => {
   if (!cachedFireData || !cacheTimestamp) return false;
 
   const now = Date.now();
-  return now - cacheTimestamp < CACHE_DURATION;
+  return now - cacheTimestamp < CACHE_DURATION_MS;
 };
 
 /**
@@ -135,7 +137,7 @@ const processForestFireData = async (
 ): Promise<ForestFireData[]> => {
   const processedData: ForestFireData[] = [];
 
-  const geoJsonData = await geoJsonService.loadGeoJsonData("/assets/map/gadm41_KOR_2.json");
+  const geoJsonData = await geoJsonService.loadGeoJsonData(GEO_JSON_PATH);
   if (!geoJsonData) {
     return [];
   }
@@ -198,14 +200,18 @@ export const forestFireService = {
     }
 
     try {
-      const data = await fetchData<Record<string, unknown>[]>("http://localhost:4000/api/fireList");
+      const data = await fetchData<Record<string, unknown>[]>(FIRE_LIST_ENDPOINT);
       const processedData = await processForestFireData(data);
 
       saveToCache(processedData);
       return processedData;
-    } catch (_) {
-      // 에러 발생 시에도 빈 배열 반환
-      return [];
+    } catch (error) {
+      // 에러를 표준화하여 throw
+      throw new Error(
+        error instanceof Error
+          ? `산불 데이터를 가져오는 중 오류: ${error.message}`
+          : "산불 데이터를 가져오는 중 오류가 발생했습니다."
+      );
     }
   },
 

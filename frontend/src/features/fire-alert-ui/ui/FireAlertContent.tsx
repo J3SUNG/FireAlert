@@ -3,6 +3,7 @@ import { FireAlertContentProps } from "../model/types";
 import { ForestFireMap } from "../../../features/forest-fire-map";
 import { FireStatusSummary } from "../../../shared";
 import { FireAlertSidebar } from "./FireAlertSidebar";
+import { LOADING_MESSAGE, ERROR_MESSAGES, BUTTON_TEXT } from "../../../shared/constants";
 
 /**
  * 산불 알림 컨텐츠 컴포넌트
@@ -27,7 +28,7 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
       <div className="fire-alert__content">
         <div className="fire-alert__loading-container">
           <div className="fire-alert__spinner"></div>
-          <p className="fire-alert__loading-text">산불 데이터를 불러오는 중...</p>
+          <p className="fire-alert__loading-text">{LOADING_MESSAGE}</p>
         </div>
       </div>
     );
@@ -37,9 +38,9 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
     return (
       <div className="fire-alert__content">
         <div className="fire-alert__error-container">
-          <p className="fire-alert__error-text">{error}</p>
+          <p className="fire-alert__error-text">{error || ERROR_MESSAGES.default}</p>
           <button className="fire-alert__retry-button" onClick={handleReload}>
-            다시 시도
+            {BUTTON_TEXT.retry}
           </button>
         </div>
       </div>

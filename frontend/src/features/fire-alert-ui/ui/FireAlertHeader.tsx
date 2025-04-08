@@ -1,5 +1,6 @@
 import React from "react";
 import { FireAlertHeaderProps } from "../model/types";
+import { APP_TITLE } from "../../../shared/constants";
 
 /**
  * 산불 알림 헤더 컴포넌트
@@ -21,9 +22,9 @@ export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
       <div className="fire-alert__logo-container">
         <div className="fire-alert__logo-icon">🔥</div>
         <h1 className="fire-alert__logo-text">
-          <span className="fire-alert__logo-text--fire">불씨</span>알림
+          <span className="fire-alert__logo-text--fire">{APP_TITLE.main.split('알림')[0]}</span>{APP_TITLE.main.split('불씨')[1]}
         </h1>
-        <span className="fire-alert__subtitle">전국 산불 모니터링 시스템</span>
+        <span className="fire-alert__subtitle">{APP_TITLE.subtitle}</span>
       </div>
 
       <div className="fire-alert__filter-container">
