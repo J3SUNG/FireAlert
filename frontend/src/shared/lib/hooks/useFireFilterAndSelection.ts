@@ -1,12 +1,13 @@
 import { useState, useMemo, useCallback } from "react";
-import { ForestFireData } from "../model/forestFire";
+import { ForestFireData } from "../../model/forestFire";
+import { FireFilterType } from "../../model/types";
 
 /**
  * 산불 필터링 및 선택 관리 훅
  * 산불 데이터의 필터링과 선택을 관리하는 훅입니다.
  * 상태별 필터링, 산불 선택 기능, 버튼 클래스 관리 등을 제공합니다.
  * 
- * @param {ForestFireData[]} fires 산불 데이터 배열
+ * @param fires 산불 데이터 배열
  * @returns 산불 필터링과 선택 관리에 필요한 상태와 함수들
  */
 export function useFireFilterAndSelection(fires: ForestFireData[]) {
@@ -14,9 +15,8 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
    * 선택된 필터 상태
    * 기본값은 "active"(진화중) 상태로 설정
    */
-  const [selectedFilter, setSelectedFilter] = useState<
-    "all" | "active" | "contained" | "extinguished"
-  >("active"); // 기본값을 "active"(진화중)로 변경
+  const [selectedFilter, setSelectedFilter] = useState<FireFilterType>("active");
+  
   /**
    * 선택된 산불 ID 상태
    */
@@ -36,7 +36,7 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
    * 산불을 선택하거나 선택 해제하는 함수입니다.
    * 이미 선택된 산불을 다시 클릭하면 선택이 해제됩니다.
    * 
-   * @param {ForestFireData} fire 선택한 산불 데이터
+   * @param fire 선택한 산불 데이터
    */
   const handleFireSelect = useCallback((fire: ForestFireData): void => {
     setSelectedFireId((prevId) => (prevId === fire.id ? undefined : fire.id));
@@ -46,11 +46,11 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
    * 필터 버튼 CSS 클래스 생성 함수
    * 필터 상태에 따라 적절한 CSS 클래스를 생성합니다.
    * 
-   * @param {"all" | "active" | "contained" | "extinguished"} filter 필터 유형
-   * @returns {string} CSS 클래스 문자열
+   * @param filter 필터 유형
+   * @returns CSS 클래스 문자열
    */
   const getButtonClass = useMemo(() => {
-    return (filter: "all" | "active" | "contained" | "extinguished"): string => {
+    return (filter: FireFilterType): string => {
       const className = "fire-button";
   
       if (filter === selectedFilter) {
@@ -69,7 +69,7 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
    * 필터별 버튼에 표시할 레이블을 생성합니다.
    * 각 카테고리의 산불 개수를 표시합니다.
    * 
-   * @param {{ total: number; active: number; contained: number; extinguished: number }} counts 상태별 카운트
+   * @param counts 상태별 카운트
    * @returns 필터별 버튼 레이블 객체
    */
   const getFilterButtonLabels = useMemo(() => {
@@ -90,21 +90,17 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
    * 필터 변경 처리 함수
    * 필터 변경 시 선택된 산불을 해제합니다.
    * 
-   * @param {"all" | "active" | "contained" | "extinguished"} newFilter 새 필터 값
+   * @param newFilter 새 필터 값
    */
-  const handleFilterChange = useCallback((newFilter: "all" | "active" | "contained" | "extinguished") => {
+  const handleFilterChange = useCallback((newFilter: FireFilterType) => {
     setSelectedFilter(newFilter);
     // 필터 변경시 선택된 산불 해제
     setSelectedFireId(undefined);
   }, []);
 
-  /**
-   * 필터링 및 선택 관리에 필요한 상태와 함수들 반환
-   * @returns 필터링과 선택 관리에 필요한 상태와 함수들
-   */
   return {
     selectedFilter,
-    setSelectedFilter: handleFilterChange, // 기본 setter 대신 새 함수 사용
+    setSelectedFilter: handleFilterChange,
     selectedFireId,
     filteredData,
     handleFireSelect,

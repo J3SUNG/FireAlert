@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { ForestFireData } from "../../../shared/model/forestFire";
-import { forestFireApi } from "./forestFireApi";
+import { ForestFireData } from "../../../../shared/model/forestFire";
+import { forestFireService } from "../../../../shared/api/forestFireService";
 import {
   calculateResponseLevelCounts,
   calculateStatusCounts,
-} from "../../../shared/lib/forestFireUtils";
-import { useAsyncOperation } from "../../../shared/lib/errors";
+} from "../../../../shared/lib/forestFireUtils";
+import { useAsyncOperation } from "../../../../shared/lib/errors";
 
 /**
  * 산불 데이터를 가져오고 관리하는 커스텀 훅
@@ -17,7 +17,7 @@ import { useAsyncOperation } from "../../../shared/lib/errors";
 export function useForestFireData() {
   const [fires, setFires] = useState<ForestFireData[]>([]);
   
-  // 새 에러 처리 훅 사용
+  // 에러 처리 훅 사용
   const { 
     isLoading, 
     hasError, 
@@ -36,10 +36,10 @@ export function useForestFireData() {
   const loadData = useCallback(async (forceRefresh = false): Promise<void> => {
     const result = await execute(async () => {
       try {
-        const data = await forestFireApi.getForestFires(forceRefresh);
+        // forestFireApi 대신 직접 forestFireService 사용
+        const data = await forestFireService.getForestFires(forceRefresh);
         return data || [];
       } catch (err) {
-        // 표준 Error로 변환하여 던지기
         throw new Error(
           err instanceof Error 
             ? err.message 
@@ -73,7 +73,8 @@ export function useForestFireData() {
    */
   const handleReload = useCallback((): void => {
     clearError();
-    forestFireApi.clearCache();
+    // forestFireApi 대신 직접 forestFireService 사용
+    forestFireService.clearCache();
     void loadData(true);
   }, [loadData, clearError]);
 

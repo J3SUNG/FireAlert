@@ -45,9 +45,6 @@ export function useCurrentTime() {
     });
   };
 
-  /**
-   * 현재 시간과 포맷팅 함수 반환
-   */
   return {
     currentTime,
     formatDate
