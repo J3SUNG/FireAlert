@@ -6,6 +6,7 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const { dummy } = require("./dummy");
 
 const app = express();
 app.use(cors());
@@ -32,6 +33,9 @@ app.get("/api/fireList", async (req, res) => {
         }
       );
       data = response.data;
+
+      // 더미 데이터 사용
+      data = dummy;
     } catch (apiError) {
       return res.json([]);
     }
