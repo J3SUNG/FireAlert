@@ -1,7 +1,5 @@
-/* 변수 임포트 */
 @import "./variables/colors.css";
 
-/* 기본 스타일 초기화 */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -24,9 +22,6 @@ body {
   line-height: 1.5;
 }
 
-/* 애니메이션 - 전역으로 한 번만 정의 */
-
-/* 로딩 회전 애니메이션 */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -36,7 +31,6 @@ body {
   }
 }
 
-/* 마커용 pulse 애니메이션 */
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -52,7 +46,6 @@ body {
   }
 }
 
-/* 상태 표시용 pulse 애니메이션 */
 @keyframes pulse-shadow {
   0% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);

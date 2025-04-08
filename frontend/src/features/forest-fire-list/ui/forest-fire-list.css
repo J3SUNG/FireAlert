@@ -1,9 +1,5 @@
-/* 산불 목록 컴포넌트 스타일 (BEM 방식) */
-
-/* ForestFireList 컴포넌트 */
 .forest-fire-list {
   height: 100%;
-  /* font-family is already defined in index.css */
 }
 
 .forest-fire-list__filter-container {
@@ -12,7 +8,6 @@
   background-color: var(--color-bg-tertiary);
 }
 
-/* 버튼 그룹 스타일 */
 .forest-fire-list__button-group {
   display: flex;
   gap: 8px;
@@ -21,9 +16,6 @@
   border-radius: 18px;
   background: var(--color-bg-filter);
 }
-
-/* 리스트용 버튼은 공통 fire-alert__button 스타일 사용 */
-/* 추가 스타일이 필요하다면 여기에 추가 */
 
 .forest-fire-list__content {
   padding: 12px;
@@ -51,7 +43,6 @@
   color: var(--color-text-tertiary);
 }
 
-/* ForestFireItem 컴포넌트 */
 .forest-fire-item {
   padding: 14px;
   border: 1px solid var(--color-border);
@@ -147,8 +138,6 @@
   align-items: center;
   font-weight: 500;
 }
-
-/* 상태 배지는 배경색 없이 아이콘으로만 표시 */
 
 .forest-fire-item__status-icon {
   display: inline-block;

@@ -1,15 +1,12 @@
 :root {
-  /* 기본 색상 */
   --color-white: #ffffff;
   --color-black: #000000;
   
-  /* 텍스트 색상 */
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
   --color-text-tertiary: #6b7280;
   --color-text-quaternary: #64748b;
   
-  /* 배경 색상 */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f8fafc;
   --color-bg-tertiary: #f9fafb;
@@ -17,30 +14,24 @@
   --color-bg-button: #e5e7eb;
   --color-selected-bg: #f0f7ff;
   
-  /* 테두리 색상 */
   --color-border: #e5e7eb;
   
-  /* 브랜드 색상 */
-  --color-brand-primary: #3b82f6; /* 파란색 */
-  --color-brand-fire: #dc2626; /* 빨간색 */
+  --color-brand-primary: #3b82f6;
+  --color-brand-fire: #dc2626;
   
-  /* 그림자 */
   --color-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
   --color-shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --color-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
 
-  /* 상태 색상 */
-  --color-status-active: #ef4444; /* 진행중 - 빨간색 */
-  --color-status-contained: #f97316; /* 통제중 - 주황색 */
-  --color-status-extinguished: #22c55e; /* 진화완료 - 초록색 */
+  --color-status-active: #ef4444;
+  --color-status-contained: #f97316;
+  --color-status-extinguished: #22c55e;
   
-  /* 레벨 색상 */
-  --color-initial: #0080ff; /* 초기대응 - 파란색 */
-  --color-level1: #eab308; /* 1단계 - 노란색 */
-  --color-level2: #f97316; /* 2단계 - 주황색 */
-  --color-level3: #ef4444; /* 3단계 - 빨간색 */
+  --color-initial: #0080ff;
+  --color-level1: #eab308;
+  --color-level2: #f97316;
+  --color-level3: #ef4444;
   
-  /* 심각도 색상 (대응단계) */
   --color-severity-critical-bg: #fee2e2;
   --color-severity-critical-text: #b91c1c;
   --color-severity-high-bg: #ffedd5;
@@ -50,14 +41,11 @@
   --color-severity-low-bg: #dbeafe;
   --color-severity-low-text: #1e40af;
   
-  /* 진화완료 색상 */
   --color-extinguished-bg: #dcfce7;
   --color-extinguished-text: #166534;
   
-  /* 로딩 색상 */
   --color-loading-border: #f3f3f3;
   --color-loading-spinner: #3b82f6;
   
-  /* 오류 색상 */
   --color-error: #ef4444;
 }
