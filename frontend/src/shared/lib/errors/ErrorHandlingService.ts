@@ -5,8 +5,9 @@ import {
   ErrorHandler,
   ErrorHandlingService,
   ErrorLoggingOptions,
-  ErrorSeverity
-} from './errorTypes';
+  ErrorSeverity,
+  ErrorType
+} from './types';
 
 /**
  * 공통 기본 에러 처리 서비스 구현
@@ -25,7 +26,21 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
     [ErrorCategory.VALIDATION]: '입력 데이터에 문제가 있습니다. 입력 값을 확인해 주세요.',
     [ErrorCategory.UI]: '화면 표시 중 오류가 발생했습니다.',
     [ErrorCategory.DATA]: '데이터 처리 중 오류가 발생했습니다.',
+    [ErrorCategory.MAP]: '지도 로딩 중 오류가 발생했습니다.',
     [ErrorCategory.GENERAL]: '오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+  };
+  
+  // 타입별 카테고리 매핑
+  private readonly typeToCategoryMap: Record<ErrorType, ErrorCategory> = {
+    [ErrorType.UNKNOWN]: ErrorCategory.GENERAL,
+    [ErrorType.NETWORK]: ErrorCategory.NETWORK,
+    [ErrorType.AUTH]: ErrorCategory.API,
+    [ErrorType.VALIDATION]: ErrorCategory.VALIDATION,
+    [ErrorType.NOT_FOUND]: ErrorCategory.API,
+    [ErrorType.MAP_LOAD_FAILED]: ErrorCategory.MAP,
+    [ErrorType.FIRE_DATA_FETCH_FAILED]: ErrorCategory.DATA,
+    [ErrorType.GEOLOCATION_UNAVAILABLE]: ErrorCategory.MAP,
+    [ErrorType.PERMISSION_DENIED]: ErrorCategory.MAP
   };
   
   constructor(options?: ErrorLoggingOptions) {
@@ -37,7 +52,7 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   /**
    * 에러 처리
    */
-  handleError(error: AppError | Error, context?: ErrorContext): void {
+  handleError(error: AppError | Error | unknown, context?: ErrorContext): void {
     // 표준화된 AppError 객체로 변환
     const appError = this.normalizeError(error, context);
     
@@ -74,16 +89,28 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   /**
    * 새 에러 생성
    */
-  createError(message: string, options: Partial<AppError> = {}): AppError {
+  createError(
+    message: string, 
+    type: ErrorType = ErrorType.UNKNOWN,
+    options: Partial<Omit<AppError, 'message' | 'type' | 'timestamp'>> = {}
+  ): AppError {
+    const category = options.category || this.typeToCategoryMap[type] || ErrorCategory.GENERAL;
+    
     return {
       message,
+      type,
+      category,
       severity: options.severity || ErrorSeverity.ERROR,
-      category: options.category || ErrorCategory.GENERAL,
-      originalError: options.originalError,
-      context: options.context || { timestamp: Date.now() },
       code: options.code,
-      recoverable: options.recoverable !== undefined ? options.recoverable : true,
-      retryable: options.retryable !== undefined ? options.retryable : true
+      timestamp: Date.now(),
+      context: options.context || {},
+      originalError: options.originalError,
+      options: options.options || {
+        showUser: true,
+        retryable: true,
+        toast: true,
+        log: true
+      }
     };
   }
   
@@ -102,15 +129,19 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
     
     // 카테고리에 맞는 친화적 메시지 반환
     // 개발자용 상세 메시지는 숨기고 사용자용 메시지 제공
+    if (error.options?.showUser) {
+      return `${prefix}${error.message}`;
+    }
+    
     return `${prefix}${this.userMessages[error.category] || error.message}`;
   }
   
   /**
    * 에러 객체 정규화 (표준 형식으로 변환)
    */
-  private normalizeError(error: AppError | Error, context?: ErrorContext): AppError {
+  private normalizeError(error: unknown, context?: ErrorContext): AppError {
     // 이미 AppError 형식인 경우
-    if ('category' in error && 'severity' in error) {
+    if (this.isAppError(error)) {
       return {
         ...error,
         context: {
@@ -118,73 +149,123 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
           ...context,
           timestamp: context?.timestamp || error.context?.timestamp || Date.now()
         }
-      } as AppError;
+      };
     }
     
-    // 일반 Error 객체를 AppError로 변환
-    return {
-      message: error.message || 'Unknown error',
-      severity: ErrorSeverity.ERROR,
-      category: this.guessErrorCategory(error),
-      originalError: error,
-      context: {
-        ...context,
-        timestamp: context?.timestamp || Date.now()
-      },
-      recoverable: true,
-      retryable: true
-    };
+    // Error 객체인 경우
+    if (error instanceof Error) {
+      const errorType = this.guessErrorType(error);
+      return this.createError(
+        error.message || 'Unknown error', 
+        errorType,
+        {
+          category: this.typeToCategoryMap[errorType],
+          severity: ErrorSeverity.ERROR,
+          context: {
+            ...context,
+            timestamp: context?.timestamp || Date.now()
+          },
+          originalError: error,
+          options: {
+            showUser: true,
+            retryable: true,
+            toast: true,
+            log: true
+          }
+        }
+      );
+    }
+    
+    // 기타 타입의 에러
+    return this.createError(
+      typeof error === 'string' ? error : 'An unknown error occurred',
+      ErrorType.UNKNOWN,
+      {
+        context,
+        originalError: error
+      }
+    );
   }
   
   /**
-   * 에러 카테고리 추측
+   * 객체가 AppError 타입인지 확인
    */
-  private guessErrorCategory(error: Error): ErrorCategory {
+  private isAppError(obj: unknown): obj is AppError {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'type' in obj &&
+      'message' in obj &&
+      'category' in obj &&
+      'severity' in obj &&
+      'timestamp' in obj
+    );
+  }
+  
+  /**
+   * 에러 타입 추측
+   */
+  private guessErrorType(error: Error): ErrorType {
     const message = error.message.toLowerCase();
     
     if (message.includes('network') || message.includes('connection') || 
         message.includes('internet') || message.includes('offline')) {
-      return ErrorCategory.NETWORK;
+      return ErrorType.NETWORK;
     }
     
-    if (message.includes('api') || message.includes('server') || 
-        message.includes('response') || message.includes('request')) {
-      return ErrorCategory.API;
+    if (message.includes('auth') || message.includes('permission') || 
+        message.includes('login') || message.includes('unauthorized')) {
+      return ErrorType.AUTH;
     }
     
     if (message.includes('valid') || message.includes('format') || 
         message.includes('required') || message.includes('missing')) {
-      return ErrorCategory.VALIDATION;
+      return ErrorType.VALIDATION;
     }
     
-    if (message.includes('data') || message.includes('parsing') || 
-        message.includes('processing')) {
-      return ErrorCategory.DATA;
+    if (message.includes('map') || message.includes('layer') || 
+        message.includes('marker')) {
+      return ErrorType.MAP_LOAD_FAILED;
     }
     
-    if (message.includes('render') || message.includes('component') || 
-        message.includes('element')) {
-      return ErrorCategory.UI;
+    if (message.includes('fire') || message.includes('data') || 
+        message.includes('fetch')) {
+      return ErrorType.FIRE_DATA_FETCH_FAILED;
     }
     
-    return ErrorCategory.GENERAL;
+    if (message.includes('location') || message.includes('geolocation') || 
+        message.includes('position')) {
+      return ErrorType.GEOLOCATION_UNAVAILABLE;
+    }
+    
+    if (message.includes('not found') || message.includes('404')) {
+      return ErrorType.NOT_FOUND;
+    }
+    
+    return ErrorType.UNKNOWN;
   }
   
   /**
    * 에러 로깅
    */
   private logError(error: AppError): void {
+    if (!error.options?.log) {
+      return;
+    }
+    
     // 콘솔 로깅
     if (this.loggingOptions.logToConsole) {
       const logMethod = 
-        error.severity === ErrorSeverity.ERROR || error.severity === ErrorSeverity.CRITICAL
+        error.severity === ErrorSeverity.CRITICAL
           ? console.error
-          : error.severity === ErrorSeverity.WARNING
-            ? console.warn
-            : console.info;
+          : error.severity === ErrorSeverity.ERROR
+            ? console.error
+            : error.severity === ErrorSeverity.WARNING
+              ? console.warn
+              : console.info;
       
       logMethod(
-        `[${error.category}] ${error.message}`,
+        `[${error.category}] ${error.type}${error.code ? ` (${error.code})` : ''}: ${error.message}`,
         { 
           severity: error.severity,
           context: error.context,

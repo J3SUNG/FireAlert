@@ -5,8 +5,7 @@ import {
   calculateResponseLevelCounts,
   calculateStatusCounts,
 } from "../../../shared/lib/forestFireUtils";
-import { useDataErrorHandling } from "../lib/useDataErrorHandling";
-import { DataErrorCode } from "../model/dataErrorTypes";
+import { useAsyncOperation } from "../../../shared/lib/errors";
 
 /**
  * 산불 데이터를 가져오고 관리하는 커스텀 훅
@@ -17,11 +16,15 @@ import { DataErrorCode } from "../model/dataErrorTypes";
  */
 export function useForestFireData() {
   const [fires, setFires] = useState<ForestFireData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // 데이터 오류 처리를 위한 훅 사용
-  const { createFetchError, setError: handleError } = useDataErrorHandling("useForestFireData");
+  
+  // 새 에러 처리 훅 사용
+  const { 
+    isLoading, 
+    hasError, 
+    errorMessage, 
+    execute, 
+    clearError 
+  } = useAsyncOperation<ForestFireData[]>("useForestFireData", "forest-fire-data");
 
   /**
    * 산불 데이터 로드 함수
@@ -31,34 +34,37 @@ export function useForestFireData() {
    * @returns {Promise<void>}
    */
   const loadData = useCallback(async (forceRefresh = false): Promise<void> => {
-    try {
-      setLoading(true);
-      const data = await forestFireApi.getForestFires(forceRefresh);
-
-      // 반환된 데이터 설정
-      setFires(data || []);
-      setError(null);
-    } catch (err) {
-      // 데이터 페칭 오류 처리
-      const fetchError = createFetchError(
-        DataErrorCode.FETCH_FAILED,
-        err instanceof Error ? err : new Error("Unknown error"),
-        "서버와의 통신 중 오류가 발생했습니다."
-      );
-
-      handleError(fetchError);
-      setError("산불 데이터를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-    } finally {
-      setLoading(false);
+    const result = await execute(async () => {
+      try {
+        const data = await forestFireApi.getForestFires(forceRefresh);
+        return data || [];
+      } catch (err) {
+        // 표준 Error로 변환하여 던지기
+        throw new Error(
+          err instanceof Error 
+            ? err.message 
+            : "산불 데이터를 가져오는 중 오류가 발생했습니다."
+        );
+      }
+    }, {
+      functionName: 'loadData',
+      action: '산불 데이터 로딩'
+    });
+    
+    if (result) {
+      setFires(result);
     }
-  }, []);
+  }, [execute]);
 
+  // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
     void loadData();
   }, [loadData]);
 
+  // 상태별 카운트 계산
   const statusCounts = calculateStatusCounts(fires);
 
+  // 대응단계별 카운트 계산
   const responseLevelCounts = calculateResponseLevelCounts(fires);
 
   /**
@@ -66,15 +72,15 @@ export function useForestFireData() {
    * 캐시를 지우고 산불 데이터를 다시 가져오는 함수입니다.
    */
   const handleReload = useCallback((): void => {
-    // 에러 상태 초기화
+    clearError();
     forestFireApi.clearCache();
     void loadData(true);
-  }, [loadData]);
+  }, [loadData, clearError]);
 
   return {
     fires,
-    loading,
-    error,
+    loading: isLoading,
+    error: hasError ? errorMessage : null,
     statusCounts,
     responseLevelCounts,
     handleReload,

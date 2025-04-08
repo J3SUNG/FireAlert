@@ -5,6 +5,35 @@ import './app/styles/index.css';
 import 'leaflet/dist/leaflet.css';
 
 import { setupDefaultLeafletIcons } from './shared/lib/leaflet/iconSetup';
+import { getErrorService, ErrorBoundary } from './shared/lib/errors';
+
+/**
+ * 애플리케이션 전역 에러 핸들러 설정
+ * 컴포넌트 외부에서 발생하는 에러(비동기 작업, 이벤트 핸들러 등)를 잡아냄
+ */
+const setupGlobalErrorHandlers = () => {
+  const errorService = getErrorService();
+  
+  // 처리되지 않은 전역 Promise 에러 핸들러
+  window.addEventListener('unhandledrejection', (event) => {
+    errorService.handleError(event.reason, {
+      component: 'Global',
+      feature: 'UnhandledRejection',
+      timestamp: Date.now()
+    });
+    console.error('Unhandled Promise Rejection:', event.reason);
+  });
+  
+  // 전역 런타임 에러 핸들러
+  window.addEventListener('error', (event) => {
+    errorService.handleError(event.error, {
+      component: 'Global',
+      feature: 'RuntimeError',
+      timestamp: Date.now()
+    });
+    console.error('Global Runtime Error:', event.error);
+  });
+};
 
 /**
  * 애플리케이션 초기화 시 Leaflet 기본 아이콘 설정
@@ -12,11 +41,16 @@ import { setupDefaultLeafletIcons } from './shared/lib/leaflet/iconSetup';
  */
 setupDefaultLeafletIcons();
 
+// 전역 에러 핸들러 설정
+setupGlobalErrorHandlers();
+
 const rootElement = document.getElementById('root');
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <App />
+      <ErrorBoundary component="App" feature="root">
+        <App />
+      </ErrorBoundary>
     </React.StrictMode>,
   );
 }

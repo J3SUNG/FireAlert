@@ -2,14 +2,13 @@ import React from "react";
 import { FireAlertHeader, FireAlertContent } from "../../features/fire-alert-ui";
 import { useForestFireData } from "../../features/forest-fire-data";
 import { useCurrentTime, useFireFilterAndSelection } from "../../shared/lib";
+import { ErrorBoundary } from "../../shared/lib/errors";
 import "./fire-alert.css";
 
 /**
- * 산불 알림 메인 페이지 컴포넌트
- * 전국의 산불 현황을 지도와 목록 형태로 보여주며, 상태별 필터링을 제공합니다.
- * @returns {JSX.Element} 산불 알림 페이지 UI
+ * 산불 알림 메인 페이지 컴포넌트 내용
  */
-const FireAlertPage: React.FC = () => {
+const FireAlertPageContent: React.FC = () => {
   // 산불 데이터 및 상태 관리
   const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } =
     useForestFireData();
@@ -54,6 +53,19 @@ const FireAlertPage: React.FC = () => {
         setSelectedFilter={setSelectedFilter}
       />
     </div>
+  );
+};
+
+/**
+ * 산불 알림 메인 페이지 컴포넌트
+ * 전국의 산불 현황을 지도와 목록 형태로 보여주며, 상태별 필터링을 제공합니다.
+ * @returns {JSX.Element} 산불 알림 페이지 UI
+ */
+const FireAlertPage: React.FC = () => {
+  return (
+    <ErrorBoundary component="FireAlertPage" feature="fire-alert">
+      <FireAlertPageContent />
+    </ErrorBoundary>
   );
 };
 
