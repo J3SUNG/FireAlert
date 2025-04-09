@@ -1,0 +1,21 @@
+/* 기본 변수 */
+@import '../../../shared/styles/variables.css';
+
+/* 모든 스타일 파일 가져오기 */
+@import './FireAlertHeader.css';
+@import './FireAlertContent.css';
+@import './FireAlertSidebar.css';
+@import './StatusSummary.css';
+@import './FireAlertButtons.css';
+
+/* 
+ * FireAlert 스타일 시스템
+ * 
+ * 이 스타일시트는 FireAlert 애플리케이션의 모든 컴포넌트 스타일을 통합합니다.
+ * 변수는 shared/styles에 정의되어 있으며,
+ * 컴포넌트별 스타일은 각각의 CSS 파일로 모듈화되어 있습니다.
+ *
+ * 컴포넌트 스타일 명명 규칙:
+ * - .fire-alert__*: 최상위 컴포넌트 또는 주요 섹션
+ * - .fire-alert__*--*: 변형(variant) 또는 상태(state)
+ */

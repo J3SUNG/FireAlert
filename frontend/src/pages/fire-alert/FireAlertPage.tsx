@@ -3,7 +3,8 @@ import { FireAlertHeader, FireAlertContent } from "../../features/fire-alert-ui"
 import { useForestFireData } from "../../features/forest-fire-data";
 import { useCurrentTime, useFireFilterAndSelection } from "../../shared/lib";
 import { ErrorBoundary } from "../../shared/lib/errors";
-import "../../features/fire-alert-ui/styles/index.css";
+import "../../features/fire-alert-ui/ui/index.css";
+import "./FireAlertPage.css";
 
 /**
  * 산불 알림 메인 페이지 컴포넌트 내용

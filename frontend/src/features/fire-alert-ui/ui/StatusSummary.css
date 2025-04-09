@@ -1,0 +1,173 @@
+/* 상태 요약 패널 스타일 */
+.fire-alert__status-summary {
+  position: absolute;
+  bottom: var(--spacing-md);
+  left: var(--spacing-md);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-md);
+  width: 180px;
+  z-index: var(--z-index-above);
+  border: 1px solid var(--color-border);
+  opacity: 0.95;
+  transition: all var(--transition-normal) ease;
+}
+
+.fire-alert__status-summary:hover {
+  opacity: 1;
+  box-shadow: var(--shadow-lg);
+}
+
+/* 요약 제목 */
+.fire-alert__summary-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-heading);
+  padding: 0 2px 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+/* 요약 그리드 */
+.fire-alert__summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xs);
+  padding: 0;
+}
+
+/* 요약 항목 */
+.fire-alert__summary-item {
+  display: flex;
+  border-radius: var(--border-radius-md);
+  padding: 6px 8px;
+  transition: all var(--transition-fast) ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  margin: 0;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 단계별 배경색 */
+.fire-alert__summary-item--initial {
+  background-color: rgba(0, 128, 255, 0.08);
+}
+
+.fire-alert__summary-item--level1 {
+  background-color: rgba(234, 179, 8, 0.08);
+}
+
+.fire-alert__summary-item--level2 {
+  background-color: rgba(249, 115, 22, 0.08);
+}
+
+.fire-alert__summary-item--level3 {
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* 항목 내용 레이아웃 */
+.fire-alert__summary-item-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* 라벨 그룹 */
+.fire-alert__label-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 색상 표시기 */
+.fire-alert__color-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--border-radius-circle);
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 색상 표시기 - 단계별 */
+.fire-alert__color-indicator--initial {
+  background-color: var(--color-status-info);
+}
+
+.fire-alert__color-indicator--level1 {
+  background-color: var(--color-status-caution);
+}
+
+.fire-alert__color-indicator--level2 {
+  background-color: var(--color-status-warning);
+}
+
+.fire-alert__color-indicator--level3 {
+  background-color: var(--color-status-active);
+}
+
+/* 요약 라벨 */
+.fire-alert__summary-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-body);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+/* 요약 값 */
+.fire-alert__summary-value {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  min-width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-white);
+  border-radius: 11px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 요약 값 - 단계별 색상 */
+.fire-alert__summary-value--initial {
+  color: var(--color-status-info);
+}
+
+.fire-alert__summary-value--level1 {
+  color: var(--color-status-caution);
+}
+
+.fire-alert__summary-value--level2 {
+  color: var(--color-status-warning);
+}
+
+.fire-alert__summary-value--level3 {
+  color: var(--color-status-active);
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+  .fire-alert__status-summary {
+    bottom: var(--spacing-sm);
+    left: var(--spacing-sm);
+    width: 150px;
+    padding: var(--spacing-sm);
+  }
+  
+  .fire-alert__summary-item {
+    padding: 4px 6px;
+  }
+  
+  .fire-alert__summary-label {
+    font-size: 12px;
+  }
+  
+  .fire-alert__summary-value {
+    font-size: 14px;
+    min-width: 20px;
+    height: 20px;
+  }
+}

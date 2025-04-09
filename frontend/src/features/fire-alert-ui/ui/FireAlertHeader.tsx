@@ -1,6 +1,7 @@
 import React from "react";
 import { FireAlertHeaderProps } from "../model/types";
 import { APP_TITLE } from "../../../shared/constants";
+import "./FireAlertHeader.css";
 
 /**
  * 산불 알림 헤더 컴포넌트

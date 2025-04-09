@@ -4,6 +4,7 @@ import { ForestFireMap } from "../../../features/forest-fire-map";
 import { FireStatusSummary } from "../../../shared";
 import { FireAlertSidebar } from "./FireAlertSidebar";
 import { LOADING_MESSAGE, ERROR_MESSAGES, BUTTON_TEXT } from "../../../shared/constants";
+import "./FireAlertContent.css";
 
 /**
  * 산불 알림 컨텐츠 컴포넌트

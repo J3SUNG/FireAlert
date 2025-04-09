@@ -1,0 +1,127 @@
+/* 버튼 기본 스타일 */
+.fire-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all var(--transition-fast) ease;
+  background-color: var(--color-bg-element);
+  color: var(--color-text-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* 호버 효과 */
+.fire-button:hover {
+  filter: brightness(0.95);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 포커스 스타일 */
+.fire-button:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* 활성화된 버튼 스타일 - 전체 */
+.fire-button--active-all {
+  background-color: var(--color-brand);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 활성화된 버튼 스타일 - 진행 중 */
+.fire-button--active-red {
+  background-color: var(--color-status-active);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 활성화된 버튼 스타일 - 통제 중 */
+.fire-button--active-orange {
+  background-color: var(--color-status-warning);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 활성화된 버튼 스타일 - 진화 완료 */
+.fire-button--active-green {
+  background-color: var(--color-status-success);
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 작은 버튼 크기 */
+.fire-button--small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-xs);
+  min-height: 24px;
+}
+
+/* 데이터 속성을 사용한 필터 버튼 스타일 - 비활성 상태 */
+.fire-button[data-filter="all"]:not(.fire-button--active-all) {
+  background-color: rgba(59, 130, 246, 0.07);
+  font-weight: var(--font-weight-bold);
+}
+
+.fire-button[data-filter="active"]:not(.fire-button--active-red) {
+  background-color: rgba(239, 68, 68, 0.07);
+  font-weight: var(--font-weight-bold);
+}
+
+.fire-button[data-filter="contained"]:not(.fire-button--active-orange) {
+  background-color: rgba(249, 115, 22, 0.07);
+  font-weight: var(--font-weight-bold);
+}
+
+.fire-button[data-filter="extinguished"]:not(.fire-button--active-green) {
+  background-color: rgba(34, 197, 94, 0.07);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 아이콘 포함 버튼 */
+.fire-button--with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.fire-button__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* 버튼 그룹 */
+.fire-button-group {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* 버튼 비활성화 스타일 */
+.fire-button:disabled,
+.fire-button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(30%);
+}
+
+/* 반응형 조정 */
+@media (max-width: 576px) {
+  .fire-button {
+    padding: 6px 12px;
+    font-size: var(--font-size-xs);
+  }
+}

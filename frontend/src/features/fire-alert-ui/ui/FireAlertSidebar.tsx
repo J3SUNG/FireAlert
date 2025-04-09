@@ -1,6 +1,7 @@
 import React from "react";
 import { FireAlertSidebarProps } from "../model/types";
 import { ForestFireList } from "../../../features/forest-fire-list";
+import "./FireAlertSidebar.css";
 
 /**
  * 산불 알림 사이드바 컴포넌트

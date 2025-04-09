@@ -1,0 +1,115 @@
+/* 헤더 스타일 */
+.fire-alert__header {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--header-height);
+  min-height: var(--header-height);
+  z-index: var(--z-index-header);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+}
+
+/* 로고 컨테이너 */
+.fire-alert__logo-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* 로고 아이콘 */
+.fire-alert__logo-icon {
+  font-size: var(--font-size-2xl);
+  margin-right: var(--spacing-sm);
+  color: var(--color-brand-fire);
+}
+
+/* 로고 텍스트 */
+.fire-alert__logo-text {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+/* 로고 내 불씨 글자 */
+.fire-alert__logo-text--fire {
+  color: var(--color-brand-fire);
+}
+
+/* 서브타이틀 */
+.fire-alert__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-left: var(--spacing-sm);
+  letter-spacing: -0.3px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* 필터 컨테이너 */
+.fire-alert__filter-container {
+  display: flex;
+  gap: 10px;
+  background: var(--color-bg-element);
+  padding: 4px;
+  border-radius: var(--border-radius-pill);
+  transition: all var(--transition-normal) ease;
+}
+
+/* 타임스탬프 */
+.fire-alert__timestamp {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 992px) {
+  .fire-alert__header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--header-height);
+    padding: var(--spacing-sm);
+  }
+  
+  .fire-alert__filter-container {
+    order: 3;
+    margin-top: var(--spacing-sm);
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .fire-alert__timestamp {
+    font-size: var(--font-size-xs);
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .fire-alert__logo-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  
+  .fire-alert__subtitle {
+    font-size: 10px;
+    margin-left: 0;
+  }
+  
+  .fire-alert__logo-text {
+    font-size: var(--font-size-lg);
+  }
+  
+  .fire-alert__logo-icon {
+    font-size: var(--font-size-xl);
+  }
+}
