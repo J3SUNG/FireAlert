@@ -4,7 +4,7 @@ import { forestFireService } from "../../../../shared/api/forestFireService";
 import {
   calculateResponseLevelCounts,
   calculateStatusCounts,
-} from "../../../../shared/lib/forestFireUtils";
+} from "../../../../shared/lib/calculations/forestFireStats";
 import { useAsyncOperation } from "../../../../shared/lib/errors";
 
 /**

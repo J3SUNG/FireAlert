@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ForestFireData } from "../model/forestFire";
-import { convertStatus, extractLocation, getResponseLevel } from "../lib/forestFireUtils";
+import { extractLocation } from "../lib/formatting/locationFormat";
+import { convertStatus, getResponseLevel } from "../lib/data/forestFireUtils";
 import { geoJsonService } from "./geoJsonService";
 
 /** 캐시된 산불 데이터 */

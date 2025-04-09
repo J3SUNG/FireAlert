@@ -1,19 +1,6 @@
 import { ForestFireData } from "../../../shared/model/forestFire";
-import { FireFilterType } from "../../../shared/model/types";
+import { FireFilterType, FilterType } from "../../../shared/model/common/filterTypes";
 
-/**
- * 필터 버튼 레이블 타입
- */
-export interface FilterType {
-  /** 모든 산불 레이블 */
-  all: string;
-  /** 진행 중인 산불 레이블 */
-  active: string;
-  /** 진화 중인 산불 레이블 */
-  contained: string;
-  /** 진화 완료된 산불 레이블 */
-  extinguished: string;
-}
 
 /**
  * 대응 단계별 개수 타입

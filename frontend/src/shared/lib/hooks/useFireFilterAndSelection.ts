@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { ForestFireData } from "../../model/forestFire";
-import { FireFilterType } from "../../model/types";
+import { FireFilterType } from "../../model/common/filterTypes";
 
 /**
  * 산불 필터링 및 선택 관리 훅
