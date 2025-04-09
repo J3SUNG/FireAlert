@@ -168,8 +168,9 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
         }
       };
 
-      // 이벤트 리스너 등록
-      map.on("zoomend", toggleDistrictLayer);
+      // 맵 객체에 이벤트 핸들러 저장 (정리를 위해)
+      map.toggleDistrictLayerHandler = toggleDistrictLayer;
+      map.on("zoomend", map.toggleDistrictLayerHandler);
 
       // 시군구 레이블 추가 - 데이터 처리
       data.features.forEach((feature) => {
@@ -247,8 +248,8 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
               // 마커 참조 저장
               addDistrictMarker(marker);
 
-              // 줌 레벨에 따라 마커 가시성 조정
-              map.on("zoomend", () => {
+              // 마커를 위한 가시성 토글 함수 (명시적 정리 가능하도록 저장)
+              const updateMarkerVisibility = () => {
                 const currentZoom = map.getZoom();
                 if (currentZoom >= 8) {
                   // 줌 레벨 8 이상일 때만 시군구 이름 표시
@@ -256,7 +257,11 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
                 } else {
                   marker.setOpacity(0);
                 }
-              });
+              };
+              
+              // 마커에 이벤트 핸들러 참조 저장 (명시적 정리를 위해)
+              marker.eventHandler = updateMarkerVisibility;
+              map.on("zoomend", marker.eventHandler);
 
               // 초기 줌 레벨에 따라 가시성 설정
               if (map.getZoom() >= 8) {
@@ -283,8 +288,9 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
         }
       };
 
-      // 이벤트 리스너 등록
-      map.on("moveend", maintainLayerOrder);
+      // 맵 객체에 이벤트 핸들러 저장 (정리를 위해)
+      map.maintainLayerOrderHandler = maintainLayerOrder;
+      map.on("moveend", map.maintainLayerOrderHandler);
       
       // 초기 레이어 순서 적용
       maintainLayerOrder();
@@ -330,12 +336,29 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
     // 컴포넌트 언마운트 시 정리 작업
     return () => {
       clearTimeout(timer);
+      
+      // GeoJSON 레이어 제거 전에 맵 객체에 저장된 이벤트 핸들러 정리
+      if (map) {
+        // 이벤트 리스너 제거
+        map.off("zoomend");
+        map.off("moveend");
+        
+        // 출금한 추가: 맵 객체에 저장된 이벤트 핸들러 제거
+        if (map.toggleDistrictLayerHandler) {
+          map.off("zoomend", map.toggleDistrictLayerHandler);
+          delete map.toggleDistrictLayerHandler;
+        }
+        
+        if (map.maintainLayerOrderHandler) {
+          map.off("moveend", map.maintainLayerOrderHandler);
+          delete map.maintainLayerOrderHandler;
+        }
+      }
+      
+      // 레이어 제거 - 마커와 GeoJSON 레이어 등 모든 자원 정리
       cleanupLayers(map);
-
-      map.off("zoomend");
-      map.off("moveend");
     };
-  }, [map, loadProvinces, loadDistricts, cleanupLayers]);
+  }, [map, loadProvinces, loadDistricts, cleanupLayers, getProvinceLayer, getDistrictLayer, setIsGeoJsonLoaded]);
 
   return {
     isGeoJsonLoaded,

@@ -26,6 +26,18 @@ export function useMarkerState() {
   const removeMarker = useCallback((id: string, map: L.Map | null) => {
     const marker = markersRef.current[id];
     if (marker && map) {
+      // 이벤트 리스너 제거
+      if ('off' in marker) {
+        marker.off();
+      }
+      // 레이어그룹의 경우 각 레이어도 이벤트 제거
+      if ('eachLayer' in marker) {
+        marker.eachLayer((layer) => {
+          if ('off' in layer) {
+            layer.off();
+          }
+        });
+      }
       map.removeLayer(marker);
       delete markersRef.current[id];
       return true;
@@ -39,6 +51,19 @@ export function useMarkerState() {
     
     Object.values(markersRef.current).forEach(marker => {
       if (map.hasLayer(marker)) {
+        // 우선 이벤트 리스너 제거
+        if ('off' in marker) {
+          marker.off();
+        }
+        // 레이어그룹의 경우 각 레이어도 이벤트 제거
+        if ('eachLayer' in marker) {
+          marker.eachLayer((layer) => {
+            if ('off' in layer) {
+              layer.off();
+            }
+          });
+        }
+        // 마커 제거
         marker.remove();
       }
     });
@@ -51,6 +76,18 @@ export function useMarkerState() {
     
     Object.entries(markersRef.current).forEach(([id, marker]) => {
       if (!currentIds.has(id)) {
+        // 이벤트 리스너 제거
+        if ('off' in marker) {
+          marker.off();
+        }
+        // 레이어그룹의 경우 각 레이어도 이벤트 제거
+        if ('eachLayer' in marker) {
+          marker.eachLayer((layer) => {
+            if ('off' in layer) {
+              layer.off();
+            }
+          });
+        }
         map.removeLayer(marker);
         delete markersRef.current[id];
       }

@@ -42,11 +42,16 @@ export function useMarkerManager({
 
   // 컴포넌트 언마운트 시 정리
   useEffect(() => {
+    // 마커가 있는 경우에만 마커 정리
+    const hasMarkers = Object.keys(markers).length > 0;
+    
     return () => {
-      // 마운트 해제 시 모든 마커 제거
-      clearAllMarkers(map);
+      // 마운트 해제 시 모든 마커 제거 및 이벤트 리스너 및 메모리 제거
+      if (hasMarkers) {
+        clearAllMarkers(map);
+      }
     };
-  }, [map, clearAllMarkers]);
+  }, [map, clearAllMarkers, markers]);
 
   // 빈 영역 클릭 이벤트 처리 - 선택 마커 해제
   useEffect(() => {

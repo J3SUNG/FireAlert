@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ForestFireData } from "../../../../shared/model/forestFire";
 import { forestFireService } from "../../../../shared/api/forestFireService";
 import {
@@ -27,7 +27,7 @@ export function useForestFireData() {
   } = useAsyncOperation<ForestFireData[]>("useForestFireData", "forest-fire-data");
 
   /**
-   * 산불 데이터 로드 함수
+   * 데이터 로드 함수
    * 서버에서 산불 데이터를 가져와 상태를 갱신합니다.
    *
    * @param {boolean} forceRefresh 캐시된 데이터를 무시하고 강제로 새로 가져오기 위한 플래그
@@ -61,11 +61,11 @@ export function useForestFireData() {
     void loadData();
   }, [loadData]);
 
-  // 상태별 카운트 계산
-  const statusCounts = calculateStatusCounts(fires);
+  // 상태별 카운트 계산 - useMemo 사용하여 추가 렌더링 방지
+  const statusCounts = useMemo(() => calculateStatusCounts(fires), [fires]);
 
-  // 대응단계별 카운트 계산
-  const responseLevelCounts = calculateResponseLevelCounts(fires);
+  // 대응단계별 카운트 계산 - useMemo 사용하여 추가 렌더링 방지
+  const responseLevelCounts = useMemo(() => calculateResponseLevelCounts(fires), [fires]);
 
   /**
    * 데이터 재로드 함수
@@ -74,7 +74,7 @@ export function useForestFireData() {
   const handleReload = useCallback((): void => {
     clearError();
     // forestFireApi 대신 직접 forestFireService 사용
-    forestFireService.clearCache();
+    forestFireService.clearCache(); // GeoJSON 캐시는 유지 (false 옵션)
     void loadData(true);
   }, [loadData, clearError]);
 

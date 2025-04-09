@@ -50,17 +50,35 @@ export function useGeoJsonState() {
     
     const { provinces, districts } = geoJsonLayersRef.current;
     
-    // 레이어 제거
-    if (provinces && map.hasLayer(provinces)) {
-      map.removeLayer(provinces);
+    // 레이어 제거 - 이벤트 리스너 먼저 제거
+    if (provinces) {
+      if ('off' in provinces) {
+        provinces.off();
+      }
+      
+      // 레이어 제거
+      if (map.hasLayer(provinces)) {
+        map.removeLayer(provinces);
+      }
     }
     
-    if (districts && map.hasLayer(districts)) {
-      map.removeLayer(districts);
+    if (districts) {
+      if ('off' in districts) {
+        districts.off();
+      }
+      
+      // 레이어 제거
+      if (map.hasLayer(districts)) {
+        map.removeLayer(districts);
+      }
     }
     
     // 시도 레이블 마커 제거
     provinceMarkersRef.current.forEach((marker) => {
+      if ('off' in marker) {
+        marker.off();
+      }
+      
       if (map.hasLayer(marker)) {
         map.removeLayer(marker);
       }
@@ -69,7 +87,16 @@ export function useGeoJsonState() {
     
     // 시군구 레이블 마커 제거
     districtMarkersRef.current.forEach((marker) => {
-      if (map.hasLayer(marker)) {
+      // 이벤트 핸들러 제거
+      if ('eventHandler' in marker && map) {
+        map.off('zoomend', marker.eventHandler);
+      }
+      
+      if ('off' in marker) {
+        marker.off();
+      }
+      
+      if (map && map.hasLayer(marker)) {
         map.removeLayer(marker);
       }
     });

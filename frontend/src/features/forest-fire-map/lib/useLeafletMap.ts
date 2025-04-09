@@ -106,6 +106,20 @@ export function useLeafletMap({
   // 맵 제거 함수
   const destroyMap = useCallback(() => {
     if (mapRef.current) {
+      // 모든 이벤트 리스너 명시적 제거
+      mapRef.current.off();
+      
+      // 모든 마커 레이어 정리
+      Object.values(markersRef.current).forEach(marker => {
+        if (mapRef.current) marker.removeFrom(mapRef.current);
+      });
+      
+      // 모든 GeoJSON 레이어 정리
+      Object.values(geoJsonLayersRef.current).forEach(layer => {
+        if (mapRef.current) layer.removeFrom(mapRef.current);
+      });
+      
+      // 맵 인스턴스 제거
       mapRef.current.remove();
       mapRef.current = null;
       markersRef.current = {};
@@ -172,6 +186,8 @@ export function useLeafletMap({
     
     const marker = markersRef.current[id];
     if (marker) {
+      // 이벤트 리스너 제거 및 정리
+      if ('off' in marker) marker.off();
       marker.removeFrom(mapRef.current);
       delete markersRef.current[id];
     }
@@ -265,7 +281,7 @@ export function useLeafletMap({
     return () => {
       destroyMap();
     };
-  }, []); // 마운트/언마운트 시에만 실행
+  }, [initializeMap, destroyMap, isInitialized]); // 의존성 배열 명시적 추가
   
   return {
     map: mapRef.current,
