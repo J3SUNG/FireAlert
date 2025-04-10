@@ -5,36 +5,36 @@ import { ForestFireData } from "../../../shared/model/forestFire";
  * 산불 지도 컴포넌트 Props
  */
 export interface ForestFireMapProps {
-  fires: ForestFireData[];
-  selectedFireId?: string;
-  onFireSelect?: (fire: ForestFireData) => void;
-  legendPosition?: L.ControlPosition;
+  fires: ForestFireData[];              // 표시할 산불 데이터 배열
+  selectedFireId?: string;              // 선택된 산불 ID
+  onFireSelect?: (fire: ForestFireData) => void;  // 산불 선택 핸들러
+  legendPosition?: L.ControlPosition;   // 범례 위치
 }
 
 /**
  * 화재 마커 관리자 Props
  */
 export interface FireMarkerManagerProps {
-  map: L.Map | null;
-  fires: ForestFireData[];
-  selectedFireId?: string;
-  onFireSelect?: (fire: ForestFireData) => void;
-  isGeoJsonLoaded: boolean;
+  map: L.Map | null;                    // 지도 인스턴스
+  fires: ForestFireData[];              // 표시할 산불 데이터 배열
+  selectedFireId?: string;              // 선택된 산불 ID
+  onFireSelect?: (fire: ForestFireData) => void;  // 산불 선택 핸들러
+  isGeoJsonLoaded: boolean;             // GeoJSON 로드 완료 여부
 }
 
 /**
  * 맵 후크 옵션
  */
 export interface UseMapOptions {
-  containerRef: React.RefObject<HTMLDivElement>;
-  legendPosition?: L.ControlPosition;
-  options?: Partial<any>; // MAP_INIT_OPTIONS의 타입을 any로 간단히 표현
-  fires?: ForestFireData[];
+  containerRef: React.RefObject<HTMLDivElement>;  // 지도 컨테이너 참조
+  legendPosition?: L.ControlPosition;   // 범례 위치
+  options?: Partial<any>;               // 지도 초기화 옵션
+  fires?: ForestFireData[];             // 표시할 산불 데이터 배열
 }
 
 /**
  * 맵 로딩 인디케이터 Props
  */
 export interface MapLoadingIndicatorProps {
-  isLoading: boolean;
+  isLoading: boolean;                   // 로딩 상태
 }

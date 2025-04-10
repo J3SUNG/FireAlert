@@ -1,7 +1,10 @@
 import L from "leaflet";
 import { ForestFireData } from "../../../shared/model/forestFire";
 
-// 시도명 축약 맵핑
+/**
+ * 시도명 축약 맵핑
+ * 지도에 표시되는 시도명을 간결하게 표시하기 위한 축약명
+ */
 const PROVINCE_ABBR: Record<string, string> = {
   서울특별시: "서울",
   부산특별시: "부산",
@@ -22,28 +25,40 @@ const PROVINCE_ABBR: Record<string, string> = {
   제주특별자치도: "제주",
 };
 
-// CSS 변수에 매핑되는 마커 색상 설정
+/**
+ * 마커 색상 설정
+ * 산불 위험도에 따라 표시되는 마커 색상
+ */
 const FIRE_MARKER_COLORS: Record<string, string> = {
-  critical: "#ef4444", // 빨강색 (CSS 변수: --color-level3)
-  high: "#f97316", // 주황색 (CSS 변수: --color-level2)
-  medium: "#eab308", // 노랑색 (CSS 변수: --color-level1)
-  low: "#0080ff", // 파란색 (CSS 변수: --color-initial)
-  initial: "#6b7280", // 회색
+  critical: "#ef4444", // 빨강색 (3단계)
+  high: "#f97316",     // 주황색 (2단계)
+  medium: "#eab308",   // 노랑색 (1단계)
+  low: "#0080ff",      // 파란색 (초기대응)
+  initial: "#6b7280",  // 회색
 };
 
-// 대응단계별 색상 설정 - CSS 변수 값과 동일하게 유지
+/**
+ * 대응단계별 색상 설정
+ * 산불 대응단계에 따른 색상 매핑
+ */
 const RESPONSE_LEVEL_COLORS: Record<string, string> = {
-  초기대응: "#0080ff", // 파란색 (CSS 변수: --color-initial)
+  초기대응: "#0080ff",     // 파란색
   초기진화단계: "#0080ff", // 파란색
-  "1단계": "#eab308", // 노랑색 (CSS 변수: --color-level1)
-  "2단계": "#f97316", // 주황색 (CSS 변수: --color-level2)
-  "3단계": "#ef4444", // 빨강색 (CSS 변수: --color-level3)
-  default: "#6b7280", // 기본 회색
+  "1단계": "#eab308",     // 노랑색
+  "2단계": "#f97316",     // 주황색
+  "3단계": "#ef4444",     // 빨강색
+  default: "#6b7280",     // 기본 회색
 };
 
 const SELECTED_MARKER_SCALE = 1.4;
 
-// 마커 이름 포맷팅 함수
+/**
+ * 마커 이름 포맷팅
+ * 시도명 축약하고 불필요한 정보를 제거하여 간결한 위치 정보 반환
+ * 
+ * @param fire 산불 데이터
+ * @returns 포맷팅된 위치 이름
+ */
 function formatLocationName(fire: ForestFireData): string {
   if (!fire.location) return "알 수 없는 위치";
 
@@ -56,10 +71,9 @@ function formatLocationName(fire: ForestFireData): string {
     return `${provinceName} ${districtName}`;
   }
 
-  // fire.location에서 파싱 시도
+  // location에서 파싱 시도
   const locationParts = fire.location.split(" ");
   if (locationParts.length >= 2) {
-    // 처음 두 부분이 시도와 시군구인 경우가 많음
     const province = locationParts[0];
     const district = locationParts[1];
 
@@ -71,7 +85,13 @@ function formatLocationName(fire: ForestFireData): string {
   return fire.location;
 }
 
-// 툴팁 내용 생성 함수
+/**
+ * 툴팁 내용 생성
+ * 마커 호버 시 표시되는 산불 상세 정보 툴팁 생성
+ * 
+ * @param fire 산불 데이터
+ * @returns HTML 형식의 툴팁 콘텐츠
+ */
 function createTooltipContent(fire: ForestFireData): string {
   const status =
     fire.status === "active" ? "진행중" : fire.status === "contained" ? "통제중" : "진화완료";
@@ -124,6 +144,16 @@ interface FireMarkerOptions {
   map?: L.Map;
 }
 
+/**
+ * 산불 마커 생성 함수
+ * 
+ * 산불 데이터로부터 지도에 표시할 마커를 생성합니다.
+ * 위험도에 따른 색상 및 상태 정보를 적용합니다.
+ * 
+ * @param fire 산불 데이터
+ * @param options 마커 옵션 객체 또는 선택 상태 불리언
+ * @returns 산불 마커 레이어 그룹
+ */
 export function createFireMarker(
   fire: ForestFireData,
   options?: boolean | FireMarkerOptions
@@ -131,11 +161,10 @@ export function createFireMarker(
   // 대응단계에 따른 색상 설정
   let color = FIRE_MARKER_COLORS[fire.severity] || FIRE_MARKER_COLORS.initial;
 
-  // 대응단계가 있으면 그에 따른 색상 우선 적용
+  // 대응단계명이 있으면 해당 색상 적용
   if (fire.responseLevelName) {
-    // 해당 대응단계에 맞는 색상처리
     if (fire.responseLevelName.includes("초기") || fire.responseLevelName.includes("초기진화")) {
-      color = "#0080ff"; // 초기대응/초기진화단계는 파란색으로 고정
+      color = "#0080ff"; // 초기대응은 파란색
     } else {
       color = RESPONSE_LEVEL_COLORS[fire.responseLevelName] || color;
     }
@@ -149,24 +178,22 @@ export function createFireMarker(
     isSelected = !!options.isSelected;
   }
 
+  // 마커 크기와 스타일 계산
   const radius = isSelected ? 10 * SELECTED_MARKER_SCALE : 10;
   const weight = isSelected ? 3 : 2;
-
   const opacity = fire.status === "extinguished" ? 0.7 : 1;
-  // fillOpacity - 사용되지 않는 변수이지만 추후 사용을 위해 남겨둡
-  const _fillOpacity = fire.status === "extinguished" ? 0.4 : 0.6;
 
   // LayerGroup 생성
   const layerGroup = L.layerGroup();
 
-  // 활성 화재 여부 확인 (active 상태면 펄스 애니메이션 적용)
+  // 활성 화재 여부 확인 (진행중이면 펄스 애니메이션 적용)
   const isActive = fire.status === "active";
 
   // 마커 이름 표시
   const locationName = formatLocationName(fire);
   const nameHtml = `<div class="forest-fire-map__marker-name">${locationName}</div>`;
 
-  // 마커 아이콘 생성 (circleMarker 대신 divIcon 사용)
+  // 마커 아이콘 생성
   const iconHtml = `
     <div class="forest-fire-map__marker-wrapper">
       <div class="forest-fire-map__marker ${isActive ? "forest-fire-map__marker--active" : ""}" style="
@@ -183,7 +210,7 @@ export function createFireMarker(
   const icon = L.divIcon({
     html: iconHtml,
     className: "forest-fire-map__marker-icon",
-    iconSize: [radius * 2 + 4, radius * 2 + 20], // 높이를 늘려 이름 텍스트를 포함
+    iconSize: [radius * 2 + 4, radius * 2 + 20], // 높이를 늘려 이름 텍스트 포함
     iconAnchor: [radius + 2, radius + 2],
   });
 
@@ -195,7 +222,7 @@ export function createFireMarker(
     zIndexOffset: isSelected ? 2000 : 1000,
   });
 
-  // 호버 시 상세 팝업 표시 - 이전 코드에서 사용하던 툴팁
+  // 호버 시 상세 팝업 표시
   const popupContent = createTooltipContent(fire);
   const popup = L.popup({
     closeButton: false,
@@ -208,7 +235,6 @@ export function createFireMarker(
 
   // 마커 호버 이벤트 처리
   marker.on("mouseover", function (e) {
-    // 팝업을 마커에 바인딩하지 않고 직접 특정 위치에 열기
     popup.setLatLng(e.latlng).openOn(e.target._map);
   });
 
@@ -225,7 +251,7 @@ export function createFireMarker(
     });
   }
 
-  // 레이어 그룹에 추가
+  // 레이어 그룹에 마커 추가
   layerGroup.addLayer(marker);
 
   return layerGroup;

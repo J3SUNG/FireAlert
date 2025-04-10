@@ -9,10 +9,8 @@ import { useAsyncOperation } from "../../../../shared/lib/errors";
 
 /**
  * 산불 데이터를 가져오고 관리하는 커스텀 훅
- * 서버에서 산불 데이터를 가져오고, 상태별 카운트 및 대응단계별 카운트를 계산합니다.
- * 로딩, 오류 상태 및 데이터 재로딩 기능을 제공합니다.
- *
- * @returns 산불 데이터 관리에 필요한 상태와 함수들
+ * 
+ * 서버에서 데이터를 가져오고 상태별/대응단계별 카운트를 계산합니다.
  */
 export function useForestFireData() {
   const [fires, setFires] = useState<ForestFireData[]>([]);
@@ -26,17 +24,10 @@ export function useForestFireData() {
     clearError 
   } = useAsyncOperation<ForestFireData[]>("useForestFireData", "forest-fire-data");
 
-  /**
-   * 데이터 로드 함수
-   * 서버에서 산불 데이터를 가져와 상태를 갱신합니다.
-   *
-   * @param {boolean} forceRefresh 캐시된 데이터를 무시하고 강제로 새로 가져오기 위한 플래그
-   * @returns {Promise<void>}
-   */
+  // 데이터 로드 함수 - 캐시 사용 여부 선택 가능
   const loadData = useCallback(async (forceRefresh = false): Promise<void> => {
     const result = await execute(async () => {
       try {
-        // forestFireApi 대신 직접 forestFireService 사용
         const data = await forestFireService.getForestFires(forceRefresh);
         return data || [];
       } catch (err) {
@@ -61,20 +52,16 @@ export function useForestFireData() {
     void loadData();
   }, [loadData]);
 
-  // 상태별 카운트 계산 - useMemo 사용하여 추가 렌더링 방지
+  // 상태별 카운트 계산 - 불필요한 계산 방지
   const statusCounts = useMemo(() => calculateStatusCounts(fires), [fires]);
 
-  // 대응단계별 카운트 계산 - useMemo 사용하여 추가 렌더링 방지
+  // 대응단계별 카운트 계산 - 불필요한 계산 방지
   const responseLevelCounts = useMemo(() => calculateResponseLevelCounts(fires), [fires]);
 
-  /**
-   * 데이터 재로드 함수
-   * 캐시를 지우고 산불 데이터를 다시 가져오는 함수입니다.
-   */
+  // 데이터 재로드 함수 - 캐시 초기화 후 새로 로드
   const handleReload = useCallback((): void => {
     clearError();
-    // forestFireApi 대신 직접 forestFireService 사용
-    forestFireService.clearCache(); // GeoJSON 캐시는 유지 (false 옵션)
+    forestFireService.clearCache();
     void loadData(true);
   }, [loadData, clearError]);
 

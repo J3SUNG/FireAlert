@@ -23,15 +23,15 @@ export const PROVINCE_LOCATIONS = [
 
 /**
  * 이름으로 시도 좌표 찾기
- * @param name 시도 이름
- * @returns 좌표 또는 undefined
+ * 
+ * 정확한 일치 또는 부분 일치로 좌표 검색
  */
 export const findProvinceLocation = (name: string) => {
   // 정확한 일치 먼저 확인
   const exactMatch = PROVINCE_LOCATIONS.find((location) => location.name === name);
   if (exactMatch) return exactMatch;
 
-  // 부분 일치 확인 (예: "강원도"가 "강원특별자치도"와 일치하도록)
+  // 부분 일치 확인 (예: "강원도"와 "강원특별자치도")
   const partialMatch = PROVINCE_LOCATIONS.find(
     (location) => name.includes(location.name) || location.name.includes(name)
   );

@@ -6,11 +6,8 @@ import { ForestFireData } from "../../model/forestFire";
 
 /**
  * 산불 상태 코드 변환
- * 시스템에서 사용하는 상태 코드로 변환합니다.
  * 
- * @param {string} status 원본 상태 명칭
- * @param {string} percentage 진화율
- * @returns {ForestFireData["status"]} 변환된 상태 코드
+ * 원본 상태 명칭과 진화율을 기준으로 내부 상태 코드로 변환
  */
 export const convertStatus = (status: string, percentage: string): ForestFireData["status"] => {
   if (percentage === "100") return "extinguished";
@@ -22,10 +19,8 @@ export const convertStatus = (status: string, percentage: string): ForestFireDat
 
 /**
  * 대응 단계 이름으로 위험도 결정
- * 산불 대응 단계 이름을 기준으로 시스템에서 사용하는 위험도 태그로 변환합니다.
  * 
- * @param {string} issueName 대응 단계 이름
- * @returns {ForestFireData["severity"]} 위험도 태그
+ * 단계 이름에 따라 위험도 심각도 결정
  */
 export const getResponseLevel = (issueName: string): ForestFireData["severity"] => {
   if (issueName.includes("3단계")) return "critical";
@@ -36,10 +31,8 @@ export const getResponseLevel = (issueName: string): ForestFireData["severity"] 
 
 /**
  * 진화율에 따라 색상 코드 결정
- * 진화율 값에 따라 적절한 표시 색상을 반환합니다.
  * 
- * @param {string} percentage 진화율 문자열
- * @returns {string} 표시할 16진수 색상 코드
+ * 진행 상황을 시각적으로 표현하기 위한 색상 변환
  */
 export const getExtinguishPercentageColor = (percentage: string): string => {
   const percentageNum = parseInt(percentage, 10);

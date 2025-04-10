@@ -57,6 +57,8 @@ export const MAP_ERROR_MESSAGES: Record<MapErrorCode, string> = {
 
 /**
  * 지도 특화 에러 생성 함수
+ * 
+ * 에러 코드를 기반으로 구조화된 에러 객체 생성
  */
 export function createMapError(
   code: MapErrorCode, 
@@ -66,9 +68,9 @@ export function createMapError(
   const baseMessage = MAP_ERROR_MESSAGES[code] || '지도 작업 중 오류가 발생했습니다.';
   const message = additionalInfo ? `${baseMessage} ${additionalInfo}` : baseMessage;
   
-  // 에러 카테고리 매핑
+  // 코드 접두사로 에러 카테고리 결정
   let category: ErrorCategory = ErrorCategory.GENERAL;
-  let mapCategory: MapErrorCategory = MapErrorCategory.MAP_INITIALIZATION; // 기본값 설정
+  let mapCategory: MapErrorCategory = MapErrorCategory.MAP_INITIALIZATION;
   
   if (code.startsWith('MAP')) {
     category = ErrorCategory.UI;
@@ -78,7 +80,9 @@ export function createMapError(
     mapCategory = MapErrorCategory.GEOJSON_LOADING;
   } else if (code.startsWith('MRK')) {
     category = ErrorCategory.UI;
-    mapCategory = MapErrorCategory.MARKER_CREATION;
+    mapCategory = code === MapErrorCode.MARKER_UPDATE_FAILED 
+      ? MapErrorCategory.MARKER_UPDATE 
+      : MapErrorCategory.MARKER_CREATION;
   } else if (code.startsWith('EVT')) {
     category = ErrorCategory.UI;
     mapCategory = MapErrorCategory.MAP_INTERACTION;

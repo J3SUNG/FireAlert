@@ -11,6 +11,8 @@ import {
 
 /**
  * 공통 기본 에러 처리 서비스 구현
+ * 
+ * 애플리케이션 전체 에러 처리 로직을 중앙화
  */
 export class DefaultErrorHandlingService implements ErrorHandlingService {
   private handlers: ErrorHandler[] = [];
@@ -51,6 +53,8 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   
   /**
    * 에러 처리
+   * 
+   * 에러를 표준화하고 로깅 및 등록된 핸들러에 전달
    */
   handleError(error: AppError | Error | unknown, context?: ErrorContext): void {
     // 표준화된 AppError 객체로 변환
@@ -88,6 +92,8 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   
   /**
    * 새 에러 생성
+   * 
+   * 표준화된 에러 객체 생성
    */
   createError(
     message: string, 
@@ -116,9 +122,10 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   
   /**
    * 사용자 친화적 에러 메시지 가져오기
+   * 
+   * 개발자용 기술적 메시지 대신 사용자용 메시지 생성
    */
   getUserMessage(error: AppError): string {
-    // 심각도에 따라 다른 접두사 추가
     const prefix = error.severity === ErrorSeverity.CRITICAL 
       ? '심각한 오류: '
       : error.severity === ErrorSeverity.ERROR 
@@ -127,8 +134,6 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
           ? '경고: '
           : '';
     
-    // 카테고리에 맞는 친화적 메시지 반환
-    // 개발자용 상세 메시지는 숨기고 사용자용 메시지 제공
     if (error.options?.showUser) {
       return `${prefix}${error.message}`;
     }
@@ -204,6 +209,8 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   
   /**
    * 에러 타입 추측
+   * 
+   * 에러 메시지 내용을 기반으로 적절한 타입 판단
    */
   private guessErrorType(error: Error): ErrorType {
     const message = error.message.toLowerCase();
@@ -247,6 +254,8 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
   
   /**
    * 에러 로깅
+   * 
+   * 에러 정보를 콘솔 또는 원격 서비스에 기록
    */
   private logError(error: AppError): void {
     if (!error.options?.log) {
@@ -274,10 +283,9 @@ export class DefaultErrorHandlingService implements ErrorHandlingService {
       );
     }
     
-    // 원격 서비스 로깅 (실제 구현 필요)
+    // 원격 서비스 로깅 (필요시 구현)
     if (this.loggingOptions.logToService) {
-      // 원격 서비스에 로깅 구현
-      // 예: 서버 API 호출, 모니터링 서비스(Sentry 등) 활용
+      // 원격 로깅 서비스 연동 코드
     }
   }
 }
@@ -287,6 +295,8 @@ let errorServiceInstance: ErrorHandlingService | null = null;
 
 /**
  * 에러 처리 서비스 인스턴스 가져오기
+ * 
+ * 싱글톤 패턴으로 서비스 인스턴스 제공
  */
 export function getErrorService(): ErrorHandlingService {
   if (!errorServiceInstance) {
@@ -297,6 +307,8 @@ export function getErrorService(): ErrorHandlingService {
 
 /**
  * 에러 처리 서비스 재설정
+ * 
+ * 주로 테스트 목적으로 사용
  */
 export function resetErrorService(): void {
   errorServiceInstance = null;

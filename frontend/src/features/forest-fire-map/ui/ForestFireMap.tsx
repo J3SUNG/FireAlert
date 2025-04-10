@@ -10,16 +10,8 @@ import "./map.css";
 
 /**
  * 산불 지도 컴포넌트
- * 지도에 산불 데이터를 마커로 표시하고, 지역 경계를 GeoJSON으로 렌더링합니다.
- * Leaflet 지도 라이브러리를 기반으로 구현되었습니다.
  * 
- * 성능 최적화:
- * - useMemo와 useCallback을 사용하여 불필요한 렌더링 방지
- * - React.memo로 컴포넌트 메모이제이션
- * - 지도 상태 관리 최적화
- * 
- * @param {ForestFireMapProps} props 지도 관련 속성
- * @returns {JSX.Element} 지도 컴포넌트
+ * 지도에 산불 데이터를 마커로 표시하고 지역 경계를 GeoJSON으로 렌더링합니다.
  */
 export const ForestFireMap: FC<ForestFireMapProps> = React.memo(({
   fires,
@@ -27,7 +19,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(({
   onFireSelect,
   legendPosition = "bottomleft",
 }) => {
-  // 고유 ID 생성 (렌더링 간 안정성 보장)
+  // 고유 ID 생성 - 렌더링 간 안정성 보장
   const instanceId = useMemo(() => `map-${Date.now()}`, []);
   
   // 지도 컨테이너 DOM 참조
@@ -44,7 +36,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(({
   const { map, isMapLoaded } = useMap({
     containerRef: mapContainerRef,
     legendPosition,
-    fires, // 산불 데이터 전달
+    fires,
   });
 
   // 지도 로드 완료 시 준비 상태 업데이트
@@ -52,7 +44,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(({
     if (!mountedRef.current) return;
     
     if (isMapLoaded && map && mapContainerRef.current) {
-      // 지연을 통해 DOM이 완전히 렌더링될 때까지 대기
+      // 지연시간을 통해 DOM이 완전히 렌더링될 때까지 대기
       const timer = setTimeout(() => {
         if (mountedRef.current) {
           setMapReady(true);
@@ -92,7 +84,7 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(({
     };
   }, []);
 
-  // 마커 관리자 키 (안정적인 메모리 관리)
+  // 마커 관리자 키 생성 - 안정적인 메모리 관리
   const markerManagerKey = useMemo(() => `markers-${instanceId}`, [instanceId]);
 
   // 로딩 상태 계산

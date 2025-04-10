@@ -23,7 +23,9 @@ interface ErrorActions {
 }
 
 /**
- * 애플리케이션 전체에서 사용할 수 있는 에러 처리 훅
+ * 에러 처리 훅
+ * 
+ * 컴포넌트에서 중앙화된 에러 처리 로직 활용
  */
 export function useErrorHandling(
   component?: string, 
@@ -39,9 +41,8 @@ export function useErrorHandling(
   // 에러 서비스 가져오기
   const errorService = getErrorService();
   
-  // 에러 핸들러
+  // 에러 핸들러 - 관련 에러만 상태에 반영
   const errorHandler = useCallback<ErrorHandler>((error: AppError) => {
-    // 컴포넌트와 관련된 에러만 처리
     const isRelevantError = (
       (!component && !feature) || 
       (component && error.context?.component === component) ||
@@ -107,10 +108,8 @@ export function useErrorHandling(
   
   // 컴포넌트 마운트 시 에러 핸들러 등록
   useEffect(() => {
-    // 에러 핸들러 등록
     errorService.registerHandler(errorHandler);
     
-    // 컴포넌트 언마운트 시 에러 핸들러 제거
     return () => {
       errorService.unregisterHandler(errorHandler);
     };
@@ -129,7 +128,9 @@ export function useErrorHandling(
 }
 
 /**
- * 비동기 작업을 위한 로딩 및 에러 상태 관리 훅
+ * 비동기 작업 상태 관리 훅
+ * 
+ * 로딩/에러 상태를 함께 관리하는 유틸리티 훅
  */
 export function useAsyncOperation<T>(
   component?: string,
@@ -138,6 +139,7 @@ export function useAsyncOperation<T>(
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorState, { clearError, setError }] = useErrorHandling(component, feature);
   
+  // 비동기 함수 실행 및 상태 관리
   const execute = useCallback(
     async (asyncFn: () => Promise<T>, context?: ErrorContext): Promise<T | null> => {
       setIsLoading(true);

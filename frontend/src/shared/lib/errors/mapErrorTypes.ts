@@ -18,6 +18,8 @@ export enum MapErrorCode {
 
 /**
  * 지도 초기화 에러 생성 함수
+ * 
+ * 지도 컴포넌트 로드 및 초기화 실패 시 사용
  */
 export function createMapInitError(
   message = 'Failed to initialize map',
@@ -39,6 +41,8 @@ export function createMapInitError(
 
 /**
  * 지도 마커 생성 에러 생성 함수
+ * 
+ * 위치 마커 생성 및 표시 실패 시 사용
  */
 export function createMarkerError(
   message = 'Failed to create marker',
@@ -60,6 +64,8 @@ export function createMarkerError(
 
 /**
  * GeoJSON 로드 에러 생성 함수
+ * 
+ * 지역 경계 데이터 로드 실패 시 사용
  */
 export function createGeoJsonError(
   message = 'Failed to load GeoJSON data',
@@ -81,6 +87,8 @@ export function createGeoJsonError(
 
 /**
  * 위치 정보 관련 에러 생성 함수
+ * 
+ * 사용자 현재 위치 획득 실패 시 사용
  */
 export function createGeolocationError(
   message = 'Failed to get current location',
@@ -102,6 +110,8 @@ export function createGeolocationError(
 
 /**
  * 위치 정보 권한 관련 에러 생성 함수
+ * 
+ * 위치 권한 거부 시 사용
  */
 export function createLocationPermissionError(
   message = 'Location permission denied',

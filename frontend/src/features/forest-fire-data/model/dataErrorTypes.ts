@@ -35,6 +35,8 @@ export const DATA_ERROR_MESSAGES: Record<DataErrorCode, string> = {
 
 /**
  * 데이터 특화 에러 생성 함수
+ * 
+ * 에러 코드에 따라 적절한 에러 객체를 생성합니다
  */
 export function createDataError(
   code: DataErrorCode, 
@@ -44,7 +46,7 @@ export function createDataError(
   const baseMessage = DATA_ERROR_MESSAGES[code] || '데이터 처리 중 오류가 발생했습니다.';
   const message = additionalInfo ? `${baseMessage} ${additionalInfo}` : baseMessage;
   
-  // 에러 카테고리 결정
+  // 에러 유형에 따라 카테고리 분류
   let category: ErrorCategory;
   
   if (code === DataErrorCode.FETCH_FAILED || code === DataErrorCode.TIMEOUT) {
@@ -55,7 +57,7 @@ export function createDataError(
     category = ErrorCategory.DATA;
   }
   
-  // 심각도 결정 (FETCH_FAILED, TIMEOUT은 더 심각)
+  // 네트워크 오류는 더 심각한 수준으로 분류
   const severity = 
     (code === DataErrorCode.FETCH_FAILED || code === DataErrorCode.TIMEOUT) 
       ? ErrorSeverity.ERROR 
@@ -72,6 +74,6 @@ export function createDataError(
       timestamp: Date.now()
     },
     recoverable: true,
-    retryable: code !== DataErrorCode.INVALID_FORMAT // 형식 오류는 재시도해도 해결 안됨
+    retryable: code !== DataErrorCode.INVALID_FORMAT // 형식 오류는 재시도해도 동일한 결과
   };
 }

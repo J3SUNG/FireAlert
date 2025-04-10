@@ -12,14 +12,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * 공통 버튼 컴포넌트
- * 애플리케이션 전체에서 일관된 버튼 스타일과 동작을 제공합니다.
  * 
- * @param props.variant - 버튼 변형 (default, primary, secondary, all, active, contained, extinguished)
- * @param props.isActive - 활성화 상태
- * @param props.fullWidth - 전체 너비 사용 여부
- * @param props.children - 버튼 내용
- * @param props.className - 추가 CSS 클래스
- * @param props - 기타 HTML 버튼 속성
+ * 애플리케이션 전체에서 일관된 스타일과 기능 제공
  */
 export const Button: React.FC<ButtonProps> = ({
   variant = "default",

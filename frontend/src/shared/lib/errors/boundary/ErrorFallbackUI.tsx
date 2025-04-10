@@ -9,7 +9,9 @@ interface ErrorFallbackUIProps {
 }
 
 /**
- * 에러 발생 시 보여지는 폴백 UI 컴포넌트
+ * 에러 폴백 UI 컴포넌트
+ * 
+ * 에러 발생 시 보여줄 사용자 친화적인 화면
  */
 const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
   error,
@@ -17,10 +19,10 @@ const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
   component,
   feature
 }) => {
-  // 사용자에게 보여줄 에러 메시지 생성
+  // 사용자에게 보여줄 에러 메시지
   const userMessage = error?.message || '알 수 없는 오류가 발생했습니다.';
   
-  // 개발 환경에서만 표시할 기술적 세부 정보
+  // 개발 환경에서만 상세 정보 표시
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   return (
@@ -50,6 +52,7 @@ const ErrorFallbackUI: React.FC<ErrorFallbackUIProps> = ({
           {userMessage}
         </p>
         
+        {/* 개발 모드에서만 표시되는 상세 정보 */}
         {isDevelopment && error && (
           <div className="error-fallback__details">
             <h3>기술적 세부 정보 (개발 모드)</h3>

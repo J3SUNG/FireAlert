@@ -9,11 +9,8 @@ interface LoadingIndicatorProps {
 
 /**
  * 공통 로딩 표시 컴포넌트
- * 애플리케이션 전체에서 일관된 로딩 UI를 제공합니다.
  * 
- * @param props.message - 로딩 메시지 (기본값: "데이터를 불러오는 중입니다...")
- * @param props.className - 추가 CSS 클래스
- * @param props.size - 로딩 스피너 크기 (small, medium, large)
+ * 애플리케이션 전체에 일관된 로딩 UI 제공
  */
 export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
   message = LOADING_MESSAGE,

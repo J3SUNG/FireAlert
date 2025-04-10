@@ -8,10 +8,8 @@ import "./FireAlertContent.css";
 
 /**
  * 산불 알림 컨텐츠 컴포넌트
- * 로딩 상태, 에러 상태, 지도와 사이드바를 표시합니다.
  * 
- * @param props 컨텐츠 컴포넌트 속성
- * @returns {JSX.Element} 컨텐츠 UI
+ * 로딩, 에러 상태와 지도, 사이드바를 표시합니다.
  */
 export const FireAlertContent: React.FC<FireAlertContentProps> = ({
   loading,

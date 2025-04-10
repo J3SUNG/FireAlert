@@ -13,11 +13,9 @@ interface MapInitializationOptions {
 }
 
 /**
- * 지도 초기화 및 생명주기 관리를 위한 커스텀 훅
- * 지도 인스턴스 생성, 상태 관리, 메모리 정리를 담당합니다.
+ * 지도 초기화 및 생명주기 관리 훅
  * 
- * @param options 지도 초기화 옵션
- * @returns 지도 인스턴스와 로드 상태
+ * 지도 인스턴스 생성, 상태 관리, 메모리 정리 담당
  */
 export function useMapInitialization({
   containerRef,
@@ -66,7 +64,7 @@ export function useMapInitialization({
     // 지도 인스턴스 상태 업데이트
     setMap(mapInstance);
 
-    // 지도가 로드되었음을 표시
+    // 약간의 지연 후 로드 완료 처리
     setTimeout(() => {
       if (mountedRef.current) {
         setIsMapLoaded(true);

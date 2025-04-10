@@ -6,10 +6,8 @@ import { ForestFireData } from "../../model/forestFire";
 
 /**
  * 산불 데이터 통계 계산
- * 지역별, 위험도별, 상태별 통계를 계산합니다.
  * 
- * @param {ForestFireData[]} fires 산불 데이터 배열
- * @returns 산불 통계 정보 객체
+ * 지역별, 위험도별, 상태별 종합 통계를 계산
  */
 export const getForestFireStatistics = (fires: ForestFireData[]) => {
   const provinceStats = {} as Record<
@@ -64,10 +62,8 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
 
 /**
  * 상태별 카운트 계산
- * 산불 상태별(진행중, 통제중, 진화완료) 개수를 계산합니다.
  * 
- * @param {ForestFireData[]} fires 산불 데이터 배열
- * @returns {{ total: number, active: number, contained: number, extinguished: number }} 상태별 카운트
+ * 산불 상태별 개수 계산 (전체, 진행중, 통제중, 진화완료)
  */
 export const calculateStatusCounts = (fires: ForestFireData[]) => {
   return {
@@ -80,10 +76,8 @@ export const calculateStatusCounts = (fires: ForestFireData[]) => {
 
 /**
  * 대응 단계별 카운트 계산
- * 산불 대응 단계별 개수를 계산합니다.
  * 
- * @param {ForestFireData[]} fires 산불 데이터 배열
- * @returns {{ level3: number, level2: number, level1: number, initial: number }} 대응 단계별 카운트
+ * 심각도에 따른 대응 단계별 개수 계산
  */
 export const calculateResponseLevelCounts = (fires: ForestFireData[]) => {
   return {

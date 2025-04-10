@@ -5,7 +5,8 @@ import { UseMapOptions } from "../model/types";
 
 /**
  * Leaflet 맵을 관리하는 커스텀 훅
- * StrictMode와 렌더링 사이클을 고려한 구현
+ * 
+ * StrictMode 환경에서 중복 렌더링 문제를 해결하고 성능 최적화
  */
 export function useMap({
   containerRef,
@@ -18,29 +19,23 @@ export function useMap({
   const instanceIdRef = useRef<string>(`map-${Date.now()}`);
   const isInitializedRef = useRef<boolean>(false);
 
-  // 맵 초기화 함수 - 클린업 로직 포함
+  // 맵 초기화 함수
   const initializeMap = useCallback(() => {
-    // 이미 초기화된 경우에도 fires 데이터가 변경되면 범례 업데이트
-    if (isInitializedRef.current && mapRef.current && window && (window as any).updateFireLegend) {
-      (window as any).updateFireLegend();
-      return mapRef.current;
-    }
-    // 이미 초기화된 경우 중복 초기화 방지
+    // 이미 초기화된 경우, 불필요한 재생성 방지
     if (isInitializedRef.current && mapRef.current) {
+      // fires 데이터가 변경되면 범례만 업데이트
+      if (window && (window as any).updateFireLegend) {
+        (window as any).updateFireLegend();
+      }
       return mapRef.current;
     }
 
     const container = containerRef.current;
-    if (!container) {
+    if (!container || !document.body.contains(container)) {
       return null;
     }
 
-    // 컨테이너가 DOM에 존재하는지 확인
-    if (!document.body.contains(container)) {
-      return null;
-    }
-
-    // 기존 맵 인스턴스 정리 - 강제 정리
+    // 기존 맵 인스턴스 정리
     if (mapRef.current) {
       try {
         mapRef.current.off();
@@ -58,7 +53,7 @@ export function useMap({
       }
     }
 
-    // 컨테이너 강제 초기화
+    // 컨테이너 초기화 - Leaflet 잔여물 제거
     try {
       container.innerHTML = "";
 
@@ -82,7 +77,7 @@ export function useMap({
     // 고유 ID 속성 추가
     container.setAttribute("data-map-id", instanceIdRef.current);
 
-    // 새 맵 인스턴스 생성 시도
+    // 새 맵 인스턴스 생성
     try {
       container.style.backgroundColor = MAP_BACKGROUND_COLOR;
 
@@ -96,10 +91,12 @@ export function useMap({
       const newMap = L.map(container, mergedOptions);
       mapRef.current = newMap;
 
+      // 한국 영역으로 지도 범위 제한
       const bounds = L.latLngBounds(KOREA_BOUNDS.southWest, KOREA_BOUNDS.northEast);
       newMap.setMaxBounds(bounds);
       newMap.options.maxBoundsViscosity = 0.8;
 
+      // 컨트롤 추가
       L.control.zoom({ position: "topright" }).addTo(newMap);
       L.control.scale({ imperial: false, position: "bottomright" }).addTo(newMap);
 
@@ -112,7 +109,7 @@ export function useMap({
         }
       });
 
-      // 안전을 위해 타임아웃으로도 로드 상태 설정
+      // 안전장치: 일정 시간 후에도 로드 이벤트가 발생하지 않으면 강제로 로드 상태 설정
       setTimeout(() => {
         if (mapRef.current === newMap && !isMapLoaded) {
           setIsMapLoaded(true);
@@ -151,7 +148,7 @@ export function useMap({
       isInitializedRef.current = false;
       setIsMapLoaded(false);
     } catch (_) {
-      // 강제로 참조 초기화
+      // 실패해도 참조 초기화
       mapRef.current = null;
       isInitializedRef.current = false;
       setIsMapLoaded(false);
@@ -168,24 +165,20 @@ export function useMap({
     };
   }, []); // 의존성 배열 비우기
   
-  // 산불 데이터가 변경될 때마다 범례 업데이트
+  // 산불 데이터가 변경될 때만 범례 업데이트
   useEffect(() => {
     if (isMapLoaded && mapRef.current && fires.length > 0) {
-      // 전역 범례 업데이트 함수가 있다면 호출
       if (window && (window as any).updateFireLegend) {
         (window as any).updateFireLegend();
       }
     }
   }, [isMapLoaded, fires]);
 
-  // 컨테이너 변경 감지
+  // 컨테이너 변경 시 지도 재초기화
   useEffect(() => {
-    // 컨테이너가 변경되었지만, 맵이 이미 존재하는 경우 재초기화
-    if (
-      containerRef.current &&
-      mapRef.current &&
-      mapRef.current.getContainer() !== containerRef.current
-    ) {
+    if (containerRef.current &&
+        mapRef.current &&
+        mapRef.current.getContainer() !== containerRef.current) {
       destroyMap();
       initializeMap();
     }

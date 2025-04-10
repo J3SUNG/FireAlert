@@ -17,8 +17,8 @@ interface ErrorBoundaryState {
 
 /**
  * 에러 바운더리 컴포넌트
- * React 컴포넌트 트리에서 자식 컴포넌트에서 발생하는 JavaScript 에러를 캐치하고 
- * 에러 UI를 표시합니다.
+ * 
+ * 컴포넌트 트리에서 발생하는 JavaScript 에러를 캐치하고 대체 UI 표시
  */
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -30,7 +30,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    // 다음 렌더링에서 폴백 UI가 보이도록 상태를 업데이트합니다
+    // 에러 발생 시 상태 업데이트
     return {
       hasError: true,
       error
@@ -38,10 +38,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // 에러 로깅
     const { component, feature, onError } = this.props;
     
-    // 에러 서비스에 에러 전달
+    // 중앙 에러 처리 서비스에 에러 전달
     const errorService = getErrorService();
     errorService.handleError(error, {
       component,
@@ -49,13 +48,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       timestamp: Date.now()
     });
     
-    // 사용자 정의 에러 핸들러 호출
+    // 사용자 정의 에러 핸들러가 있다면 호출
     if (onError) {
       onError(error, errorInfo);
     }
   }
 
-  // 에러 상태 초기화
+  // 에러 상태 초기화 - 앱 복구 시도
   handleReset = (): void => {
     this.setState({
       hasError: false,
@@ -73,7 +72,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         return fallback;
       }
       
-      // 기본 에러 UI 컴포넌트
+      // 기본 에러 UI 표시
       return (
         <ErrorFallbackUI 
           error={error} 
@@ -84,6 +83,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       );
     }
 
+    // 에러가 없으면 자식 컴포넌트 정상 렌더링
     return children;
   }
 }

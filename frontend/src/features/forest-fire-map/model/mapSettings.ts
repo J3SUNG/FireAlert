@@ -1,6 +1,9 @@
 import L from "leaflet";
 
-// 지도 초기 설정
+/**
+ * 지도 초기 설정
+ * 한국 중심의 지도를 위한 기본 설정값
+ */
 export const MAP_INIT_OPTIONS = {
   center: [36.0, 127.7] as L.LatLngExpression, // 한국 중심점
   zoom: 7,
@@ -14,13 +17,19 @@ export const MAP_INIT_OPTIONS = {
   maxZoom: 12,
 };
 
-// 한국의 지도 경계
+/**
+ * 한국의 지도 경계
+ * 한국 전체를 포함하는 지도 범위
+ */
 export const KOREA_BOUNDS = {
   southWest: L.latLng(33.0, 124.5),
   northEast: L.latLng(38.7, 131.0),
 };
 
-// GeoJSON 파일 경로
+/**
+ * GeoJSON 파일 경로
+ * 행정구역 경계 데이터 파일 경로
+ */
 export const GEOJSON_PATHS = {
   provinces: "/assets/map/gadm41_KOR_1.json",
   districts: "/assets/map/gadm41_KOR_2.json",
@@ -28,17 +37,17 @@ export const GEOJSON_PATHS = {
 
 /**
  * 지도 경계 스타일 시스템
- * - 모든 시도/시군구 경계 스타일을 중앙 관리하기 위한 모듈
- * - CSS 정의 대신 JavaScript 객체로 통합 관리
+ * 
+ * 시도/시군구 경계선과 영역의 스타일을 중앙에서 관리
  */
 export const createGeoJsonStyles = () => {
-  // 공통 기본 스타일 (모든 경계선에 적용될 기본 스타일)
+  // 공통 기본 스타일
   const baseGeoBoundaryStyle: L.PathOptions = {
     dashArray: "",
     lineCap: "butt" as L.LineCapShape,
     lineJoin: "miter" as L.LineJoinShape,
     opacity: 1.0,
-    interactive: false, // 마우스 이벤트 처리하지 않음
+    interactive: false, // 마우스 이벤트 비활성화
   };
 
   // 시도 스타일
@@ -63,34 +72,32 @@ export const createGeoJsonStyles = () => {
     renderer: new L.SVG({ padding: 0 }), // 패딩 없는 SVG 렌더러
   };
 
-  // 확대 레벨에 따른 시군구 스타일 생성 함수
+  // 확대 레벨에 따른 시군구 스타일 생성
   const getDistrictStyleByZoom = (zoom: number): L.PathOptions => {
-    // 기본 시군구 스타일에 확대 레벨별 스타일 적용
+    // 줌 레벨에 따른 스타일 변경
     if (zoom >= 9) {
       return {
         ...districtStyle,
-        weight: 1, // 높은 줌 레벨에서 1px 두께 유지
+        weight: 1, // 높은 줌 레벨에서 1px
       };
     } else if (zoom >= 8) {
       return {
         ...districtStyle,
-        weight: 1, // 중간 줌 레벨에서 1px 두께 유지
+        weight: 1, // 중간 줌 레벨에서 1px
       };
     } else {
       return {
-        ...districtStyle, // 낮은 줌 레벨에서 기본 스타일 사용
+        ...districtStyle, // 낮은 줌 레벨에서 기본
       };
     }
   };
 
-  // SVG 경계선 스타일 직접 설정 함수 - DOM 직접 조작 대신 중앙화
+  // SVG 경계선 스타일 직접 설정
   const applyDistrictSvgStyle = (path: SVGPathElement): void => {
     if (!path || !path.classList) return;
 
-    // 모든 district 클래스가 있는 경로에 동일한 스타일 적용
     if (!path.classList.contains("province-boundary")) {
       path.classList.add("district-boundary");
-      // 시군구 경계선 스타일 직접 적용
       path.setAttribute("stroke", districtStyle.color || "#ffffff");
       path.setAttribute("stroke-width", "1");
       path.setAttribute("stroke-opacity", String(districtStyle.opacity || 1));
@@ -102,12 +109,11 @@ export const createGeoJsonStyles = () => {
     }
   };
 
-  // 시도 경계선 SVG 스타일 적용 함수
+  // 시도 경계선 SVG 스타일 적용
   const applyProvinceSvgStyle = (path: SVGPathElement): void => {
     if (!path || !path.classList) return;
 
     path.classList.add("province-boundary");
-    // 시도 경계선 스타일 직접 적용
     path.setAttribute("stroke", provinceStyle.color || "#ffffff");
     path.setAttribute("stroke-width", String(provinceStyle.weight || 3.5));
     path.setAttribute("stroke-opacity", String(provinceStyle.opacity || 1));
@@ -117,7 +123,7 @@ export const createGeoJsonStyles = () => {
     path.setAttribute("pointer-events", "none");
   };
 
-  // 강제 시군구 스타일 적용 함수 (일관된 스타일 유지를 위해 사용)
+  // 강제 시군구 스타일 적용 (일관성 유지)
   const forceApplyDistrictStyle = (layer: L.GeoJSON | null, map: L.Map | null): void => {
     if (!layer || !map || !map.hasLayer(layer)) return;
 
@@ -158,7 +164,10 @@ export const geoJsonStyles = createGeoJsonStyles();
 export const PROVINCES_STYLE = geoJsonStyles.provinceStyle;
 export const DISTRICTS_STYLE = geoJsonStyles.districtStyle;
 
-// 심각도별 마커 크기
+/**
+ * 심각도별 마커 크기
+ * 산불의 심각도에 따른 마커 사이즈 정의
+ */
 export const MARKER_SIZES = {
   critical: 28,
   high: 25,
@@ -166,14 +175,20 @@ export const MARKER_SIZES = {
   low: 20,
 };
 
-// 상태별 텍스트
+/**
+ * 상태별 텍스트
+ * 산불 상태에 대한 한글 표시 텍스트
+ */
 export const STATUS_TEXT = {
   active: "진행중",
   contained: "통제중",
   extinguished: "진화완료",
 };
 
-// 심각도별 텍스트
+/**
+ * 심각도별 텍스트
+ * 산불 위험도에 대한 한글 표시 텍스트
+ */
 export const SEVERITY_TEXT = {
   critical: "심각",
   high: "높음",
@@ -181,5 +196,8 @@ export const SEVERITY_TEXT = {
   low: "낮음",
 };
 
-// 지도 배경색
+/**
+ * 지도 배경색
+ * 지도 컨테이너의 기본 배경색
+ */
 export const MAP_BACKGROUND_COLOR = "#bae6fd";

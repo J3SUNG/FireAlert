@@ -5,10 +5,8 @@ import "./FireAlertSidebar.css";
 
 /**
  * 산불 알림 사이드바 컴포넌트
- * 산불 데이터 현황 및 목록을 표시합니다.
  * 
- * @param props 사이드바 컴포넌트 속성
- * @returns {JSX.Element} 사이드바 UI
+ * 산불 데이터 현황 및 목록을 표시합니다
  */
 export const FireAlertSidebar: React.FC<FireAlertSidebarProps> = ({
   filteredData,

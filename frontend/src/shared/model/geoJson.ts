@@ -3,10 +3,10 @@
  */
 
 export interface GeoJsonProperties {
-  NL_NAME_1?: string;
-  NL_NAME_2?: string;
-  TYPE_2?: string;
-  [key: string]: unknown;
+  NL_NAME_1?: string;  // 시도명
+  NL_NAME_2?: string;  // 시군구명
+  TYPE_2?: string;     // 지역 타입
+  [key: string]: unknown;  // 기타 속성
 }
 
 export interface GeoJsonGeometry {
@@ -26,6 +26,6 @@ export interface GeoJsonData {
 }
 
 export interface Coordinates {
-  lat: number;
-  lng: number;
+  lat: number;  // 위도
+  lng: number;  // 경도
 }

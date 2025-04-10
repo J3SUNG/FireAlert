@@ -12,23 +12,25 @@ interface MapInitializerProps {
 
 /**
  * Leaflet 지도 초기화 컴포넌트
+ * 
+ * 지도 생성, 설정 및 이벤트 바인딩 처리
  */
 export const MapInitializer: FC<MapInitializerProps> = ({
   legendPosition = "bottomleft",
   onMapReady,
-  fires = [], // 기본값으로 빈 배열 사용
+  fires = [],
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
-  // 에러 처리 훅 사용
+  // 에러 처리
   const [errorState, { setError, clearError }] = useErrorHandling("MapInitializer", "forest-fire-map");
 
-  // 지도 초기화 효과
+  // 지도 초기화
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    if (map) return; // 이미 맵이 있으면 초기화하지 않음
+    if (map) return; // 이미 초기화된 경우 중복 방지
 
     setIsLoading(true);
     clearError();
@@ -37,48 +39,34 @@ export const MapInitializer: FC<MapInitializerProps> = ({
       // 배경색 설정
       mapContainerRef.current.style.backgroundColor = MAP_BACKGROUND_COLOR;
 
-      // 지도 초기화
+      // 지도 인스턴스 생성
       const newMap = L.map(mapContainerRef.current, MAP_INIT_OPTIONS);
 
-      // 지도 경계 설정
+      // 한국 영역으로 제한
       const bounds = L.latLngBounds(KOREA_BOUNDS.southWest, KOREA_BOUNDS.northEast);
       newMap.setMaxBounds(bounds);
-      newMap.options.maxBoundsViscosity = 0.8; // 경계를 넘어갈 때 저항감 (0-1)
+      newMap.options.maxBoundsViscosity = 0.8;
 
-      // 오른쪽 위에 줌 컨트롤 추가
-      L.control
-        .zoom({
-          position: "topright",
-        })
-        .addTo(newMap);
+      // 컨트롤 추가
+      L.control.zoom({ position: "topright" }).addTo(newMap);
+      L.control.scale({ imperial: false, position: "bottomright" }).addTo(newMap);
 
-      // 스케일 컨트롤 추가
-      L.control
-        .scale({
-          imperial: false,
-          position: "bottomright",
-        })
-        .addTo(newMap);
-
-      // 범례 추가
+      // 범례 컨트롤 추가
       const legendControl = new L.Control({ position: legendPosition });
 
       legendControl.onAdd = function (): HTMLElement {
         const div = L.DomUtil.create("div", "map-legend");
 
-        // 범례 업데이트 함수 정의
+        // 범례 업데이트 함수
         const updateLegend = () => {
           try {
             const newInitialCount = fires.filter(
-              (fire) =>
-                fire.responseLevelName === "초기대응" || fire.responseLevelName === "초기진화단계"
+              fire => fire.responseLevelName === "초기대응" || fire.responseLevelName === "초기진화단계"
             ).length;
 
-            const newLevel1Count = fires.filter((fire) => fire.responseLevelName === "1단계").length;
-
-            const newLevel2Count = fires.filter((fire) => fire.responseLevelName === "2단계").length;
-
-            const newLevel3Count = fires.filter((fire) => fire.responseLevelName === "3단계").length;
+            const newLevel1Count = fires.filter(fire => fire.responseLevelName === "1단계").length;
+            const newLevel2Count = fires.filter(fire => fire.responseLevelName === "2단계").length;
+            const newLevel3Count = fires.filter(fire => fire.responseLevelName === "3단계").length;
 
             div.innerHTML = `
               <h4 class="map-legend__title">산불 대응단계 현황</h4>
@@ -112,18 +100,17 @@ export const MapInitializer: FC<MapInitializerProps> = ({
               </div>
             `;
           } catch (error) {
-            // 범례 업데이트 에러 처리
+            // 범례 업데이트 오류
             setError(error, { 
               functionName: 'updateLegend',
               action: '지도 범례 업데이트'
             });
             
-            // 에러가 발생해도 기본 텍스트는 표시
             div.innerHTML = '<h4 class="map-legend__title">산불 대응단계 현황</h4><div class="map-legend__error">범례 정보를 불러올 수 없습니다.</div>';
           }
         };
 
-        // 산불 데이터가 변경될 때마다 호출할 수 있도록 전역 함수에 저장 (참조용)
+        // 외부에서 범례 업데이트 가능하도록 전역 함수 설정
         if (window) {
           (window as any).updateFireLegend = updateLegend;
         }
@@ -139,12 +126,12 @@ export const MapInitializer: FC<MapInitializerProps> = ({
       // 배경색 설정
       newMap.getContainer().style.background = MAP_BACKGROUND_COLOR;
 
-      // 상태 업데이트
+      // 상태 업데이트 및 콜백
       setMap(newMap);
       onMapReady(newMap);
       setIsLoading(false);
     } catch (error) {
-      // 에러 처리
+      // 초기화 오류 처리
       setError(error, {
         functionName: 'mapInitialization',
         action: '지도 초기화'
@@ -153,12 +140,12 @@ export const MapInitializer: FC<MapInitializerProps> = ({
     }
 
     return () => {
-      // cleanup: 컴포넌트 언마운트 시 지도 삭제 (선택적)
+      // 메모리 누수 방지
       if (map) map.remove();
     };
   }, [legendPosition, onMapReady, fires, clearError, setError]);
 
-  // fires가 변경될 때 범례 업데이트
+  // 산불 데이터 변경 시 범례 업데이트
   useEffect(() => {
     if (window && (window as any).updateFireLegend) {
       (window as any).updateFireLegend();
@@ -169,6 +156,7 @@ export const MapInitializer: FC<MapInitializerProps> = ({
     <>
       <div ref={mapContainerRef} className="forest-fire-map__container" />
       
+      {/* 에러 발생 시 오버레이 표시 */}
       {errorState.hasError && (
         <div className="map-error-overlay" style={{
           position: 'absolute',
@@ -196,7 +184,6 @@ export const MapInitializer: FC<MapInitializerProps> = ({
                 clearError();
                 if (map) map.remove();
                 setMap(null);
-                // 지도 다시 초기화
               }}
               style={{
                 padding: '8px 16px',

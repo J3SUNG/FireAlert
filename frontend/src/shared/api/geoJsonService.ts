@@ -11,10 +11,8 @@ let loadError = false;
 
 /**
  * GeoJSON 피처의 중심점 계산
- * 다양한 지오메트리 형태(Point, Polygon, MultiPolygon)에 대한 중심점을 계산합니다.
  * 
- * @param {GeoJsonFeature} feature 중심점을 계산할 GeoJSON 피처
- * @returns {Coordinates | null} 계산된 중심점 좌표 또는 계산 실패 시 null
+ * 다양한 지오메트리 형태에 대한 중심점을 계산
  */
 const getCentroid = (feature: GeoJsonFeature): Coordinates | null => {
   try {
@@ -63,7 +61,6 @@ const getCentroid = (feature: GeoJsonFeature): Coordinates | null => {
 
     return null;
   } catch (_) {
-    // 중심점 계산 중 오류 처리
     return null;
   }
 };
@@ -72,10 +69,8 @@ const getCentroid = (feature: GeoJsonFeature): Coordinates | null => {
 export const geoJsonService = {
   /**
    * GeoJSON 데이터 로드
-   * 지정된 URL에서 GeoJSON 데이터를 가져오고 캐싱합니다.
    * 
-   * @param {string} url GeoJSON 파일의 URL
-   * @returns {Promise<GeoJsonData | null>} 로드된 GeoJSON 데이터 또는 오류 시 null
+   * 지정된 URL에서 GeoJSON 데이터를 가져와 캐싱
    */
   async loadGeoJsonData(url: string): Promise<GeoJsonData | null> {
     if (geoJsonData) return geoJsonData;
@@ -100,7 +95,6 @@ export const geoJsonService = {
           isLoading = false;
           resolve();
         } catch (_) {
-          // GeoJSON 데이터 로드 중 오류 처리
           loadError = true;
           isLoading = false;
           resolve();
@@ -108,7 +102,6 @@ export const geoJsonService = {
       };
 
       loadData().catch((_) => {
-        // GeoJSON 데이터 로드 중 오류 처리
         loadError = true;
         isLoading = false;
         resolve();
@@ -121,12 +114,8 @@ export const geoJsonService = {
 
   /**
    * 지역 이름으로 좌표 찾기
-   * 시도 및 시군구 이름을 기반으로 GeoJSON 데이터에서 좌표를 검색합니다.
    * 
-   * @param {GeoJsonData} geoJsonData GeoJSON 데이터
-   * @param {string} province 시도 이름
-   * @param {string} [district] 시군구 이름 (선택적)
-   * @returns {Coordinates | null} 찾은 좌표 또는 좌표를 찾지 못한 경우 null
+   * 시도 및 시군구 이름으로 좌표 검색
    */
   getCoordinatesByName(
     geoJsonData: GeoJsonData,
@@ -139,6 +128,7 @@ export const geoJsonService = {
       }
 
       if (district) {
+        // 시군구 정보가 있으면 해당 지역 검색
         const districtFeatures = geoJsonData.features.filter((feature) => {
           const props = feature.properties;
           if (!props.NL_NAME_1 || !props.NL_NAME_2) return false;
@@ -155,6 +145,7 @@ export const geoJsonService = {
         }
       }
 
+      // 시도 단위 검색
       const provinceFeatures = geoJsonData.features.filter((feature) => {
         const props = feature.properties;
         return props.NL_NAME_1 && (props.NL_NAME_1.includes(province) || province.includes(props.NL_NAME_1));
@@ -184,7 +175,6 @@ export const geoJsonService = {
 
       return null;
     } catch (_) {
-      // 좌표 검색 중 오류 처리
       return null;
     }
   }

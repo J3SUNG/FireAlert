@@ -19,6 +19,8 @@ export enum DataErrorCode {
 
 /**
  * 데이터 페칭 에러 생성 함수
+ * 
+ * 네트워크 또는 서버 문제로 데이터를 가져오지 못할 때 사용
  */
 export function createDataFetchError(
   message = 'Failed to fetch data',
@@ -41,6 +43,8 @@ export function createDataFetchError(
 
 /**
  * 데이터 파싱 에러 생성 함수
+ * 
+ * 수신된 데이터의 형식이 예상과 다를 때 사용
  */
 export function createDataParseError(
   message = 'Failed to parse data',
@@ -61,7 +65,9 @@ export function createDataParseError(
 }
 
 /**
- * 산불 데이터 관련 에러 생성 함수
+ * 산불 데이터 가져오기 에러 생성 함수
+ * 
+ * 산불 특화 데이터 로드 실패 시 사용
  */
 export function createFireDataFetchError(
   message = 'Failed to fetch forest fire data',
@@ -83,6 +89,8 @@ export function createFireDataFetchError(
 
 /**
  * 산불 데이터 업데이트 에러 생성 함수
+ * 
+ * 이미 로드된 산불 데이터 갱신 실패 시 사용
  */
 export function createFireDataUpdateError(
   message = 'Failed to update forest fire data',

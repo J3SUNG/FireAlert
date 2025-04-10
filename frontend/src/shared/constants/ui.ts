@@ -40,5 +40,5 @@ export const FIRE_STATUS_CLASSES = {
   extinguished: 'fire-button--active-green',
 };
 
-/** 기본 CSS 클래스 */
+/** 기본 버튼 CSS 클래스 */
 export const DEFAULT_BUTTON_CLASS = 'fire-button';

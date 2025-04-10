@@ -5,10 +5,8 @@ import "./FireAlertHeader.css";
 
 /**
  * 산불 알림 헤더 컴포넌트
- * 로고, 필터 버튼, 타임스탬프를 표시합니다.
  * 
- * @param props 헤더 컴포넌트 속성
- * @returns {JSX.Element} 헤더 UI
+ * 로고, 필터 버튼, 타임스탬프를 표시합니다
  */
 export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
   selectedFilter,
