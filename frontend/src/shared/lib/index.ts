@@ -10,6 +10,12 @@ export * from './calculations';
 // 데이터 처리 관련 유틸리티 내보내기
 export * from './data';
 
+// UI 유틸리티 내보내기
+export * from './ui';
+
+// 캐시 유틸리티 내보내기
+export * from './cache';
+
 // Leaflet 유틸리티 내보내기
 export { setupDefaultLeafletIcons } from './leaflet/iconSetup';
 

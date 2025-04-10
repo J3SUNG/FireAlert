@@ -3,22 +3,15 @@ import { ForestFireData } from "../model/forestFire";
 import { extractLocation } from "../lib/formatting/locationFormat";
 import { convertStatus, getResponseLevel } from "../lib/data/forestFireUtils";
 import { geoJsonService } from "./geoJsonService";
-
-/** 캐시된 산불 데이터 */
-let cachedFireData: ForestFireData[] | null = null;
-/** 캐시 타임스탬프 */
-let cacheTimestamp: number | null = null;
-/** 캐시된 GeoJSON 데이터 */
-let cachedGeoJsonData: any = null;
-/** GeoJSON 캐시 타임스탬프 */
-let geoJsonCacheTimestamp: number | null = null;
-
+import { CacheManager } from "../lib/cache/cacheUtils";
 import { CACHE_DURATION_MS, FIRE_LIST_ENDPOINT, GEO_JSON_PATH } from '../constants/api';
 
-/** 캐시 유효 기간 (상수에서 가져옴) */
-const CACHE_DURATION = CACHE_DURATION_MS;
-/** GeoJSON 캐시 유효 기간 (24시간) */
-const GEOJSON_CACHE_DURATION = 24 * 60 * 60 * 1000;
+/** 
+ * 캐시 관리자 인스턴스 생성
+ * 산불 데이터와 GeoJSON 데이터를 위한 별도의 캐시 관리자를 생성합니다.
+ */
+const fireDataCache = new CacheManager<ForestFireData[]>(CACHE_DURATION_MS);
+const geoJsonCache = new CacheManager<any>(24 * 60 * 60 * 1000); // 24시간 캐시
 
 /**
  * 데이터 가져오기 유틸리티 함수
@@ -30,30 +23,6 @@ const GEOJSON_CACHE_DURATION = 24 * 60 * 60 * 1000;
 export const fetchData = async <T>(url: string): Promise<T> => {
   const response = await axios.get<T>(url);
   return response.data;
-};
-
-/**
- * 캐시 유효성 검사
- * 현재 캐시된 데이터가 유효한지 확인합니다.
- * 
- * @returns {boolean} 캐시가 유효하면 true, 그렇지 않으면 false
- */
-const isCacheValid = (): boolean => {
-  if (!cachedFireData || !cacheTimestamp) return false;
-
-  const now = Date.now();
-  return now - cacheTimestamp < CACHE_DURATION_MS;
-};
-
-/**
- * 데이터를 캐시에 저장
- * 산불 데이터와 현재 타임스탬프를 캐시에 저장합니다.
- * 
- * @param {ForestFireData[]} data 캐시할 산불 데이터
- */
-const saveToCache = (data: ForestFireData[]): void => {
-  cachedFireData = data;
-  cacheTimestamp = Date.now();
 };
 
 /**
@@ -133,6 +102,25 @@ const extractItemData = (
 };
 
 /**
+ * 캐시된 GeoJSON 데이터 가져오기
+ * 캐시에서 GeoJSON 데이터를 가져오거나, 필요한 경우 새로 로드합니다.
+ * 
+ * @returns {Promise<any>} GeoJSON 데이터
+ */
+const getGeoJsonData = async (): Promise<any> => {
+  const cachedData = geoJsonCache.getData();
+  if (cachedData) {
+    return cachedData;
+  }
+  
+  const geoJsonData = await geoJsonService.loadGeoJsonData(GEO_JSON_PATH);
+  if (geoJsonData) {
+    geoJsonCache.setData(geoJsonData);
+  }
+  return geoJsonData;
+};
+
+/**
  * 산불 데이터 처리 함수
  * API에서 가져온 데이터를 애플리케이션에서 사용할 형식으로 처리합니다.
  * GeoJSON 데이터를 활용하여 좌표를 추출합니다.
@@ -140,48 +128,6 @@ const extractItemData = (
  * @param {Record<string, unknown>[]} apiData API에서 받은 원데이터 배열
  * @returns {Promise<ForestFireData[]>} 처리된 산불 데이터 배열
  */
-/**
- * GeoJSON 데이터 캐시 유효성 확인
- * 만료된 캐시를 생성하고 유효한지 확인합니다.
- * 
- * @returns {boolean} 캐시가 유효하면 true, 그렇지 않으면 false
- */
-const isGeoJsonCacheValid = (): boolean => {
-  if (!cachedGeoJsonData || !geoJsonCacheTimestamp) return false;
-
-  const now = Date.now();
-  return now - geoJsonCacheTimestamp < GEOJSON_CACHE_DURATION;
-};
-
-/**
- * GeoJSON 데이터를 캐시에 저장
- * GeoJSON 데이터와 현재 타임스탬프를 캐시에 저장합니다.
- * 
- * @param {any} data 캐시할 GeoJSON 데이터
- */
-const saveGeoJsonToCache = (data: any): void => {
-  cachedGeoJsonData = data;
-  geoJsonCacheTimestamp = Date.now();
-};
-
-/**
- * 캐시된 GeoJSON 데이터 가져오기
- * 캐시에서 GeoJSON 데이터를 가져오거나, 필요한 경우 새로 로드합니다.
- * 
- * @returns {Promise<any>} GeoJSON 데이터
- */
-const getGeoJsonData = async (): Promise<any> => {
-  if (isGeoJsonCacheValid()) {
-    return cachedGeoJsonData;
-  }
-  
-  const geoJsonData = await geoJsonService.loadGeoJsonData(GEO_JSON_PATH);
-  if (geoJsonData) {
-    saveGeoJsonToCache(geoJsonData);
-  }
-  return geoJsonData;
-};
-
 const processForestFireData = async (
   apiData: Record<string, unknown>[]
 ): Promise<ForestFireData[]> => {
@@ -246,15 +192,18 @@ export const forestFireService = {
    * @returns {Promise<ForestFireData[]>} 산불 데이터 배열
    */
   async getForestFires(forceRefresh = false): Promise<ForestFireData[]> {
-    if (!forceRefresh && isCacheValid()) {
-      return cachedFireData!;
+    if (!forceRefresh) {
+      const cachedData = fireDataCache.getData();
+      if (cachedData) {
+        return cachedData;
+      }
     }
 
     try {
       const data = await fetchData<Record<string, unknown>[]>(FIRE_LIST_ENDPOINT);
       const processedData = await processForestFireData(data);
 
-      saveToCache(processedData);
+      fireDataCache.setData(processedData);
       return processedData;
     } catch (error) {
       // 에러를 표준화하여 throw
@@ -272,13 +221,11 @@ export const forestFireService = {
    * @param {boolean} [clearGeoJson=false] GeoJSON 캐시도 초기화할지 여부
    */
   clearCache(clearGeoJson = false): void {
-    cachedFireData = null;
-    cacheTimestamp = null;
+    fireDataCache.clearCache();
     
     // GeoJSON 캐시는 선택적으로 초기화 (자주 변경되지 않음)
     if (clearGeoJson) {
-      cachedGeoJsonData = null;
-      geoJsonCacheTimestamp = null;
+      geoJsonCache.clearCache();
     }
   },
 };

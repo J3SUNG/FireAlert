@@ -1,0 +1,171 @@
+/* 로딩 인디케이터 스타일 */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.loading-indicator__spinner {
+  display: inline-block;
+  border-radius: 50%;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #3498db;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.loading-indicator__spinner--small {
+  width: 16px;
+  height: 16px;
+}
+
+.loading-indicator__spinner--medium {
+  width: 32px;
+  height: 32px;
+}
+
+.loading-indicator__spinner--large {
+  width: 48px;
+  height: 48px;
+}
+
+.loading-indicator__text {
+  margin-top: 10px;
+  color: #555;
+  font-size: 14px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 에러 디스플레이 스타일 */
+.error-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-display__text {
+  color: #e74c3c;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.error-display__retry-button {
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.error-display__retry-button:hover {
+  background-color: #2980b9;
+}
+
+/* 버튼 스타일 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.btn:hover {
+  background-color: #e0e0e0;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn--primary:hover {
+  background-color: #2980b9;
+}
+
+.btn--secondary {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn--secondary:hover {
+  background-color: #27ae60;
+}
+
+.btn--active {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.btn--active-all {
+  background-color: #34495e;
+  color: white;
+}
+
+.btn--active-red {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn--active-orange {
+  background-color: #e67e22;
+  color: white;
+}
+
+.btn--active-green {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn--all {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.btn--active {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.btn--contained {
+  background-color: #ffe0b2;
+  color: #e65100;
+}
+
+.btn--extinguished {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.btn--full-width {
+  width: 100%;
+}
+
+/* 포커스 가능한 요소 아웃라인 */
+.btn:focus, .error-display__retry-button:focus {
+  outline: 2px solid rgba(52, 152, 219, 0.5);
+  outline-offset: 1px;
+}

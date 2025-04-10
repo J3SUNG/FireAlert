@@ -1,10 +1,11 @@
-import React, { FC, useRef, useState, useEffect, useMemo } from "react";
+import React, { FC, useRef, useState, useEffect, useMemo, useCallback } from "react";
 import "leaflet/dist/leaflet.css";
-import { MapLoadingIndicator } from "./MapLoadingIndicator";
+import { LoadingIndicator } from "../../../shared/ui";
 import { useMap, useGeoJsonManager } from "../lib";
 import { GEOJSON_PATHS } from "../model/mapSettings";
 import { FireMarkerManager } from "./FireMarkerManager";
 import { ForestFireMapProps } from "../model/types";
+import { combineClasses } from "../../../shared/lib/ui";
 import "./map.css";
 
 /**
@@ -12,10 +13,15 @@ import "./map.css";
  * 지도에 산불 데이터를 마커로 표시하고, 지역 경계를 GeoJSON으로 렌더링합니다.
  * Leaflet 지도 라이브러리를 기반으로 구현되었습니다.
  * 
+ * 성능 최적화:
+ * - useMemo와 useCallback을 사용하여 불필요한 렌더링 방지
+ * - React.memo로 컴포넌트 메모이제이션
+ * - 지도 상태 관리 최적화
+ * 
  * @param {ForestFireMapProps} props 지도 관련 속성
  * @returns {JSX.Element} 지도 컴포넌트
  */
-export const ForestFireMap: FC<ForestFireMapProps> = ({
+export const ForestFireMap: FC<ForestFireMapProps> = React.memo(({
   fires,
   selectedFireId,
   onFireSelect,
@@ -89,8 +95,19 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
   // 마커 관리자 키 (안정적인 메모리 관리)
   const markerManagerKey = useMemo(() => `markers-${instanceId}`, [instanceId]);
 
+  // 로딩 상태 계산
+  const isLoading = useMemo(() => !mapReady || !geoJsonReady, [mapReady, geoJsonReady]);
+
+  // 컨테이너 클래스 계산
+  const containerClassName = useMemo(() => {
+    return combineClasses(
+      "forest-fire-map",
+      isLoading && "forest-fire-map--loading"
+    );
+  }, [isLoading]);
+
   return (
-    <div className="forest-fire-map" data-instance-id={instanceId}>
+    <div className={containerClassName} data-instance-id={instanceId}>
       <div 
         ref={mapContainerRef} 
         className="forest-fire-map__container" 
@@ -110,7 +127,14 @@ export const ForestFireMap: FC<ForestFireMapProps> = ({
       )}
 
       {/* 로딩 표시기 */}
-      <MapLoadingIndicator isLoading={!mapReady || !geoJsonReady} />
+      {isLoading && (
+        <div className="forest-fire-map__loading-overlay">
+          <LoadingIndicator 
+            message="지도를 불러오는 중입니다..." 
+            size="large"
+          />
+        </div>
+      )}
     </div>
   );
-};
+});
