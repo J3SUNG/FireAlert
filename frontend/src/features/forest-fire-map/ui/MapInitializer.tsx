@@ -1,5 +1,6 @@
 import { FC, useRef, useState, useEffect } from "react";
 import L from "leaflet";
+import "./MapInitializer.css";
 import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../model/mapSettings";
 import { ForestFireData } from "../../../shared/model/forestFire";
 import { useErrorHandling } from "../../../shared/lib/errors";

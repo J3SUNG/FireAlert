@@ -6,7 +6,8 @@ import { GEOJSON_PATHS } from "../model/mapSettings";
 import { FireMarkerManager } from "./FireMarkerManager";
 import { ForestFireMapProps } from "../model/types";
 import { combineClasses } from "../../../shared/lib/ui";
-import "./map.css";
+import "./MapInitializer.css";
+import "./ForestFireMap.css";
 
 /**
  * 산불 지도 컴포넌트

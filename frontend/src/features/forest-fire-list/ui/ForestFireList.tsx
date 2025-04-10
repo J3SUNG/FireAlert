@@ -3,7 +3,7 @@ import { ForestFireItem } from './ForestFireItem';
 import { ForestFireListProps } from '../model/types';
 import { Button } from '../../../shared/ui/components';
 import { getFilterButtonClass } from '../../../shared/lib/ui';
-import './forest-fire-list.css';
+import './ForestFireList.css';
 
 /**
  * 산불 목록 컴포넌트
