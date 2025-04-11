@@ -1,4 +1,4 @@
-import { useErrorHandling } from '../../../shared/lib/errors';
+import { useErrorHandling } from '../../../shared/errors';
 import { DataErrorCode, createDataError } from '../model/dataErrorTypes';
 
 /**

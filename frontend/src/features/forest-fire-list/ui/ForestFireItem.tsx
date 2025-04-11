@@ -2,7 +2,7 @@ import React, { FC, useCallback, useMemo } from "react";
 import { ForestFireData } from "../../../shared/model/forestFire";
 import { ForestFireItemProps } from "../model/types";
 import { combineClasses } from "../../../shared/lib/ui/classNameUtils";
-import "./forest-fire-list.css";
+import "./ForestFireList.css";
 
 /**
  * 산불 항목 컴포넌트

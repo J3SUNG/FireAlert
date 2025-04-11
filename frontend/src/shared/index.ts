@@ -15,3 +15,6 @@ export * from './lib';
 
 // 모델 내보내기
 export * from './model';
+
+// 에러 처리 관련 내보내기
+export * from './errors';

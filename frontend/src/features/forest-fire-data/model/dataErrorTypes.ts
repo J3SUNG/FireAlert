@@ -1,8 +1,9 @@
 import { 
   ErrorCategory, 
   ErrorSeverity, 
-  AppError 
-} from '../../../shared/lib/errors/errorTypes';
+  AppError,
+  ErrorType
+} from '../../../shared/errors/types';
 
 /**
  * 데이터 관련 에러 코드
@@ -48,13 +49,17 @@ export function createDataError(
   
   // 에러 유형에 따라 카테고리 분류
   let category: ErrorCategory;
+  let type: ErrorType = ErrorType.UNKNOWN;
   
   if (code === DataErrorCode.FETCH_FAILED || code === DataErrorCode.TIMEOUT) {
     category = ErrorCategory.NETWORK;
+    type = ErrorType.NETWORK;
   } else if (code === DataErrorCode.PARSE_ERROR || code === DataErrorCode.INVALID_FORMAT) {
     category = ErrorCategory.VALIDATION;
+    type = ErrorType.VALIDATION;
   } else {
     category = ErrorCategory.DATA;
+    type = ErrorType.FIRE_DATA_FETCH_FAILED;
   }
   
   // 네트워크 오류는 더 심각한 수준으로 분류
@@ -65,6 +70,7 @@ export function createDataError(
   
   return {
     message,
+    type, // 추가: 필수 type 속성
     severity,
     category,
     code,
@@ -73,7 +79,12 @@ export function createDataError(
       feature: 'forest-fire-data',
       timestamp: Date.now()
     },
-    recoverable: true,
-    retryable: code !== DataErrorCode.INVALID_FORMAT // 형식 오류는 재시도해도 동일한 결과
+    options: {
+      showUser: true,
+      retryable: code !== DataErrorCode.INVALID_FORMAT, // 형식 오류는 재시도해도 동일한 결과
+      toast: true,
+      log: true
+    },
+    timestamp: Date.now()
   };
 }

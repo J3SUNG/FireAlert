@@ -1,4 +1,4 @@
-import { useErrorHandling } from '../../../shared/lib/errors';
+import { useErrorHandling } from '../../../shared/errors';
 import { MapErrorCode, createMapError } from '../model/mapErrorTypes';
 
 /**

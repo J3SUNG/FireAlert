@@ -2,13 +2,13 @@ import React, { useMemo } from "react";
 import { FireAlertHeader, FireAlertContent } from "../../features/fire-alert-ui";
 import { useForestFireData } from "../../features/forest-fire-data";
 import { useCurrentTime, useFireFilterAndSelection } from "../../shared/lib";
-import { ErrorBoundary } from "../../shared/lib/errors";
-import "../../features/fire-alert-ui/ui/index.css";
+import { ErrorBoundary } from "../../shared/errors";
+import "../../features/fire-alert-ui/ui/FireAlertStyles.css";
 import "./FireAlertPage.css";
 
 /**
  * 산불 알림 메인 페이지 컴포넌트 내용
- * 
+ *
  * 메모이제이션 적용으로 불필요한 렌더링 방지
  */
 const FireAlertPageContent: React.FC = React.memo(() => {
@@ -45,7 +45,7 @@ const FireAlertPageContent: React.FC = React.memo(() => {
         currentTime={currentTime}
         formatDate={formatDate}
       />
-      
+
       <FireAlertContent
         loading={loading}
         error={error}
@@ -63,7 +63,7 @@ const FireAlertPageContent: React.FC = React.memo(() => {
 
 /**
  * 산불 알림 메인 페이지 컴포넌트
- * 
+ *
  * 전국 산불 현황을 지도와 목록으로 보여주고 상태별 필터링 제공
  */
 const FireAlertPage: React.FC = React.memo(() => {

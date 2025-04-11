@@ -5,5 +5,5 @@
 // 데이터 에러 처리 후크 내보내기
 export { useDataErrorHandling } from './useDataErrorHandling';
 
-// 데이터 관리 후크 내보내기
-export * from './hooks';
+// 산불 데이터 관리 후크 내보내기
+export { useForestFireData } from './useForestFireData';
