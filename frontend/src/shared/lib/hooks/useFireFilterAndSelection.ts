@@ -28,13 +28,13 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
   // 필터 버튼 CSS 클래스 생성
   const getButtonClass = useMemo(() => {
     return (filter: FireFilterType): string => {
-      const className = "fire-button";
+      const className = "btn btn--pill btn--filter";
   
       if (filter === selectedFilter) {
-        if (filter === "all") return `${className} fire-button--active-all`;
-        if (filter === "active") return `${className} fire-button--active-red`;
-        if (filter === "contained") return `${className} fire-button--active-orange`;
-        return `${className} fire-button--active-green`;
+        if (filter === "all") return `${className} btn--active-all`;
+        if (filter === "active") return `${className} btn--active-red`;
+        if (filter === "contained") return `${className} btn--active-orange`;
+        return `${className} btn--active-green`;
       }
   
       return className;

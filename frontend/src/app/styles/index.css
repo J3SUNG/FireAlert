@@ -55,3 +55,22 @@ textarea {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* 스크롤바 스타일링 - 전역 적용 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-200);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-700);
+}

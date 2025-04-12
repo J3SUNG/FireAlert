@@ -4,8 +4,8 @@
 
 .forest-fire-list__filter-container {
   padding: 12px 16px 8px;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f1f5f9;
 }
 
 .forest-fire-list__button-group {
@@ -14,13 +14,13 @@
   overflow-x: auto;
   padding: 4px;
   border-radius: 18px;
-  background: var(--bg-filter);
+  background: #f8fafc;
 }
 
 .forest-fire-list__content {
   padding: 12px;
   overflow-y: auto;
-  background-color: var(--bg-primary);
+  background-color: #ffffff;
 }
 
 .forest-fire-list__content--with-filter {
@@ -40,22 +40,22 @@
 .forest-fire-list__empty-message {
   padding: 16px;
   text-align: center;
-  color: var(--text-tertiary);
+  color: #475569;
 }
 
 .forest-fire-item {
   padding: 14px;
-  border: 1px solid var(--border);
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background-color: var(--bg-primary);
+  background-color: #ffffff;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .forest-fire-item--selected {
-  border-color: var(--brand-primary);
-  background-color: var(--selected-bg);
-  box-shadow: var(--shadow-md);
+  border-color: #3b82f6;
+  background-color: #f0f7ff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .forest-fire-item__content {
@@ -71,7 +71,7 @@
 .forest-fire-item__title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #0f172a;
   margin-bottom: 6px;
   letter-spacing: -0.3px;
 }
@@ -80,7 +80,7 @@
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: var(--text-tertiary);
+  color: #475569;
 }
 
 .forest-fire-item__date {
@@ -111,23 +111,23 @@
 }
 
 .forest-fire-item__severity-badge--low {
-  background-color: var(--severity-low-bg);
-  color: var(--severity-low-text);
+  background-color: #dbeafe;
+  color: #1e40af;
 }
 
 .forest-fire-item__severity-badge--medium {
-  background-color: var(--severity-medium-bg);
-  color: var(--severity-medium-text);
+  background-color: #fef9c3;
+  color: #854d0e;
 }
 
 .forest-fire-item__severity-badge--high {
-  background-color: var(--severity-high-bg);
-  color: var(--severity-high-text);
+  background-color: #ffedd5;
+  color: #9a3412;
 }
 
 .forest-fire-item__severity-badge--critical {
-  background-color: var(--severity-critical-bg);
-  color: var(--severity-critical-text);
+  background-color: #fee2e2;
+  color: #b91c1c;
 }
 
 .forest-fire-item__status-badge {
@@ -148,21 +148,21 @@
 }
 
 .forest-fire-item__status-icon--active {
-  background-color: var(--status-active);
+  background-color: #ef4444;
   animation: pulse 1.5s infinite;
 }
 
 .forest-fire-item__status-icon--contained {
-  background-color: var(--status-contained);
+  background-color: #f97316;
 }
 
 .forest-fire-item__status-icon--extinguished {
-  background-color: var(--status-extinguished);
+  background-color: #22c55e;
 }
 
 .forest-fire-item__description {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #334155;
   margin-top: 8px;
   overflow: hidden;
   text-overflow: ellipsis;

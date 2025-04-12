@@ -6,32 +6,10 @@
   width: 100%;
   overflow: hidden;
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   margin: 0;
   padding: 0;
   background: var(--bg-primary);
-}
-
-/* 스크롤바 스타일링 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--gray-200);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--gray-400);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
 }
 
 /* 반응형 조정 */

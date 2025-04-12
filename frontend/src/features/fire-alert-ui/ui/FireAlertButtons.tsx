@@ -1,5 +1,4 @@
 import React from 'react';
-import './FireAlertButtons.css';
 
 /**
  * 불씨알림 앱의 버튼 컴포넌트

@@ -1,6 +1,6 @@
 /* 헤더 스타일 */
 .fire-alert__header {
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) var(--space-2xl);
   background-color: var(--bg-primary);
   box-shadow: var(--shadow-sm);
   display: flex;
@@ -24,7 +24,7 @@
 .fire-alert__logo-icon {
   font-size: var(--text-2xl);
   margin-right: var(--space-sm);
-  color: var(--brand-fire);
+  color: var(--status-active);
 }
 
 /* 로고 텍스트 */
@@ -37,7 +37,7 @@
 
 /* 로고 내 불씨 글자 */
 .fire-alert__logo-text--fire {
-  color: var(--brand-fire);
+  color: var(--status-active);
 }
 
 /* 서브타이틀 */
@@ -53,7 +53,7 @@
 .fire-alert__filter-container {
   display: flex;
   gap: var(--space-xs);
-  background: var(--bg-filter);
+  background: var(--bg-tertiary);
   padding: var(--space-xs);
   border-radius: var(--radius-full);
   transition: all var(--duration-normal) ease;
@@ -63,7 +63,7 @@
 .fire-alert__timestamp {
   font-size: var(--text-sm);
   color: var(--text-tertiary);
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
   font-weight: var(--font-medium);
@@ -77,7 +77,7 @@
     min-height: var(--header-height);
     padding: var(--space-sm);
   }
-  
+
   .fire-alert__filter-container {
     order: 3;
     margin-top: var(--space-sm);
@@ -86,10 +86,10 @@
     overflow-x: auto;
     padding: var(--space-xs) var(--space-sm);
   }
-  
+
   .fire-alert__timestamp {
     font-size: var(--text-xs);
-    padding: var(--space-xs) var(--space-xs);
+    padding: var(--space-xs);
   }
 }
 
@@ -99,16 +99,16 @@
     align-items: flex-start;
     gap: 0;
   }
-  
+
   .fire-alert__subtitle {
     font-size: var(--text-xs);
     margin-left: 0;
   }
-  
+
   .fire-alert__logo-text {
     font-size: var(--text-lg);
   }
-  
+
   .fire-alert__logo-icon {
     font-size: var(--text-xl);
   }
