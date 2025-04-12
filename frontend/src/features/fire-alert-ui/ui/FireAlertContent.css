@@ -15,19 +15,19 @@
   flex: 1;
   position: relative;
   overflow: hidden;
-  background-color: var(--color-bg);
-  transition: width var(--transition-normal) ease;
+  background-color: var(--bg-secondary);
+  transition: width var(--duration-normal) ease;
 }
 
 /* 맵 컨테이너 내부 요소 스타일링 */
 .fire-alert__map-overlay {
   position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  z-index: var(--z-index-above);
-  background: var(--color-bg-primary);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-sm);
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: var(--z-above);
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
   box-shadow: var(--shadow-md);
 }
 
@@ -39,24 +39,24 @@
   align-items: center;
   height: 100%;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: var(--z-index-above);
+  background-color: var(--bg-translucent);
+  z-index: var(--z-above);
 }
 
 .fire-alert__spinner {
   width: 40px;
   height: 40px;
-  border-radius: var(--border-radius-circle);
-  border: 4px solid var(--color-gray-light);
-  border-top: 4px solid var(--color-brand);
+  border-radius: var(--radius-full);
+  border: 4px solid var(--loading-border);
+  border-top: 4px solid var(--loading-spinner);
   animation: spin 1s linear infinite;
 }
 
 .fire-alert__loading-text {
-  margin-top: var(--spacing-md);
-  font-size: var(--font-size-md);
-  color: var(--color-text-body);
-  font-weight: var(--font-weight-medium);
+  margin-top: var(--space-md);
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
 }
 
 /* 에러 관련 스타일 */
@@ -65,46 +65,46 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--space-lg);
   height: 100%;
   width: 100%;
-  background-color: var(--color-bg-primary);
-  animation: fadeIn var(--transition-normal) ease-in-out;
+  background-color: var(--bg-primary);
+  animation: fadeIn var(--duration-normal) ease-in-out;
 }
 
 .fire-alert__error-text {
-  font-size: var(--font-size-md);
-  color: var(--color-status-active);
-  margin-bottom: var(--spacing-md);
+  font-size: var(--text-md);
+  color: var(--error);
+  margin-bottom: var(--space-md);
   text-align: center;
   max-width: 600px;
   line-height: 1.5;
 }
 
 .fire-alert__retry-button {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--color-brand);
-  color: var(--color-white);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--brand-primary);
+  color: var(--white);
   border: none;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  transition: background-color var(--transition-fast) ease;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  transition: background-color var(--duration-fast) ease;
 }
 
 .fire-alert__retry-button:hover {
-  background-color: #2563eb; /* 조금 더 어두운 파란색 */
+  background-color: var(--blue-600); 
   box-shadow: var(--shadow-sm);
 }
 
 .fire-alert__retry-button:focus {
-  outline: 2px solid #93c5fd; /* 연한 파란색 아웃라인 */
+  outline: 2px solid var(--brand-primary-light);
   outline-offset: 2px;
 }
 
 /* 반응형 조정 */
-@media (max-width: 992px) {
+@media (max-width: var(--screen-lg)) {
   .fire-alert__content {
     flex-direction: column;
     height: auto;
@@ -117,7 +117,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: var(--screen-sm)) {
   .fire-alert__map-container {
     height: 50vh;
     min-height: 300px;

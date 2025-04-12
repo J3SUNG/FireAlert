@@ -97,41 +97,41 @@ function createTooltipContent(fire: ForestFireData): string {
     fire.status === "active" ? "진행중" : fire.status === "contained" ? "통제중" : "진화완료";
 
   return `
-    <div class="forest-fire-map__popup">
-      <div class="forest-fire-map__popup-title">${fire.location || "알 수 없는 위치"}</div>
-      <div class="forest-fire-map__popup-info">
-        <span class="forest-fire-map__popup-label">상태:</span>
-        <span class="forest-fire-map__popup-status--${fire.status}">${status}</span>
+    <div class="forest-fire-map__tooltip">
+      <div class="forest-fire-map__tooltip-title">${fire.location || "알 수 없는 위치"}</div>
+      <div class="forest-fire-map__tooltip-info">
+        <span class="forest-fire-map__tooltip-label">상태:</span>
+        <span class="forest-fire-map__tooltip-status--${fire.status}">${status}</span>
       </div>
       ${
         fire.responseLevelName
           ? `
-      <div class="forest-fire-map__popup-info">
-        <span class="forest-fire-map__popup-label">대응:</span>
+      <div class="forest-fire-map__tooltip-info">
+        <span class="forest-fire-map__tooltip-label">대응:</span>
         <span>${fire.responseLevelName}</span>
       </div>`
           : ""
       }
-      <div class="forest-fire-map__popup-info">
-        <span class="forest-fire-map__popup-label">발생일:</span> ${fire.date || "정보 없음"}
+      <div class="forest-fire-map__tooltip-info">
+        <span class="forest-fire-map__tooltip-label">발생일:</span> ${fire.date || "정보 없음"}
       </div>
-      <div class="forest-fire-map__popup-info">
-        <span class="forest-fire-map__popup-label">면적:</span> ${
+      <div class="forest-fire-map__tooltip-info">
+        <span class="forest-fire-map__tooltip-label">면적:</span> ${
           fire.affectedArea ? `${fire.affectedArea}ha` : "정보 없음"
         }
       </div>
       ${
         fire.extinguishPercentage
           ? `
-      <div class="forest-fire-map__popup-info">
-        <span class="forest-fire-map__popup-label">진화율:</span> ${fire.extinguishPercentage}%
+      <div class="forest-fire-map__tooltip-info">
+        <span class="forest-fire-map__tooltip-label">진화율:</span> ${fire.extinguishPercentage}%
       </div>`
           : ""
       }
       ${
         fire.description
           ? `
-      <div class="forest-fire-map__popup-description">${fire.description}</div>`
+      <div class="forest-fire-map__tooltip-description">${fire.description}</div>`
           : ""
       }
     </div>
@@ -191,19 +191,16 @@ export function createFireMarker(
 
   // 마커 이름 표시
   const locationName = formatLocationName(fire);
-  const nameHtml = `<div class="forest-fire-map__marker-name">${locationName}</div>`;
 
   // 마커 아이콘 생성
   const iconHtml = `
     <div class="forest-fire-map__marker-wrapper">
-      <div class="forest-fire-map__marker ${isActive ? "forest-fire-map__marker--active" : ""}" style="
+      <div class="forest-fire-map__marker ${isActive ? "forest-fire-map__marker--active" : ""} ${isSelected ? "forest-fire-map__marker--selected" : ""} ${fire.status === "extinguished" ? "forest-fire-map__marker--extinguished" : ""}" style="
         width: ${radius * 2}px;
         height: ${radius * 2}px;
         background-color: ${color};
-        border-width: ${weight}px;
-        opacity: ${opacity};
       "></div>
-      ${nameHtml}
+      <div class="forest-fire-map__marker-name">${locationName}</div>
     </div>
   `;
 
@@ -222,24 +219,24 @@ export function createFireMarker(
     zIndexOffset: isSelected ? 2000 : 1000,
   });
 
-  // 호버 시 상세 팝업 표시
-  const popupContent = createTooltipContent(fire);
-  const popup = L.popup({
+  // 호버 시 툴팁 표시
+  const tooltipContent = createTooltipContent(fire);
+  const tooltip = L.popup({
     closeButton: false,
-    className: "fire-tooltip-hover",
+    className: "forest-fire-map__tooltip-container",
     offset: [0, -5],
     autoPan: false,
-    maxWidth: 220,
+    maxWidth: 280,
     minWidth: 200,
-  }).setContent(popupContent);
+  }).setContent(tooltipContent);
 
   // 마커 호버 이벤트 처리
   marker.on("mouseover", function (e) {
-    popup.setLatLng(e.latlng).openOn(e.target._map);
+    tooltip.setLatLng(e.latlng).openOn(e.target._map);
   });
 
   marker.on("mouseout", function (e) {
-    e.target._map.closePopup(popup);
+    e.target._map.closePopup(tooltip);
   });
 
   // 클릭 이벤트 처리

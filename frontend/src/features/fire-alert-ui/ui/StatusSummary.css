@@ -1,17 +1,17 @@
 /* 상태 요약 패널 스타일 */
 .fire-alert__status-summary {
   position: absolute;
-  bottom: var(--spacing-md);
-  left: var(--spacing-md);
-  background-color: var(--color-bg-primary);
-  border-radius: var(--border-radius-lg);
+  bottom: var(--space-md);
+  left: var(--space-md);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: var(--spacing-md);
+  padding: var(--space-md);
   width: 180px;
-  z-index: var(--z-index-above);
-  border: 1px solid var(--color-border);
+  z-index: var(--z-above);
+  border: 1px solid var(--border);
   opacity: 0.95;
-  transition: all var(--transition-normal) ease;
+  transition: all var(--duration-normal) ease;
 }
 
 .fire-alert__status-summary:hover {
@@ -21,12 +21,12 @@
 
 /* 요약 제목 */
 .fire-alert__summary-title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-sm);
-  color: var(--color-text-heading);
-  padding: 0 2px 5px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+  padding: 0 2px var(--space-xs);
+  border-bottom: 1px solid var(--border);
   text-align: center;
 }
 
@@ -34,17 +34,17 @@
 .fire-alert__summary-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-xs);
+  gap: var(--space-xs);
   padding: 0;
 }
 
 /* 요약 항목 */
 .fire-alert__summary-item {
   display: flex;
-  border-radius: var(--border-radius-md);
-  padding: 6px 8px;
-  transition: all var(--transition-fast) ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs) var(--space-sm);
+  transition: all var(--duration-fast) ease;
+  box-shadow: var(--shadow-sm);
   margin: 0;
   width: 100%;
   margin: 0 auto;
@@ -52,26 +52,26 @@
 
 /* 단계별 배경색 */
 .fire-alert__summary-item--initial {
-  background-color: rgba(0, 128, 255, 0.08);
+  background-color: var(--level-initial-light);
 }
 
 .fire-alert__summary-item--level1 {
-  background-color: rgba(234, 179, 8, 0.08);
+  background-color: var(--level-1-light);
 }
 
 .fire-alert__summary-item--level2 {
-  background-color: rgba(249, 115, 22, 0.08);
+  background-color: var(--level-2-light);
 }
 
 .fire-alert__summary-item--level3 {
-  background-color: rgba(239, 68, 68, 0.08);
+  background-color: var(--level-3-light);
 }
 
 /* 항목 내용 레이아웃 */
 .fire-alert__summary-item-content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--space-sm);
   width: 100%;
   justify-content: space-between;
 }
@@ -80,93 +80,93 @@
 .fire-alert__label-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
 }
 
 /* 색상 표시기 */
 .fire-alert__color-indicator {
   width: 8px;
   height: 8px;
-  border-radius: var(--border-radius-circle);
+  border-radius: var(--radius-full);
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 /* 색상 표시기 - 단계별 */
 .fire-alert__color-indicator--initial {
-  background-color: var(--color-status-info);
+  background-color: var(--level-initial);
 }
 
 .fire-alert__color-indicator--level1 {
-  background-color: var(--color-status-caution);
+  background-color: var(--level-1);
 }
 
 .fire-alert__color-indicator--level2 {
-  background-color: var(--color-status-warning);
+  background-color: var(--level-2);
 }
 
 .fire-alert__color-indicator--level3 {
-  background-color: var(--color-status-active);
+  background-color: var(--level-3);
 }
 
 /* 요약 라벨 */
 .fire-alert__summary-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-body);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium);
   white-space: nowrap;
 }
 
 /* 요약 값 */
 .fire-alert__summary-value {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
   min-width: 22px;
   height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-white);
-  border-radius: 11px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--white);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
 }
 
 /* 요약 값 - 단계별 색상 */
 .fire-alert__summary-value--initial {
-  color: var(--color-status-info);
+  color: var(--level-initial);
 }
 
 .fire-alert__summary-value--level1 {
-  color: var(--color-status-caution);
+  color: var(--level-1);
 }
 
 .fire-alert__summary-value--level2 {
-  color: var(--color-status-warning);
+  color: var(--level-2);
 }
 
 .fire-alert__summary-value--level3 {
-  color: var(--color-status-active);
+  color: var(--level-3);
 }
 
 /* 반응형 조정 */
-@media (max-width: 768px) {
+@media (max-width: var(--screen-md)) {
   .fire-alert__status-summary {
-    bottom: var(--spacing-sm);
-    left: var(--spacing-sm);
+    bottom: var(--space-sm);
+    left: var(--space-sm);
     width: 150px;
-    padding: var(--spacing-sm);
+    padding: var(--space-sm);
   }
   
   .fire-alert__summary-item {
-    padding: 4px 6px;
+    padding: var(--space-xs) var(--space-xs);
   }
   
   .fire-alert__summary-label {
-    font-size: 12px;
+    font-size: var(--text-xs);
   }
   
   .fire-alert__summary-value {
-    font-size: 14px;
+    font-size: var(--text-sm);
     min-width: 20px;
     height: 20px;
   }

@@ -1,67 +1,67 @@
 /* 사이드바 스타일 */
 .fire-alert__sidebar {
   width: var(--sidebar-width);
-  background-color: var(--color-bg-primary);
+  background-color: var(--bg-primary);
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
-  border-left: 1px solid var(--color-border);
+  border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  z-index: var(--z-index-above);
-  transition: width var(--transition-normal) ease, transform var(--transition-normal) ease;
+  z-index: var(--z-above);
+  transition: width var(--duration-normal) ease, transform var(--duration-normal) ease;
 }
 
 /* 사이드바 헤더 */
 .fire-alert__sidebar-header {
-  padding: var(--spacing-md);
-  background-color: var(--color-bg-element);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-md);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--space-xs);
 }
 
 /* 사이드바 제목 */
 .fire-alert__sidebar-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-xs);
-  color: var(--color-text-heading);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
   letter-spacing: -0.5px;
 }
 
 /* 사이드바 부제목 */
 .fire-alert__sidebar-subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
 /* 사이드바 콘텐츠 */
 .fire-alert__sidebar-content {
   overflow-y: auto;
   flex: 1;
-  padding: var(--spacing-sm);
+  padding: var(--space-sm);
 }
 
 /* 사이드바 항목 */
 .fire-alert__sidebar-item {
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-md);
-  background-color: var(--color-bg);
-  margin-bottom: var(--spacing-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  margin-bottom: var(--space-sm);
   cursor: pointer;
-  transition: all var(--transition-fast) ease;
+  transition: all var(--duration-fast) ease;
   border: 1px solid transparent;
 }
 
 .fire-alert__sidebar-item:hover {
-  background-color: var(--color-bg-element);
+  background-color: var(--bg-secondary);
 }
 
 .fire-alert__sidebar-item--selected {
-  border-color: var(--color-brand);
-  background-color: rgba(59, 130, 246, 0.05);
+  border-color: var(--brand-primary);
+  background-color: var(--brand-primary-light);
 }
 
 /* 사이드바 토글 버튼 */
@@ -72,30 +72,30 @@
   transform: translateY(-50%);
   width: 24px;
   height: 24px;
-  background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-circle);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: var(--z-index-above);
+  z-index: var(--z-above);
   box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast) ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .fire-alert__sidebar-toggle:hover {
-  background-color: var(--color-bg);
+  background-color: var(--bg-secondary);
 }
 
 /* 반응형 조정 */
-@media (max-width: 992px) {
+@media (max-width: var(--screen-lg)) {
   .fire-alert__sidebar {
     width: 100%;
     height: auto;
     min-height: 300px;
     border-left: none;
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid var(--border);
   }
   
   .fire-alert__sidebar-toggle {
@@ -103,17 +103,17 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: var(--screen-sm)) {
   .fire-alert__sidebar-header {
-    padding: var(--spacing-sm);
+    padding: var(--space-sm);
   }
   
   .fire-alert__sidebar-content {
-    padding: var(--spacing-xs);
+    padding: var(--space-xs);
   }
   
   .fire-alert__sidebar-item {
-    padding: var(--spacing-xs);
-    margin-bottom: var(--spacing-xs);
+    padding: var(--space-xs);
+    margin-bottom: var(--space-xs);
   }
 }

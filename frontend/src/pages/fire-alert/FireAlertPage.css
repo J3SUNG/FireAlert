@@ -12,7 +12,7 @@
   bottom: 0;
   margin: 0;
   padding: 0;
-  background: var(--color-bg);
+  background: var(--bg-primary);
 }
 
 /* 스크롤바 스타일링 */
@@ -22,40 +22,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: var(--gray-200);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-text-muted);
-  border-radius: var(--border-radius-pill);
+  background: var(--gray-400);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
-}
-
-/* 기본 포커스 스타일 */
-:focus {
-  outline: 2px solid var(--color-brand);
-  outline-offset: 2px;
-}
-
-/* 기본 애니메이션 */
-.fade-in {
-  animation: fadeIn var(--transition-normal) ease-in-out;
-}
-
-/* 스크린 리더를 위한 클래스 */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  background: var(--text-secondary);
 }
 
 /* 반응형 조정 */

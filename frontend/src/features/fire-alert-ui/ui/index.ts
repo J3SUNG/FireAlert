@@ -1,5 +1,6 @@
-export { default as FireAlertContent } from './FireAlertContent';
-export { default as FireAlertHeader } from './FireAlertHeader';
-export { default as FireAlertSidebar } from './FireAlertSidebar';
-export { default as FireAlertButtons } from './FireAlertButtons';
-export { default as StatusSummary } from './StatusSummary';
+// Named exports로 변경
+export { FireAlertContent } from './FireAlertContent';
+export { FireAlertHeader } from './FireAlertHeader';
+export { FireAlertSidebar } from './FireAlertSidebar';
+export { FireAlertButtons } from './FireAlertButtons';
+export { StatusSummary } from './StatusSummary';

@@ -4,14 +4,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: var(--space-md);
 }
 
 .loading-indicator__spinner {
   display: inline-block;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 3px solid rgba(0, 0, 0, 0.1);
-  border-top-color: #3498db;
+  border-top-color: var(--brand-primary);
   animation: spin 1s ease-in-out infinite;
 }
 
@@ -31,15 +31,9 @@
 }
 
 .loading-indicator__text {
-  margin-top: 10px;
-  color: #555;
-  font-size: 14px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  margin-top: var(--space-sm);
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
 }
 
 /* 에러 디스플레이 스타일 */
@@ -48,29 +42,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: var(--space-md);
   text-align: center;
 }
 
 .error-display__text {
-  color: #e74c3c;
-  margin-bottom: 15px;
-  font-size: 14px;
+  color: var(--error);
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-sm);
 }
 
 .error-display__retry-button {
-  padding: 8px 16px;
-  background-color: #3498db;
-  color: white;
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--brand-primary);
+  color: var(--white);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
+  font-size: var(--text-sm);
+  transition: background-color var(--duration-fast);
 }
 
 .error-display__retry-button:hover {
-  background-color: #2980b9;
+  background-color: var(--blue-600);
 }
 
 /* 버튼 스타일 */
@@ -78,19 +72,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  padding: var(--space-xs) var(--space-md);
   border: 1px solid transparent;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: #f5f5f5;
-  color: #333;
+  transition: all var(--duration-fast) ease;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .btn:hover {
-  background-color: #e0e0e0;
+  background-color: var(--bg-tertiary);
 }
 
 .btn:active {
@@ -98,66 +92,63 @@
 }
 
 .btn--primary {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--brand-primary);
+  color: var(--white);
 }
 
 .btn--primary:hover {
-  background-color: #2980b9;
+  background-color: var(--blue-600);
 }
 
 .btn--secondary {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--green);
+  color: var(--white);
 }
 
 .btn--secondary:hover {
   background-color: #27ae60;
 }
 
-.btn--active {
-  background-color: #2c3e50;
-  color: white;
-}
-
+/* 상태 버튼 스타일 */
 .btn--active-all {
-  background-color: #34495e;
-  color: white;
+  background-color: var(--brand-primary);
+  color: var(--white);
 }
 
 .btn--active-red {
-  background-color: #e74c3c;
-  color: white;
+  background-color: var(--status-active);
+  color: var(--white);
 }
 
 .btn--active-orange {
-  background-color: #e67e22;
-  color: white;
+  background-color: var(--status-contained);
+  color: var(--white);
 }
 
 .btn--active-green {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--status-extinguished);
+  color: var(--white);
 }
 
+/* 필터 버튼 스타일 */
 .btn--all {
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .btn--active {
-  background-color: #ffcdd2;
-  color: #c62828;
+  background-color: var(--status-active-light);
+  color: var(--status-active);
 }
 
 .btn--contained {
-  background-color: #ffe0b2;
-  color: #e65100;
+  background-color: var(--status-contained-light);
+  color: var(--status-contained);
 }
 
 .btn--extinguished {
-  background-color: #c8e6c9;
-  color: #2e7d32;
+  background-color: var(--status-extinguished-light);
+  color: var(--status-extinguished);
 }
 
 .btn--full-width {
@@ -166,6 +157,6 @@
 
 /* 포커스 가능한 요소 아웃라인 */
 .btn:focus, .error-display__retry-button:focus {
-  outline: 2px solid rgba(52, 152, 219, 0.5);
+  outline: 2px solid var(--brand-primary-light);
   outline-offset: 1px;
 }
