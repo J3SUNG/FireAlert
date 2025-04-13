@@ -5,7 +5,7 @@ import "./app/styles/index.css";
 import "leaflet/dist/leaflet.css";
 
 import { setupDefaultLeafletIcons } from "./shared/lib/leaflet/iconSetup";
-import { getErrorService, ErrorBoundary } from "./shared/errors";
+import { getErrorService, ErrorBoundary } from "./shared/lib/errors";
 
 /**
  * 애플리케이션 전역 에러 핸들러 설정

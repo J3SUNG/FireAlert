@@ -1,6 +1,6 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { getErrorService } from '../ErrorHandlingService';
-import ErrorFallbackUI from './ErrorFallbackUI';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { getErrorService } from "../ErrorHandlingService";
+import ErrorFallbackUI from "./ErrorFallbackUI";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ interface ErrorBoundaryState {
 
 /**
  * 에러 바운더리 컴포넌트
- * 
+ *
  * 컴포넌트 트리에서 발생하는 JavaScript 에러를 캐치하고 대체 UI 표시
  */
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -25,7 +25,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     super(props);
     this.state = {
       hasError: false,
-      error: null
+      error: null,
     };
   }
 
@@ -33,21 +33,21 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     // 에러 발생 시 상태 업데이트
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     const { component, feature, onError } = this.props;
-    
+
     // 중앙 에러 처리 서비스에 에러 전달
     const errorService = getErrorService();
     errorService.handleError(error, {
       component,
       feature,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     // 사용자 정의 에러 핸들러가 있다면 호출
     if (onError) {
       onError(error, errorInfo);
@@ -58,7 +58,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   handleReset = (): void => {
     this.setState({
       hasError: false,
-      error: null
+      error: null,
     });
   };
 
@@ -71,12 +71,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       if (fallback) {
         return fallback;
       }
-      
+
       // 기본 에러 UI 표시
       return (
-        <ErrorFallbackUI 
-          error={error} 
-          onReset={this.handleReset} 
+        <ErrorFallbackUI
+          error={error}
+          onReset={this.handleReset}
           component={this.props.component}
           feature={this.props.feature}
         />

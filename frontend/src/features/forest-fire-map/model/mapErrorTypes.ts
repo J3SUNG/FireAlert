@@ -1,4 +1,4 @@
-import { ErrorCategory, ErrorSeverity, AppError, ErrorType } from "../../../shared/errors";
+import { ErrorCategory, ErrorSeverity, AppError, ErrorType } from "../../../shared/lib/errors";
 
 /**
  * 지도 특화 에러 카테고리
@@ -103,8 +103,8 @@ export function createMapError(
       showUser: true,
       retryable: true,
       toast: true,
-      log: true
+      log: true,
     },
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
 }

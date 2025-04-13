@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { FireAlertHeader, FireAlertContent } from "../../features/fire-alert-ui";
 import { useForestFireData } from "../../features/forest-fire-data";
 import { useCurrentTime, useFireFilterAndSelection } from "../../shared/lib";
-import { ErrorBoundary } from "../../shared/errors";
+import { ErrorBoundary } from "../../shared/lib/errors";
 import "./FireAlertPage.css";
 
 /**

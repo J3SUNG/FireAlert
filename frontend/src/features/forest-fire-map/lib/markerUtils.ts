@@ -7,12 +7,12 @@ import { ForestFireData } from "../../../shared/model/forestFire";
  */
 const PROVINCE_ABBR: Record<string, string> = {
   서울특별시: "서울",
-  부산특별시: "부산",
-  대구특별시: "대구",
-  인천특별시: "인천",
-  광주특별시: "광주",
-  대전특별시: "대전",
-  울산특별시: "울산",
+  부산광역시: "부산",
+  대구광역시: "대구",
+  인천광역시: "인천",
+  광주광역시: "광주",
+  대전광역시: "대전",
+  울산광역시: "울산",
   세종특별자치시: "세종",
   경기도: "경기",
   강원도: "강원",
@@ -31,10 +31,10 @@ const PROVINCE_ABBR: Record<string, string> = {
  */
 const FIRE_MARKER_COLORS: Record<string, string> = {
   critical: "#ef4444", // 빨강색 (3단계)
-  high: "#f97316",     // 주황색 (2단계)
-  medium: "#eab308",   // 노랑색 (1단계)
-  low: "#0080ff",      // 파란색 (초기대응)
-  initial: "#6b7280",  // 회색
+  high: "#f97316", // 주황색 (2단계)
+  medium: "#eab308", // 노랑색 (1단계)
+  low: "#0080ff", // 파란색 (초기대응)
+  initial: "#6b7280", // 회색
 };
 
 /**
@@ -42,12 +42,12 @@ const FIRE_MARKER_COLORS: Record<string, string> = {
  * 산불 대응단계에 따른 색상 매핑
  */
 const RESPONSE_LEVEL_COLORS: Record<string, string> = {
-  초기대응: "#0080ff",     // 파란색
+  초기대응: "#0080ff", // 파란색
   초기진화단계: "#0080ff", // 파란색
-  "1단계": "#eab308",     // 노랑색
-  "2단계": "#f97316",     // 주황색
-  "3단계": "#ef4444",     // 빨강색
-  default: "#6b7280",     // 기본 회색
+  "1단계": "#eab308", // 노랑색
+  "2단계": "#f97316", // 주황색
+  "3단계": "#ef4444", // 빨강색
+  default: "#6b7280", // 기본 회색
 };
 
 const SELECTED_MARKER_SCALE = 1.4;
@@ -55,7 +55,7 @@ const SELECTED_MARKER_SCALE = 1.4;
 /**
  * 마커 이름 포맷팅
  * 시도명 축약하고 불필요한 정보를 제거하여 간결한 위치 정보 반환
- * 
+ *
  * @param fire 산불 데이터
  * @returns 포맷팅된 위치 이름
  */
@@ -88,7 +88,7 @@ function formatLocationName(fire: ForestFireData): string {
 /**
  * 툴팁 내용 생성
  * 마커 호버 시 표시되는 산불 상세 정보 툴팁 생성
- * 
+ *
  * @param fire 산불 데이터
  * @returns HTML 형식의 툴팁 콘텐츠
  */
@@ -146,10 +146,10 @@ interface FireMarkerOptions {
 
 /**
  * 산불 마커 생성 함수
- * 
+ *
  * 산불 데이터로부터 지도에 표시할 마커를 생성합니다.
  * 위험도에 따른 색상 및 상태 정보를 적용합니다.
- * 
+ *
  * @param fire 산불 데이터
  * @param options 마커 옵션 객체 또는 선택 상태 불리언
  * @returns 산불 마커 레이어 그룹
@@ -195,7 +195,9 @@ export function createFireMarker(
   // 마커 아이콘 생성
   const iconHtml = `
     <div class="forest-fire-map__marker-wrapper">
-      <div class="forest-fire-map__marker ${isActive ? "forest-fire-map__marker--active" : ""} ${isSelected ? "forest-fire-map__marker--selected" : ""} ${fire.status === "extinguished" ? "forest-fire-map__marker--extinguished" : ""}" style="
+      <div class="forest-fire-map__marker ${isActive ? "forest-fire-map__marker--active" : ""} ${
+    isSelected ? "forest-fire-map__marker--selected" : ""
+  } ${fire.status === "extinguished" ? "forest-fire-map__marker--extinguished" : ""}" style="
         width: ${radius * 2}px;
         height: ${radius * 2}px;
         background-color: ${color};

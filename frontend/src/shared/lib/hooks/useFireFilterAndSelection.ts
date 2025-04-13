@@ -4,13 +4,13 @@ import { FireFilterType } from "../../model/common/filterTypes";
 
 /**
  * 산불 필터링 및 선택 관리 훅
- * 
+ *
  * 산불 데이터의 필터링과 선택을 관리합니다.
  */
 export function useFireFilterAndSelection(fires: ForestFireData[]) {
   // 선택된 필터 상태 - 기본값은 "active"(진화중)
   const [selectedFilter, setSelectedFilter] = useState<FireFilterType>("active");
-  
+
   // 선택된 산불 ID 상태
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
 
@@ -29,14 +29,14 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
   const getButtonClass = useMemo(() => {
     return (filter: FireFilterType): string => {
       const className = "btn btn--pill btn--filter";
-  
+
       if (filter === selectedFilter) {
         if (filter === "all") return `${className} btn--active-all`;
         if (filter === "active") return `${className} btn--active-red`;
         if (filter === "contained") return `${className} btn--active-orange`;
         return `${className} btn--active-green`;
       }
-  
+
       return className;
     };
   }, [selectedFilter]);
