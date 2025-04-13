@@ -1,5 +1,11 @@
 import { useErrorHandling } from "../../../shared/lib/errors";
-import { MapErrorCode, createMapError } from "../model/mapErrorTypes";
+import { 
+  MapErrorCode, 
+  createForestFireMapError, 
+  createGeoJsonLoadError, 
+  createMapInitializationError, 
+  createMarkerCreationError 
+} from "../model/mapErrorTypes";
 
 /**
  * 지도 특화 에러 처리 훅
@@ -12,35 +18,35 @@ export function useMapErrorHandling(component: string) {
 
   // 지도 특화 에러 생성 함수
   const createGeoJsonError = (
-    errorCode:
-      | MapErrorCode.GEOJSON_FETCH_FAILED
-      | MapErrorCode.GEOJSON_PARSE_ERROR
-      | MapErrorCode.GEOJSON_RENDERING_ERROR,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createMapError(errorCode, originalError, additionalInfo);
+    return createGeoJsonLoadError(originalError, additionalInfo);
   };
 
   // 지도 초기화 에러 생성 함수
   const createMapInitError = (
-    errorCode: MapErrorCode.CONTAINER_NOT_FOUND | MapErrorCode.INITIALIZATION_FAILED,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createMapError(errorCode, originalError, additionalInfo);
+    return createMapInitializationError(originalError, additionalInfo);
   };
 
   // 마커 관련 에러 생성 함수
   const createMarkerError = (
-    errorCode:
-      | MapErrorCode.MARKER_CREATION_FAILED
-      | MapErrorCode.MARKER_UPDATE_FAILED
-      | MapErrorCode.MARKER_REMOVAL_FAILED,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createMapError(errorCode, originalError, additionalInfo);
+    return createMarkerCreationError(originalError, additionalInfo);
+  };
+
+  // 일반 맵 에러 생성 (특정 코드 사용 시)
+  const createMapError = (
+    errorCode: MapErrorCode,
+    originalError?: Error,
+    additionalInfo?: string
+  ) => {
+    return createForestFireMapError(errorCode, originalError, additionalInfo);
   };
 
   return {
@@ -52,5 +58,6 @@ export function useMapErrorHandling(component: string) {
     createGeoJsonError,
     createMapInitError,
     createMarkerError,
+    createMapError,
   };
 }

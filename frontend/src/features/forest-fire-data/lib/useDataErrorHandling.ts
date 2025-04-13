@@ -1,5 +1,10 @@
 import { useErrorHandling } from "../../../shared/lib/errors";
-import { DataErrorCode, createDataError } from "../model/dataErrorTypes";
+import { 
+  DataErrorCode, 
+  createForestFireDataError, 
+  createFireDataLoadError,
+  createFireDataParseError 
+} from "../model/dataErrorTypes";
 
 /**
  * 데이터 특화 에러 처리 훅
@@ -12,29 +17,27 @@ export function useDataErrorHandling(component: string) {
 
   // 네트워크 관련 에러 생성
   const createFetchError = (
-    errorCode: DataErrorCode.FETCH_FAILED | DataErrorCode.TIMEOUT,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createDataError(errorCode, originalError, additionalInfo);
+    return createFireDataLoadError(originalError, additionalInfo);
   };
 
   // 데이터 구문 분석 에러 생성
   const createParsingError = (
-    errorCode: DataErrorCode.PARSE_ERROR | DataErrorCode.INVALID_FORMAT,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createDataError(errorCode, originalError, additionalInfo);
+    return createFireDataParseError(originalError, additionalInfo);
   };
 
-  // 데이터 상태 관련 에러 생성
-  const createStateError = (
-    errorCode: DataErrorCode.EMPTY_RESPONSE | DataErrorCode.CACHE_ERROR,
+  // 일반 데이터 에러 생성 (특정 코드 사용 시)
+  const createDataError = (
+    errorCode: DataErrorCode,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createDataError(errorCode, originalError, additionalInfo);
+    return createForestFireDataError(errorCode, originalError, additionalInfo);
   };
 
   return {
@@ -45,6 +48,6 @@ export function useDataErrorHandling(component: string) {
     // 데이터 특화 에러 생성 함수 추가
     createFetchError,
     createParsingError,
-    createStateError,
+    createDataError,
   };
 }

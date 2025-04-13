@@ -5,13 +5,20 @@
 // 타입 및 인터페이스
 export * from "./types";
 
+// 통합 에러 코드
+export {
+  GeneralErrorCode,
+  DataErrorCode,
+  MapErrorCode,
+  getErrorMessage,
+} from "./errorCodes";
+
 // 데이터 관련 에러 팩토리
 export {
   createDataFetchError,
   createDataParseError,
   createFireDataFetchError,
   createFireDataUpdateError,
-  DataErrorCode,
 } from "./dataErrorTypes";
 
 // 지도 관련 에러 팩토리
@@ -21,7 +28,6 @@ export {
   createGeoJsonError,
   createGeolocationError,
   createLocationPermissionError,
-  MapErrorCode,
 } from "./mapErrorTypes";
 
 // 에러 처리 서비스

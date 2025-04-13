@@ -3,66 +3,42 @@ import {
   ErrorSeverity,
   AppError,
   ErrorType,
-} from "../../../shared/lib/errors/types";
+} from "../../../shared/lib/errors";
+import { DataErrorCode, getErrorMessage } from "../../../shared/lib/errors/errorCodes";
 
 /**
- * 데이터 관련 에러 코드
+ * 산불 데이터 특화 에러 메시지 (feature별 특화 메시지가 필요한 경우)
  */
-export enum DataErrorCode {
-  // 데이터 로딩 관련 에러
-  FETCH_FAILED = "DATA001",
-  TIMEOUT = "DATA002",
-
-  // 데이터 파싱 관련 에러
-  PARSE_ERROR = "DATA003",
-  INVALID_FORMAT = "DATA004",
-
-  // 데이터 상태 관련 에러
-  EMPTY_RESPONSE = "DATA005",
-  CACHE_ERROR = "DATA006",
-}
-
-/**
- * 데이터 에러 메시지 매핑
- */
-export const DATA_ERROR_MESSAGES: Record<DataErrorCode, string> = {
-  [DataErrorCode.FETCH_FAILED]: "산불 데이터를 가져오는데 실패했습니다.",
-  [DataErrorCode.TIMEOUT]: "데이터 요청 시간이 초과되었습니다.",
-  [DataErrorCode.PARSE_ERROR]: "데이터 분석 중 오류가 발생했습니다.",
-  [DataErrorCode.INVALID_FORMAT]: "유효하지 않은 데이터 형식입니다.",
-  [DataErrorCode.EMPTY_RESPONSE]: "받은 데이터가 없습니다.",
-  [DataErrorCode.CACHE_ERROR]: "캐시 처리 중 오류가 발생했습니다.",
+export const FOREST_FIRE_DATA_MESSAGES: Record<string, string> = {
+  [DataErrorCode.FIRE_DATA_FETCH_FAILED]: "산불 데이터를 가져오는데 실패했습니다. 네트워크 연결을 확인해주세요.",
+  [DataErrorCode.CACHE_ERROR]: "산불 데이터 캐시 처리 중 오류가 발생했습니다.",
 };
 
 /**
- * 데이터 특화 에러 생성 함수
+ * 산불 데이터 feature 특화 에러 생성 함수
  *
- * 에러 코드에 따라 적절한 에러 객체를 생성합니다
+ * 산불 데이터 슬라이스에 특화된 에러 컨텍스트를 포함합니다
  */
-export function createDataError(
+export function createForestFireDataError(
   code: DataErrorCode,
   originalError?: Error,
   additionalInfo?: string
 ): AppError {
-  const baseMessage = DATA_ERROR_MESSAGES[code] || "데이터 처리 중 오류가 발생했습니다.";
+  // feature 특화 메시지 또는 공통 메시지 사용
+  const baseMessage = FOREST_FIRE_DATA_MESSAGES[code] || getErrorMessage(code);
   const message = additionalInfo ? `${baseMessage} ${additionalInfo}` : baseMessage;
 
-  // 에러 유형에 따라 카테고리 분류
-  let category: ErrorCategory;
-  let type: ErrorType = ErrorType.UNKNOWN;
+  // 에러 유형에 따라 카테고리와 타입 분류
+  let category: ErrorCategory = ErrorCategory.DATA;
+  let type: ErrorType = ErrorType.FIRE_DATA_FETCH_FAILED;
 
   if (code === DataErrorCode.FETCH_FAILED || code === DataErrorCode.TIMEOUT) {
-    category = ErrorCategory.NETWORK;
     type = ErrorType.NETWORK;
-  } else if (code === DataErrorCode.PARSE_ERROR || code === DataErrorCode.INVALID_FORMAT) {
-    category = ErrorCategory.VALIDATION;
+  } else if (code === DataErrorCode.PARSE_FAILED || code === DataErrorCode.VALIDATION_FAILED) {
     type = ErrorType.VALIDATION;
-  } else {
-    category = ErrorCategory.DATA;
-    type = ErrorType.FIRE_DATA_FETCH_FAILED;
   }
 
-  // 네트워크 오류는 더 심각한 수준으로 분류
+  // 심각도 결정 - 네트워크 오류는 더 심각한 수준
   const severity =
     code === DataErrorCode.FETCH_FAILED || code === DataErrorCode.TIMEOUT
       ? ErrorSeverity.ERROR
@@ -70,7 +46,7 @@ export function createDataError(
 
   return {
     message,
-    type, // 추가: 필수 type 속성
+    type,
     severity,
     category,
     code,
@@ -81,10 +57,42 @@ export function createDataError(
     },
     options: {
       showUser: true,
-      retryable: code !== DataErrorCode.INVALID_FORMAT, // 형식 오류는 재시도해도 동일한 결과
+      retryable: code !== DataErrorCode.VALIDATION_FAILED,
       toast: true,
       log: true,
     },
     timestamp: Date.now(),
   };
+}
+
+/**
+ * 산불 데이터 로드 실패 에러 생성 함수
+ * 
+ * 산불 데이터 로드에 실패했을 때 사용
+ */
+export function createFireDataLoadError(
+  originalError?: Error,
+  additionalInfo?: string
+): AppError {
+  return createForestFireDataError(
+    DataErrorCode.FIRE_DATA_FETCH_FAILED,
+    originalError,
+    additionalInfo
+  );
+}
+
+/**
+ * 산불 데이터 파싱 에러 생성 함수
+ * 
+ * 산불 데이터 파싱에 실패했을 때 사용
+ */
+export function createFireDataParseError(
+  originalError?: Error,
+  additionalInfo?: string
+): AppError {
+  return createForestFireDataError(
+    DataErrorCode.FIRE_DATA_PARSE_FAILED,
+    originalError,
+    additionalInfo
+  );
 }

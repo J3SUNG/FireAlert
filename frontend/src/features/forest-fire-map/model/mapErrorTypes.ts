@@ -1,4 +1,10 @@
-import { ErrorCategory, ErrorSeverity, AppError, ErrorType } from "../../../shared/lib/errors";
+import { 
+  ErrorCategory, 
+  ErrorSeverity, 
+  AppError, 
+  ErrorType 
+} from "../../../shared/lib/errors";
+import { MapErrorCode, getErrorMessage } from "../../../shared/lib/errors/errorCodes";
 
 /**
  * 지도 특화 에러 카테고리
@@ -12,82 +18,48 @@ export enum MapErrorCategory {
 }
 
 /**
- * 지도 에러 코드
+ * 산불 지도 특화 에러 메시지 (feature별 특화 메시지가 필요한 경우)
  */
-export enum MapErrorCode {
-  // 초기화 관련 에러
-  CONTAINER_NOT_FOUND = "MAP001",
-  INITIALIZATION_FAILED = "MAP002",
-
-  // GeoJSON 관련 에러
-  GEOJSON_FETCH_FAILED = "GEO001",
-  GEOJSON_PARSE_ERROR = "GEO002",
-  GEOJSON_RENDERING_ERROR = "GEO003",
-
-  // 마커 관련 에러
-  MARKER_CREATION_FAILED = "MRK001",
-  MARKER_UPDATE_FAILED = "MRK002",
-  MARKER_REMOVAL_FAILED = "MRK003",
-
-  // 상호작용 관련 에러
-  EVENT_BINDING_FAILED = "EVT001",
-}
-
-/**
- * 지도 에러 메시지 매핑
- */
-export const MAP_ERROR_MESSAGES: Record<MapErrorCode, string> = {
-  [MapErrorCode.CONTAINER_NOT_FOUND]: "지도를 표시할 컨테이너를 찾을 수 없습니다.",
-  [MapErrorCode.INITIALIZATION_FAILED]: "지도 초기화에 실패했습니다.",
-
-  [MapErrorCode.GEOJSON_FETCH_FAILED]: "지도 데이터를 가져오는데 실패했습니다.",
-  [MapErrorCode.GEOJSON_PARSE_ERROR]: "지도 데이터 파싱 중 오류가 발생했습니다.",
-  [MapErrorCode.GEOJSON_RENDERING_ERROR]: "지도 데이터 렌더링 중 오류가 발생했습니다.",
-
-  [MapErrorCode.MARKER_CREATION_FAILED]: "지도 마커 생성에 실패했습니다.",
-  [MapErrorCode.MARKER_UPDATE_FAILED]: "지도 마커 업데이트에 실패했습니다.",
-  [MapErrorCode.MARKER_REMOVAL_FAILED]: "지도 마커 제거에 실패했습니다.",
-
-  [MapErrorCode.EVENT_BINDING_FAILED]: "지도 이벤트 바인딩에 실패했습니다.",
+export const FOREST_FIRE_MAP_MESSAGES: Record<string, string> = {
+  [MapErrorCode.INITIALIZATION_FAILED]: "산불 지도 초기화에 실패했습니다. 페이지를 새로고침 해보세요.",
+  [MapErrorCode.GEOJSON_LOAD_FAILED]: "산불 발생 지역 경계 데이터를 불러오는데 실패했습니다.",
 };
 
 /**
- * 지도 특화 에러 생성 함수
+ * 산불 지도 feature 특화 에러 생성 함수
  *
- * 에러 코드를 기반으로 구조화된 에러 객체 생성
+ * 산불 지도 슬라이스에 특화된 에러 컨텍스트를 포함합니다
  */
-export function createMapError(
+export function createForestFireMapError(
   code: MapErrorCode,
   originalError?: Error,
   additionalInfo?: string
 ): AppError {
-  const baseMessage = MAP_ERROR_MESSAGES[code] || "지도 작업 중 오류가 발생했습니다.";
+  // feature 특화 메시지 또는 공통 메시지 사용
+  const baseMessage = FOREST_FIRE_MAP_MESSAGES[code] || getErrorMessage(code);
   const message = additionalInfo ? `${baseMessage} ${additionalInfo}` : baseMessage;
 
-  // 코드 접두사로 에러 카테고리 결정
-  let category: ErrorCategory = ErrorCategory.GENERAL;
+  // 에러 유형에 따라 카테고리와 타입 분류
+  let category: ErrorCategory = ErrorCategory.MAP;
+  let type: ErrorType = ErrorType.MAP_LOAD_FAILED;
   let mapCategory: MapErrorCategory = MapErrorCategory.MAP_INITIALIZATION;
 
-  if (code.startsWith("MAP")) {
-    category = ErrorCategory.UI;
+  // 코드 접두사로 에러 카테고리 결정
+  if (code.startsWith('MAP-')) {
     mapCategory = MapErrorCategory.MAP_INITIALIZATION;
-  } else if (code.startsWith("GEO")) {
-    category = ErrorCategory.DATA;
+  } else if (code.startsWith('GEO-')) {
     mapCategory = MapErrorCategory.GEOJSON_LOADING;
-  } else if (code.startsWith("MRK")) {
-    category = ErrorCategory.UI;
-    mapCategory =
-      code === MapErrorCode.MARKER_UPDATE_FAILED
-        ? MapErrorCategory.MARKER_UPDATE
-        : MapErrorCategory.MARKER_CREATION;
-  } else if (code.startsWith("EVT")) {
-    category = ErrorCategory.UI;
+  } else if (code === MapErrorCode.MARKER_CREATION_FAILED || code === MapErrorCode.MARKER_UPDATE_FAILED) {
+    mapCategory = code === MapErrorCode.MARKER_UPDATE_FAILED 
+      ? MapErrorCategory.MARKER_UPDATE 
+      : MapErrorCategory.MARKER_CREATION;
+  } else if (code === MapErrorCode.EVENT_BINDING_FAILED) {
     mapCategory = MapErrorCategory.MAP_INTERACTION;
   }
 
   return {
     message,
-    type: ErrorType.MAP_LOAD_FAILED, // 추가: 필수 type 속성
+    type,
     severity: ErrorSeverity.ERROR,
     category,
     code,
@@ -107,4 +79,52 @@ export function createMapError(
     },
     timestamp: Date.now(),
   };
+}
+
+/**
+ * 지도 초기화 실패 에러 생성 함수
+ * 
+ * 산불 지도 초기화에 실패했을 때 사용
+ */
+export function createMapInitializationError(
+  originalError?: Error,
+  additionalInfo?: string
+): AppError {
+  return createForestFireMapError(
+    MapErrorCode.INITIALIZATION_FAILED,
+    originalError,
+    additionalInfo
+  );
+}
+
+/**
+ * GeoJSON 로드 실패 에러 생성 함수
+ * 
+ * 지역 경계 데이터 로드에 실패했을 때 사용
+ */
+export function createGeoJsonLoadError(
+  originalError?: Error,
+  additionalInfo?: string
+): AppError {
+  return createForestFireMapError(
+    MapErrorCode.GEOJSON_LOAD_FAILED,
+    originalError,
+    additionalInfo
+  );
+}
+
+/**
+ * 마커 생성 실패 에러 생성 함수
+ * 
+ * 산불 마커 생성에 실패했을 때 사용
+ */
+export function createMarkerCreationError(
+  originalError?: Error,
+  additionalInfo?: string
+): AppError {
+  return createForestFireMapError(
+    MapErrorCode.MARKER_CREATION_FAILED,
+    originalError,
+    additionalInfo
+  );
 }
