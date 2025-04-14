@@ -23,7 +23,7 @@ export const MapInitializer: FC<MapInitializerProps> = ({
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<L.Map | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_isLoading, setIsLoading] = useState<boolean>(true); // 사용하지 않는 변수 앞에 밑줄 추가
   
   // 에러 처리
   const [errorState, { setError, clearError }] = useErrorHandling("MapInitializer", "forest-fire-map");

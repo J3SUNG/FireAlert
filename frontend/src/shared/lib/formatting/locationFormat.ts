@@ -99,3 +99,23 @@ export const extractLocation = (
 
   return { province, district };
 };
+
+/**
+ * 위치 정보 포맷팅
+ * 
+ * 행정구역 정보를 간결한 형태로 표시
+ * 예: '서울특별시 강남구' -> '서울 강남구'
+ */
+export const formatLocation = (location: string, sigungu?: string): string => {
+  const { province, district } = extractLocation(location, sigungu);
+  
+  // 시도 이름 간소화
+  const shortProvince = provinceShortNames[province] || province;
+  
+  // 시군구가 있으면 포함, 없으면 시도만 표시
+  if (district && district.trim() !== '') {
+    return `${shortProvince} ${district}`;
+  }
+  
+  return shortProvince;
+};

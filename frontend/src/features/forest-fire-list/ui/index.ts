@@ -1,2 +1,2 @@
-export { default as ForestFireList } from './ForestFireList';
-export { default as ForestFireItem } from './ForestFireItem';
+export { ForestFireList } from "./ForestFireList";
+export { ForestFireItem } from "./ForestFireItem";

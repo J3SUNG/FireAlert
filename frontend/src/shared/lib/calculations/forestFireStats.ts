@@ -61,6 +61,45 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
 };
 
 /**
+ * 산불 데이터 통계 계산 (별칭)
+ * 
+ * getForestFireStatistics와 동일한 함수의 다른 이름
+ */
+export const calculateFireStatistics = getForestFireStatistics;
+
+/**
+ * 상태별 산불 그룹화
+ * 
+ * 산불 데이터를 상태별로 그룹화
+ */
+export const groupFiresByStatus = (fires: ForestFireData[]) => {
+  return {
+    active: fires.filter((fire) => fire.status === "active"),
+    contained: fires.filter((fire) => fire.status === "contained"),
+    extinguished: fires.filter((fire) => fire.status === "extinguished"),
+  };
+};
+
+/**
+ * 지역별 산불 그룹화
+ * 
+ * 산불 데이터를 지역별로 그룹화
+ */
+export const groupFiresByProvince = (fires: ForestFireData[]) => {
+  const result: Record<string, ForestFireData[]> = {};
+  
+  fires.forEach((fire) => {
+    const province = fire.province ?? "기타";
+    if (!result[province]) {
+      result[province] = [];
+    }
+    result[province].push(fire);
+  });
+  
+  return result;
+};
+
+/**
  * 상태별 카운트 계산
  * 
  * 산불 상태별 개수 계산 (전체, 진행중, 통제중, 진화완료)

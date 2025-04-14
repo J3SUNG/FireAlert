@@ -6,25 +6,13 @@
  */
 
 // UI 컴포넌트
-import { 
-  Button, 
-  LoadingIndicator, 
-  ErrorDisplay 
-} from "./ui/components";
-import { 
-  FireStatusSummary 
-} from "./ui";
-import { 
-  combineClasses 
-} from "./ui/utils/classNameUtils";
+import { Button, LoadingIndicator, ErrorDisplay } from "./ui/components";
+import { FireStatusSummary } from "./ui";
+import { combineClasses } from "./ui/utils/classNameUtils";
 
 // API 서비스
-import { 
-  forestFireService 
-} from "./api/forestFireService";
-import { 
-  geoJsonService 
-} from "./api/geoJsonService";
+import { forestFireService } from "./api/forestFireService";
+import { geoJsonService } from "./api/geoJsonService";
 
 // 공통 유틸리티 및 훅
 import {
@@ -34,10 +22,11 @@ import {
   extractLocation,
   calculateFireStatistics,
   groupFiresByStatus,
+  groupFiresByProvince,
   convertStatus,
   getResponseLevel,
   CacheManager,
-  setupDefaultLeafletIcons
+  setupDefaultLeafletIcons,
 } from "./lib";
 
 // 에러 처리
@@ -46,31 +35,17 @@ import {
   ErrorFallbackUI,
   useErrorHandling,
   createDataFetchError,
-  createMapInitError
+  createMapInitError,
 } from "./lib/errors";
 
 // 모델 및 타입
-import type {
-  ForestFireData,
-  ForestFireStatus,
-  ResponseLevel,
-  GeoJsonData
-} from "./model";
+import type { ForestFireData, GeoJsonData } from "./model";
 
 // UI 컴포넌트 내보내기
-export {
-  Button,
-  LoadingIndicator,
-  ErrorDisplay,
-  FireStatusSummary,
-  combineClasses
-};
+export { Button, LoadingIndicator, ErrorDisplay, FireStatusSummary, combineClasses };
 
 // API 서비스 내보내기
-export {
-  forestFireService,
-  geoJsonService
-};
+export { forestFireService, geoJsonService };
 
 // 공통 유틸리티 및 훅 내보내기
 export {
@@ -80,10 +55,11 @@ export {
   extractLocation,
   calculateFireStatistics,
   groupFiresByStatus,
+  groupFiresByProvince,
   convertStatus,
   getResponseLevel,
   CacheManager,
-  setupDefaultLeafletIcons
+  setupDefaultLeafletIcons,
 };
 
 // 에러 처리 내보내기
@@ -92,13 +68,8 @@ export {
   ErrorFallbackUI,
   useErrorHandling,
   createDataFetchError,
-  createMapInitError
+  createMapInitError,
 };
 
 // 모델 및 타입 내보내기
-export type {
-  ForestFireData,
-  ForestFireStatus,
-  ResponseLevel,
-  GeoJsonData
-};
+export type { ForestFireData, GeoJsonData };

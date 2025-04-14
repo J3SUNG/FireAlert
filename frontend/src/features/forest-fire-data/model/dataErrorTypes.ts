@@ -29,7 +29,7 @@ export function createForestFireDataError(
   const message = additionalInfo ? `${baseMessage} ${additionalInfo}` : baseMessage;
 
   // 에러 유형에 따라 카테고리와 타입 분류
-  let category: ErrorCategory = ErrorCategory.DATA;
+  const category: ErrorCategory = ErrorCategory.DATA;
   let type: ErrorType = ErrorType.FIRE_DATA_FETCH_FAILED;
 
   if (code === DataErrorCode.FETCH_FAILED || code === DataErrorCode.TIMEOUT) {

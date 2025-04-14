@@ -217,7 +217,7 @@ export function useLeafletMap({
   }, []);
   
   // 산불 마커 업데이트 함수
-  const updateFireMarker = useCallback((id: string, isSelected: boolean) => {
+  const updateFireMarker = useCallback((id: string, _isSelected: boolean) => { // 사용하지 않는 매개변수 앞에 밑줄 추가
     if (!mapRef.current) return;
     
     const marker = markersRef.current[id];

@@ -9,7 +9,7 @@ import "./FireAlertHeader.css";
  * 로고, 필터 버튼, 타임스탬프를 표시합니다
  */
 export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
-  selectedFilter,
+  _selectedFilter, // 사용하지 않는 매개변수 앞에 밑줄 추가
   setSelectedFilter,
   buttonLabels,
   getButtonClass,
@@ -21,7 +21,7 @@ export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
       <div className="fire-alert__logo-container">
         <div className="fire-alert__logo-icon">🔥</div>
         <h1 className="fire-alert__logo-text">
-          <span className="fire-alert__logo-text--fire">{APP_TITLE.main.split('알림')[0]}</span>{APP_TITLE.main.split('불씨')[1]}
+          <span className="fire-alert__logo-text--fire">불씨</span>알림
         </h1>
         <span className="fire-alert__subtitle">{APP_TITLE.subtitle}</span>
       </div>

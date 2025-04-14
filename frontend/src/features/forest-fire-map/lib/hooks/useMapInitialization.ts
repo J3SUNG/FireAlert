@@ -24,7 +24,7 @@ export function useMapInitialization({
   initialZoom = 7,
   minZoom = 6,
   maxZoom = 18,
-  fires = []
+  _fires = [] // 사용하지 않는 매개변수 앞에 밑줄 추가
 }: MapInitializationOptions) {
   // 지도 인스턴스 상태
   const [map, setMap] = useState<L.Map | null>(null);

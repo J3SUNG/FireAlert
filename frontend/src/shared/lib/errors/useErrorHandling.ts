@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
   AppError, 
-  ErrorCategory, 
+  _ErrorCategory, // 사용하지 않는 임포트 앞에 밑줄 추가
   ErrorContext, 
   ErrorHandler, 
-  ErrorSeverity,
-  ErrorType
+  _ErrorSeverity, // 사용하지 않는 임포트 앞에 밑줄 추가
+  _ErrorType // 사용하지 않는 임포트 앞에 밑줄 추가
 } from './types';
 import { getErrorService } from './ErrorHandlingService';
 

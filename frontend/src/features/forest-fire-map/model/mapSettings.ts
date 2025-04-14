@@ -1,12 +1,29 @@
 import L from "leaflet";
 
 /**
+ * 지도 기본 중심점
+ * 한국 중심점 좌표
+ */
+export const DEFAULT_MAP_CENTER: L.LatLngExpression = [36.0, 127.7];
+
+/**
+ * 지도 기본 줌 레벨
+ */
+export const DEFAULT_ZOOM = 7;
+
+/**
+ * 지도 타일 레이어 URL
+ * 기본 배경 지도로 사용할 OpenStreetMap 타일 URL
+ */
+export const MAP_TILE_LAYER = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+/**
  * 지도 초기 설정
  * 한국 중심의 지도를 위한 기본 설정값
  */
 export const MAP_INIT_OPTIONS = {
-  center: [36.0, 127.7] as L.LatLngExpression, // 한국 중심점
-  zoom: 7,
+  center: DEFAULT_MAP_CENTER, // 한국 중심점
+  zoom: DEFAULT_ZOOM,
   zoomControl: false,
   dragging: true,
   scrollWheelZoom: true,

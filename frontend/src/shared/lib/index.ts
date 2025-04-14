@@ -14,8 +14,9 @@ import {
 // formatting 세그먼트
 import { 
   formatLocation,
-  extractLocation
-} from "./formatting/locationFormat";
+  extractLocation,
+  provinceShortNames
+} from "./formatting";
 
 // calculations 세그먼트
 import {
@@ -49,7 +50,8 @@ export {
 // 포맷팅 관련 유틸리티 내보내기
 export {
   formatLocation,
-  extractLocation
+  extractLocation,
+  provinceShortNames
 };
 
 // 계산 관련 유틸리티 내보내기
