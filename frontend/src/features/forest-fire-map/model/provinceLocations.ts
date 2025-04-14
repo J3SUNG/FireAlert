@@ -21,6 +21,12 @@ export const PROVINCE_LOCATIONS = [
   { name: "제주특별자치도", lat: 33.4996, lng: 126.5312 },
 ];
 
+// 동일한 좌표값을 다른 형식으로 내보내기 (마커 위치로 사용)
+export const PROVINCE_COORDINATES = PROVINCE_LOCATIONS.map(loc => ({
+  name: loc.name,
+  coordinates: [loc.lat, loc.lng]
+}));
+
 /**
  * 이름으로 시도 좌표 찾기
  * 

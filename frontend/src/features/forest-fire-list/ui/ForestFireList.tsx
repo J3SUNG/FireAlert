@@ -2,6 +2,7 @@ import React, { FC, useMemo } from "react";
 import { ForestFireItem } from "./ForestFireItem";
 import { ForestFireListProps } from "../model/types";
 import { Button } from "../../../shared/ui/components";
+import { FireFilterType } from "../../../shared/model/common/filterTypes";
 import "./ForestFireList.css";
 
 /**
@@ -13,7 +14,7 @@ import "./ForestFireList.css";
  * @returns {JSX.Element} 산불 목록 컴포넌트
  */
 export const ForestFireList: FC<ForestFireListProps> = React.memo(
-  ({ fires, onFireSelect, selectedFireId, showFilter = true, filter = "all", onFilterChange }) => {
+  ({ fires, onFireSelect, selectedFireId, showFilter = true, filter = FireFilterType.ALL, onFilterChange }) => {
     /**
      * 컨텐츠 영역의 CSS 클래스명 계산
      * 필터 표시 여부에 따라 적절한 클래스를 반환합니다.
@@ -35,7 +36,7 @@ export const ForestFireList: FC<ForestFireListProps> = React.memo(
      * 메모이제이션을 적용하여 불필요한 함수 재생성을 방지합니다.
      */
     const handleFilterChange = useMemo(() => {
-      return (newFilter: "all" | "active" | "contained" | "extinguished") => {
+      return (newFilter: FireFilterType) => {
         if (onFilterChange) {
           onFilterChange(newFilter);
         }
@@ -47,10 +48,10 @@ export const ForestFireList: FC<ForestFireListProps> = React.memo(
      * 필터에 따른 메시지를 메모이제이션하여 불필요한 연산을 방지합니다.
      */
     const emptyMessage = useMemo(() => {
-      return filter === "all"
+      return filter === FireFilterType.ALL
         ? "현재 진행 중인 산불이 없습니다."
         : `현재 ${
-            filter === "active" ? "진화중인" : filter === "contained" ? "통제중인" : "진화완료된"
+            filter === FireFilterType.ACTIVE ? "진화중인" : filter === FireFilterType.CONTAINED ? "통제중인" : "진화완료된"
           } 산불이 없습니다.`;
     }, [filter]);
 
@@ -61,32 +62,32 @@ export const ForestFireList: FC<ForestFireListProps> = React.memo(
             <div className="forest-fire-list__button-group">
               <Button
                 variant="all"
-                isActive={filter === "all"}
-                onClick={() => handleFilterChange("all")}
+                isActive={filter === FireFilterType.ALL}
+                onClick={() => handleFilterChange(FireFilterType.ALL)}
                 className="fire-alert__button--small"
               >
                 전체
               </Button>
               <Button
                 variant="active"
-                isActive={filter === "active"}
-                onClick={() => handleFilterChange("active")}
+                isActive={filter === FireFilterType.ACTIVE}
+                onClick={() => handleFilterChange(FireFilterType.ACTIVE)}
                 className="fire-alert__button--small"
               >
                 진행중
               </Button>
               <Button
                 variant="contained"
-                isActive={filter === "contained"}
-                onClick={() => handleFilterChange("contained")}
+                isActive={filter === FireFilterType.CONTAINED}
+                onClick={() => handleFilterChange(FireFilterType.CONTAINED)}
                 className="fire-alert__button--small"
               >
                 통제중
               </Button>
               <Button
                 variant="extinguished"
-                isActive={filter === "extinguished"}
-                onClick={() => handleFilterChange("extinguished")}
+                isActive={filter === FireFilterType.EXTINGUISHED}
+                onClick={() => handleFilterChange(FireFilterType.EXTINGUISHED)}
                 className="fire-alert__button--small"
               >
                 진화완료

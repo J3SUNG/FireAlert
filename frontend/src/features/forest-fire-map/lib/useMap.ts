@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import L from "leaflet";
 import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../model/mapSettings";
-import { UseMapOptions } from "../model/types";
+import { UseMapOptions } from "../model/common-types";
 
 /**
  * Leaflet 맵을 관리하는 커스텀 훅
@@ -61,7 +61,7 @@ export function useMap({
         delete (container as any)._leaflet_id;
       }
 
-      const leafletClasses = Array.from(container.classList).filter((cls) =>
+      const leafletClasses = Array.from(container.classList).filter((cls: string) =>
         cls.startsWith("leaflet")
       );
 

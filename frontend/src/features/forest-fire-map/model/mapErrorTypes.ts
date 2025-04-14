@@ -1,6 +1,9 @@
 import { ErrorCategory, ErrorSeverity, AppError, ErrorType } from "../../../shared/lib/errors";
 import { MapErrorCode, getErrorMessage } from "../../../shared/lib/errors/errorCodes";
 
+// 외부에서 사용할 수 있도록 MapErrorCode 내보내기
+export { MapErrorCode };
+
 /**
  * 지도 특화 에러 카테고리
  */

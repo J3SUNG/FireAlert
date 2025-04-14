@@ -2,7 +2,6 @@ import { useErrorHandling } from "../../../shared/lib/errors";
 import { 
   MapErrorCode, 
   createForestFireMapError, 
-  createGeoJsonLoadError, 
   createMapInitializationError, 
   createMarkerCreationError 
 } from "../model/mapErrorTypes";
@@ -18,10 +17,11 @@ export function useMapErrorHandling(component: string) {
 
   // 지도 특화 에러 생성 함수
   const createGeoJsonError = (
+    code: MapErrorCode,
     originalError?: Error,
     additionalInfo?: string
   ) => {
-    return createGeoJsonLoadError(originalError, additionalInfo);
+    return createForestFireMapError(code, originalError, additionalInfo);
   };
 
   // 지도 초기화 에러 생성 함수

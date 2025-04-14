@@ -1,40 +1,59 @@
 import L from "leaflet";
-import { ForestFireData } from "../../../shared/model/forestFire";
 
-/**
- * 산불 지도 컴포넌트 Props
- */
-export interface ForestFireMapProps {
-  fires: ForestFireData[];              // 표시할 산불 데이터 배열
-  selectedFireId?: string;              // 선택된 산불 ID
-  onFireSelect?: (fire: ForestFireData) => void;  // 산불 선택 핸들러
-  legendPosition?: L.ControlPosition;   // 범례 위치
+// Leaflet 확장 타입 정의
+declare module 'leaflet' {
+  interface Map {
+    toggleDistrictLayerHandler?: () => void;
+    maintainLayerOrderHandler?: () => void;
+  }
+  
+  // 타입 인터페이스 중복 문제를 피하기 위해 그냥 사용하지 않음
+  // 대신 MarkerWithEvent 타입을 정의하여 사용
 }
 
 /**
- * 화재 마커 관리자 Props
+ * 지도 구성 옵션
  */
-export interface FireMarkerManagerProps {
-  map: L.Map | null;                    // 지도 인스턴스
-  fires: ForestFireData[];              // 표시할 산불 데이터 배열
-  selectedFireId?: string;              // 선택된 산불 ID
-  onFireSelect?: (fire: ForestFireData) => void;  // 산불 선택 핸들러
-  isGeoJsonLoaded: boolean;             // GeoJSON 로드 완료 여부
+export interface MapConfig {
+  center: L.LatLngExpression;
+  zoom: number;
+  minZoom?: number;
+  maxZoom?: number;
 }
 
 /**
- * 맵 후크 옵션
+ * 마커 옵션
  */
-export interface UseMapOptions {
-  containerRef: React.RefObject<HTMLDivElement>;  // 지도 컨테이너 참조
-  legendPosition?: L.ControlPosition;   // 범례 위치
-  options?: Partial<any>;               // 지도 초기화 옵션
-  fires?: ForestFireData[];             // 표시할 산불 데이터 배열
+export interface MarkerOptions extends L.MarkerOptions {
+  id?: string;
+  isSelected?: boolean;
 }
 
 /**
- * 맵 로딩 인디케이터 Props
+ * 마커 참조 타입
  */
-export interface MapLoadingIndicatorProps {
-  isLoading: boolean;                   // 로딩 상태
+export type MarkerRef = L.Marker & {
+  id?: string;
+  fireId?: string;
+  eventHandler?: any; // 이벤트 핸들러 속성
+};
+
+/**
+ * 마커 이벤트 핸들러
+ */
+export interface MarkerEventHandlers {
+  onClick?: (e: L.LeafletMouseEvent) => void;
+  onMouseOver?: (e: L.LeafletMouseEvent) => void;
+  onMouseOut?: (e: L.LeafletMouseEvent) => void;
+}
+
+/**
+ * GeoJSON 레이어 구성
+ */
+export interface GeoJsonLayerConfig {
+  id: string;
+  url: string;
+  style?: L.PathOptions;
+  minZoom?: number;
+  maxZoom?: number;
 }

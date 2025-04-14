@@ -9,14 +9,14 @@ import { FireFilterType } from "../../model/common/filterTypes";
  */
 export function useFireFilterAndSelection(fires: ForestFireData[]) {
   // 선택된 필터 상태 - 기본값은 "active"(진화중)
-  const [selectedFilter, setSelectedFilter] = useState<FireFilterType>("active");
+  const [selectedFilter, setSelectedFilter] = useState<FireFilterType>(FireFilterType.ACTIVE);
 
   // 선택된 산불 ID 상태
   const [selectedFireId, setSelectedFireId] = useState<string | undefined>(undefined);
 
   // 필터링된 산불 데이터 계산
   const filteredData = useMemo(() => {
-    if (selectedFilter === "all") return fires;
+    if (selectedFilter === FireFilterType.ALL) return fires;
     return fires.filter((fire) => fire.status === selectedFilter);
   }, [fires, selectedFilter]);
 
@@ -31,9 +31,9 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
       const className = "btn btn--pill btn--filter";
 
       if (filter === selectedFilter) {
-        if (filter === "all") return `${className} btn--active-all`;
-        if (filter === "active") return `${className} btn--active-red`;
-        if (filter === "contained") return `${className} btn--active-orange`;
+        if (filter === FireFilterType.ALL) return `${className} btn--active-all`;
+        if (filter === FireFilterType.ACTIVE) return `${className} btn--active-red`;
+        if (filter === FireFilterType.CONTAINED) return `${className} btn--active-orange`;
         return `${className} btn--active-green`;
       }
 

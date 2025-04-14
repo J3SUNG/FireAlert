@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { FireMarkerManagerProps } from '../model/types';
+import { FireMarkerManagerProps } from '../model/common-types';
 import { useMarkerManager } from '../lib/useMarkerManager';
 
 /**
@@ -51,8 +51,8 @@ export const FireMarkerManager: FC<FireMarkerManagerProps> = React.memo(({
   }
   
   // 산불 ID 배열을 비교하여 변경 여부 확인
-  const prevIds = prevProps.fires.map(f => f.id).sort().join(',');
-  const nextIds = nextProps.fires.map(f => f.id).sort().join(',');
+  const prevIds = prevProps.fires.map((f: any) => f.id).sort().join(',');
+  const nextIds = nextProps.fires.map((f: any) => f.id).sort().join(',');
   
   return prevIds === nextIds;
 });

@@ -36,8 +36,7 @@ export const GeoJsonLayerManager: FC<GeoJsonLayerManagerProps> = ({ map, onLayer
       setError(
         createGeoJsonError(
           MapErrorCode.GEOJSON_RENDERING_ERROR, 
-          error instanceof Error ? error : new Error('Unknown error'),
-          'GeoJSON 레이어 로드 완료 후 처리 중 오류 발생'
+          error instanceof Error ? error : new Error('Unknown error')
         )
       );
       

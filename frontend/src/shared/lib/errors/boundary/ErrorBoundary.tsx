@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Component, ErrorInfo, ReactNode } from "react";
 import { getErrorService } from "../ErrorHandlingService";
 import ErrorFallbackUI from "./ErrorFallbackUI";
 
@@ -75,8 +75,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       // 기본 에러 UI 표시
       return (
         <ErrorFallbackUI
-          error={error}
-          onReset={this.handleReset}
+          error={error || new Error('Unknown error')}  // null 값 방지
+          resetErrorBoundary={this.handleReset}
           component={this.props.component}
           feature={this.props.feature}
         />

@@ -1,15 +1,16 @@
 import React from "react";
 import { FireAlertHeaderProps } from "../model/types";
 import { APP_TITLE } from "../../../shared/constants";
+import { FireFilterType } from "../../../shared/model/common/filterTypes";
 import "./FireAlertHeader.css";
 
 /**
  * 산불 알림 헤더 컴포넌트
  * 
- * 로고, 필터 버튼, 타임스탬프를 표시합니다
+ * 로고, 필터 버튼, 타임스태프를 표시합니다
  */
 export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
-  _selectedFilter, // 사용하지 않는 매개변수 앞에 밑줄 추가
+  selectedFilter: _unused, // TypeScript에서 선택된 필터 변수를 사용하지 않는 변수로 재할당
   setSelectedFilter,
   buttonLabels,
   getButtonClass,
@@ -27,22 +28,22 @@ export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
       </div>
 
       <div className="fire-alert__filter-container">
-        <button className={getButtonClass("all")} onClick={() => setSelectedFilter("all")} data-filter="all">
+        <button className={getButtonClass(FireFilterType.ALL)} onClick={() => setSelectedFilter(FireFilterType.ALL)} data-filter="all">
           {buttonLabels.all}
         </button>
-        <button className={getButtonClass("active")} onClick={() => setSelectedFilter("active")} data-filter="active">
+        <button className={getButtonClass(FireFilterType.ACTIVE)} onClick={() => setSelectedFilter(FireFilterType.ACTIVE)} data-filter="active">
           {buttonLabels.active}
         </button>
         <button
-          className={getButtonClass("contained")}
-          onClick={() => setSelectedFilter("contained")}
+          className={getButtonClass(FireFilterType.CONTAINED)}
+          onClick={() => setSelectedFilter(FireFilterType.CONTAINED)}
           data-filter="contained"
         >
           {buttonLabels.contained}
         </button>
         <button
-          className={getButtonClass("extinguished")}
-          onClick={() => setSelectedFilter("extinguished")}
+          className={getButtonClass(FireFilterType.EXTINGUISHED)}
+          onClick={() => setSelectedFilter(FireFilterType.EXTINGUISHED)}
           data-filter="extinguished"
         >
           {buttonLabels.extinguished}

@@ -6,6 +6,9 @@ import {
 } from "../../../shared/lib/errors";
 import { DataErrorCode, getErrorMessage } from "../../../shared/lib/errors/errorCodes";
 
+// 외부에서 사용할 수 있도록 DataErrorCode 내보내기
+export { DataErrorCode };
+
 /**
  * 산불 데이터 특화 에러 메시지 (feature별 특화 메시지가 필요한 경우)
  */

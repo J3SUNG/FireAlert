@@ -1,5 +1,5 @@
-import { useRef, useCallback } from 'react';
-import L from 'leaflet';
+import { useRef, useCallback } from "react";
+import L from "leaflet";
 // GeoJsonProperties는 사용되지 않음
 
 /**
@@ -12,117 +12,123 @@ export function useGeoJsonState() {
     provinces?: L.GeoJSON;
     districts?: L.GeoJSON;
   }>({});
-  
+
   // 레이블 마커 참조
   const provinceMarkersRef = useRef<L.Marker[]>([]);
   const districtMarkersRef = useRef<L.Marker[]>([]);
-  
+
   // 레이어 설정 함수
   const setProvinceLayer = useCallback((layer: L.GeoJSON) => {
     geoJsonLayersRef.current.provinces = layer;
   }, []);
-  
+
   const setDistrictLayer = useCallback((layer: L.GeoJSON) => {
     geoJsonLayersRef.current.districts = layer;
   }, []);
-  
+
   // 레이어 조회 함수
   const getProvinceLayer = useCallback(() => {
     return geoJsonLayersRef.current.provinces;
   }, []);
-  
+
   const getDistrictLayer = useCallback(() => {
     return geoJsonLayersRef.current.districts;
   }, []);
-  
+
   // 마커 관리 함수
   const addProvinceMarker = useCallback((marker: L.Marker) => {
     provinceMarkersRef.current.push(marker);
   }, []);
-  
+
   const addDistrictMarker = useCallback((marker: L.Marker) => {
     districtMarkersRef.current.push(marker);
   }, []);
-  
+
   // 레이어 제거 함수
-  const cleanupLayers = useCallback((map: L.Map | null) => {
-    if (!map) return;
-    
-    const { provinces, districts } = geoJsonLayersRef.current;
-    
-    // 레이어 제거 - 이벤트 리스너 먼저 제거
-    if (provinces) {
-      if ('off' in provinces) {
-        provinces.off();
+  const cleanupLayers = useCallback(
+    (map: L.Map | null, markerHandlerMap?: Map<L.Marker, () => void>) => {
+      if (!map) return;
+
+      const { provinces, districts } = geoJsonLayersRef.current;
+
+      // 레이어 제거 - 이벤트 리스너 먼저 제거
+      if (provinces) {
+        if ("off" in provinces) {
+          provinces.off();
+        }
+
+        // 레이어 제거
+        if (map.hasLayer(provinces)) {
+          map.removeLayer(provinces);
+        }
       }
-      
-      // 레이어 제거
-      if (map.hasLayer(provinces)) {
-        map.removeLayer(provinces);
+
+      if (districts) {
+        if ("off" in districts) {
+          districts.off();
+        }
+
+        // 레이어 제거
+        if (map.hasLayer(districts)) {
+          map.removeLayer(districts);
+        }
       }
-    }
-    
-    if (districts) {
-      if ('off' in districts) {
-        districts.off();
-      }
-      
-      // 레이어 제거
-      if (map.hasLayer(districts)) {
-        map.removeLayer(districts);
-      }
-    }
-    
-    // 시도 레이블 마커 제거
-    provinceMarkersRef.current.forEach((marker) => {
-      if ('off' in marker) {
-        marker.off();
-      }
-      
-      if (map.hasLayer(marker)) {
-        map.removeLayer(marker);
-      }
-    });
-    provinceMarkersRef.current = [];
-    
-    // 시군구 레이블 마커 제거
-    districtMarkersRef.current.forEach((marker) => {
-      // 이벤트 핸들러 제거
-      if ('eventHandler' in marker && map) {
-        map.off('zoomend', marker.eventHandler);
-      }
-      
-      if ('off' in marker) {
-        marker.off();
-      }
-      
-      if (map && map.hasLayer(marker)) {
-        map.removeLayer(marker);
-      }
-    });
-    districtMarkersRef.current = [];
-    
-    // 참조 초기화
-    geoJsonLayersRef.current = {};
-  }, []);
-  
+
+      // 시도 레이블 마커 제거
+      provinceMarkersRef.current.forEach((marker) => {
+        if ("off" in marker) {
+          marker.off();
+        }
+
+        if (map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      });
+      provinceMarkersRef.current = [];
+
+      // 시군구 레이블 마커 제거
+      districtMarkersRef.current.forEach((marker) => {
+        if (map && markerHandlerMap?.has(marker)) {
+          const handler = markerHandlerMap.get(marker);
+          if (handler) {
+            map.off("zoomend", handler);
+            markerHandlerMap.delete(marker);
+          }
+        }
+
+        if ("off" in marker) {
+          marker.off();
+        }
+
+        if (map && map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      });
+      districtMarkersRef.current = [];
+
+      // 참조 초기화
+      geoJsonLayersRef.current = {};
+    },
+    []
+  );
+
   return {
     // 레이어 참조
     layers: geoJsonLayersRef.current,
     provinceMarkers: provinceMarkersRef.current,
     districtMarkers: districtMarkersRef.current,
-    
+
     // 레이어 관리 함수
     setProvinceLayer,
     setDistrictLayer,
     getProvinceLayer,
     getDistrictLayer,
-    
+
     // 마커 관리 함수
     addProvinceMarker,
     addDistrictMarker,
-    
+
     // 정리 함수
-    cleanupLayers
+    cleanupLayers,
   };
 }

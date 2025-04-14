@@ -28,6 +28,9 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
     cleanupLayers,
   } = useGeoJsonState();
 
+  // 마커 - 이벤트 핸들러 매핑을 위한 Map 사용
+  const markerHandlerMap = new Map<L.Marker, () => void>();
+
   // 시도 GeoJSON 로드 함수
   const loadProvinces = useCallback(async (): Promise<void> => {
     if (!map) {
@@ -258,10 +261,10 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
                   marker.setOpacity(0);
                 }
               };
-              
+
               // 마커에 이벤트 핸들러 참조 저장 (명시적 정리를 위해)
-              marker.eventHandler = updateMarkerVisibility;
-              map.on("zoomend", marker.eventHandler);
+              markerHandlerMap.set(marker, updateMarkerVisibility);
+              map.on("zoomend", updateMarkerVisibility);
 
               // 초기 줌 레벨에 따라 가시성 설정
               if (map.getZoom() >= 8) {
@@ -282,7 +285,7 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
         if (districts && map.hasLayer(districts)) {
           districts.bringToBack();
         }
-        
+
         if (provinces && map.hasLayer(provinces)) {
           provinces.bringToFront();
         }
@@ -291,7 +294,7 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
       // 맵 객체에 이벤트 핸들러 저장 (정리를 위해)
       map.maintainLayerOrderHandler = maintainLayerOrder;
       map.on("moveend", map.maintainLayerOrderHandler);
-      
+
       // 초기 레이어 순서 적용
       maintainLayerOrder();
     } catch (error) {
@@ -313,14 +316,14 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
         // 시군구 GeoJSON 로드
         await loadDistricts();
 
-        // 레이어 순서 조정 
+        // 레이어 순서 조정
         const provinces = getProvinceLayer();
         const districts = getDistrictLayer();
-        
+
         if (districts && map.hasLayer(districts)) {
           districts.bringToBack();
         }
-        
+
         if (provinces && map.hasLayer(provinces)) {
           provinces.bringToFront();
         }
@@ -336,29 +339,37 @@ export function useGeoJsonManager(map: L.Map | null, { provincesUrl, districtsUr
     // 컴포넌트 언마운트 시 정리 작업
     return () => {
       clearTimeout(timer);
-      
+
       // GeoJSON 레이어 제거 전에 맵 객체에 저장된 이벤트 핸들러 정리
       if (map) {
         // 이벤트 리스너 제거
         map.off("zoomend");
         map.off("moveend");
-        
+
         // 출금한 추가: 맵 객체에 저장된 이벤트 핸들러 제거
         if (map.toggleDistrictLayerHandler) {
           map.off("zoomend", map.toggleDistrictLayerHandler);
           delete map.toggleDistrictLayerHandler;
         }
-        
+
         if (map.maintainLayerOrderHandler) {
           map.off("moveend", map.maintainLayerOrderHandler);
           delete map.maintainLayerOrderHandler;
         }
       }
-      
+
       // 레이어 제거 - 마커와 GeoJSON 레이어 등 모든 자원 정리
       cleanupLayers(map);
     };
-  }, [map, loadProvinces, loadDistricts, cleanupLayers, getProvinceLayer, getDistrictLayer, setIsGeoJsonLoaded]);
+  }, [
+    map,
+    loadProvinces,
+    loadDistricts,
+    cleanupLayers,
+    getProvinceLayer,
+    getDistrictLayer,
+    setIsGeoJsonLoaded,
+  ]);
 
   return {
     isGeoJsonLoaded,

@@ -1,6 +1,7 @@
 import React from "react";
 import { FireAlertSidebarProps } from "../model/types";
 import { ForestFireList } from "../../../features/forest-fire-list";
+import { FireFilterType } from "../../../shared/model/common/filterTypes";
 import "./FireAlertSidebar.css";
 
 /**
@@ -21,13 +22,13 @@ export const FireAlertSidebar: React.FC<FireAlertSidebarProps> = ({
         <h2 className="fire-alert__sidebar-title">산불 데이터 현황</h2>
         <p className="fire-alert__sidebar-subtitle">
           {filteredData.length === 0 ? (
-            selectedFilter === "all" ?
+            selectedFilter === FireFilterType.ALL ?
               "현재 진행 중인 산불이 없습니다." :
-              `현재 ${selectedFilter === "active" ? "진화중인" : selectedFilter === "contained" ? "통제중인" : "진화완료된"} 산불이 없습니다.`
+              `현재 ${selectedFilter === FireFilterType.ACTIVE ? "진화중인" : selectedFilter === FireFilterType.CONTAINED ? "통제중인" : "진화완료된"} 산불이 없습니다.`
           ) : (
-            selectedFilter === "all" ?
+            selectedFilter === FireFilterType.ALL ?
               `현재 ${String(filteredData.length)}건의 산불 정보가 표시되고 있습니다.` :
-              `현재 ${selectedFilter === "active" ? "진화중인" : selectedFilter === "contained" ? "통제중인" : "진화완료된"} 산불 ${String(filteredData.length)}건이 표시되고 있습니다.`
+              `현재 ${selectedFilter === FireFilterType.ACTIVE ? "진화중인" : selectedFilter === FireFilterType.CONTAINED ? "통제중인" : "진화완료된"} 산불 ${String(filteredData.length)}건이 표시되고 있습니다.`
           )}
         </p>
       </div>

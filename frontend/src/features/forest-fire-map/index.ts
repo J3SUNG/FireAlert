@@ -9,7 +9,7 @@
 import { ForestFireMap } from "./ui/ForestFireMap";
 
 // 필요한 모델 타입
-import { ForestFireMapProps } from "./model/types";
+import { ForestFireMapProps } from "./model/common-types";
 
 import {
   DEFAULT_MAP_CENTER,

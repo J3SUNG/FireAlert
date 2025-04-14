@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, RefObject } from 'react';
 import L from 'leaflet';
 import { ForestFireData } from '../../../../shared/model/forestFire';
 
-interface MapInitializationOptions {
+export interface MapInitializationOptions {
   containerRef: RefObject<HTMLDivElement>;
   legendPosition?: L.ControlPosition;
   initialCenter?: [number, number];
@@ -10,6 +10,7 @@ interface MapInitializationOptions {
   minZoom?: number;
   maxZoom?: number;
   fires?: ForestFireData[];
+  _fires?: ForestFireData[]; // 이전 버전과의 호환성을 위해 유지
 }
 
 /**
@@ -24,8 +25,9 @@ export function useMapInitialization({
   initialZoom = 7,
   minZoom = 6,
   maxZoom = 18,
-  _fires = [] // 사용하지 않는 매개변수 앞에 밑줄 추가
 }: MapInitializationOptions) {
+  // _fires 매개변수는 사용하지 않음
+
   // 지도 인스턴스 상태
   const [map, setMap] = useState<L.Map | null>(null);
   // 지도 로드 상태

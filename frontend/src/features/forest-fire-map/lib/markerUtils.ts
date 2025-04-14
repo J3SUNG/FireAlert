@@ -180,8 +180,6 @@ export function createFireMarker(
 
   // 마커 크기와 스타일 계산
   const radius = isSelected ? 10 * SELECTED_MARKER_SCALE : 10;
-  const _weight = isSelected ? 3 : 2; // 사용하지 않는 변수 앞에 밑줄 추가
-  const _opacity = fire.status === "extinguished" ? 0.7 : 1; // 사용하지 않는 변수 앞에 밑줄 추가
 
   // LayerGroup 생성
   const layerGroup = L.layerGroup();

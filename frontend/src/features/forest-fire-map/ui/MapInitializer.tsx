@@ -142,7 +142,13 @@ export const MapInitializer: FC<MapInitializerProps> = ({
 
     return () => {
       // 메모리 누수 방지
-      if (map) map.remove();
+      if (map) {
+        try {
+          (map as any).remove();
+        } catch (e) {
+          console.warn('Failed to remove map:', e);
+        }
+      }
     };
   }, [legendPosition, onMapReady, fires, clearError, setError]);
 
@@ -183,7 +189,13 @@ export const MapInitializer: FC<MapInitializerProps> = ({
             <button 
               onClick={() => {
                 clearError();
-                if (map) map.remove();
+                if (map) {
+                  try {
+                    (map as any).remove();
+                  } catch (e) {
+                    console.warn('Failed to remove map:', e);
+                  }
+                }
                 setMap(null);
               }}
               style={{

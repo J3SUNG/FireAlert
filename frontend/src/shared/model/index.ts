@@ -11,8 +11,15 @@ import type { ForestFireData } from "./forestFire";
 // GeoJSON 데이터 모델
 import type { GeoJsonData, GeoJsonFeature, GeoJsonProperties } from "./geoJson";
 
+// 필터 타입 모델
+import { FireFilterType, FilterType } from "./common/filterTypes";
+
 // 산불 데이터 타입 내보내기
 export type { ForestFireData };
 
 // GeoJSON 데이터 타입 내보내기
 export type { GeoJsonData, GeoJsonFeature, GeoJsonProperties };
+
+// 필터 타입 내보내기
+export { FireFilterType };
+export type { FilterType };

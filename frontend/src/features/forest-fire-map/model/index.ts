@@ -5,15 +5,11 @@
  * 이 모듈은 feature 내부에서 사용하는 타입들을 내보냅니다.
  */
 
-// 필요한 타입들만 선택적으로 내보내기
-import {
-  ForestFireMapProps,
-  MapConfig,
-  MarkerOptions,
-  MarkerRef,
-  MarkerEventHandlers,
-  GeoJsonLayerConfig
-} from "./types";
+// 타입 내보내기
+export * from "./common-types";
+export * from "./types";
+
+// type 구문은 반복해서 내보내지 않음
 
 // 설정 값
 import {
@@ -34,16 +30,6 @@ import {
   createGeoJsonLoadError,
   createMarkerCreationError
 } from "./mapErrorTypes";
-
-// 타입 내보내기
-export type {
-  ForestFireMapProps,
-  MapConfig,
-  MarkerOptions,
-  MarkerRef,
-  MarkerEventHandlers,
-  GeoJsonLayerConfig
-};
 
 // 설정 상수 내보내기
 export {
