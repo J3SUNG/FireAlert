@@ -25,7 +25,7 @@ import {
   groupFiresByProvince,
   convertStatus,
   getResponseLevel,
-  CacheManager,
+  createCache,
   setupDefaultLeafletIcons,
 } from "./lib";
 
@@ -58,7 +58,7 @@ export {
   groupFiresByProvince,
   convertStatus,
   getResponseLevel,
-  CacheManager,
+  createCache,
   setupDefaultLeafletIcons,
 };
 

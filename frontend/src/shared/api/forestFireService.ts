@@ -3,15 +3,15 @@ import { ForestFireData } from "../model/forestFire";
 import { extractLocation } from "../lib/formatting/locationFormat";
 import { convertStatus, getResponseLevel } from "../lib/data/forestFireUtils";
 import { geoJsonService } from "./geoJsonService";
-import { CacheManager } from "../lib/cache/cacheUtils";
+import { createCache } from "../lib/cache/cacheUtils";
 import { CACHE_DURATION_MS, FIRE_LIST_ENDPOINT, GEO_JSON_PATH } from '../constants/api';
 
 /** 
  * 캐시 관리자 인스턴스 생성
- * 산불 데이터와 GeoJSON 데이터를 위한 별도의 캐시 관리자를 생성합니다.
+ * 산불 데이터와 GeoJSON 데이터를 위한 별도의 캐시를 생성합니다.
  */
-const fireDataCache = new CacheManager<ForestFireData[]>(CACHE_DURATION_MS);
-const geoJsonCache = new CacheManager<any>(24 * 60 * 60 * 1000); // 24시간 캐시
+const fireDataCache = createCache<ForestFireData[]>(CACHE_DURATION_MS);
+const geoJsonCache = createCache<any>(24 * 60 * 60 * 1000); // 24시간 캐시
 
 /**
  * 데이터 가져오기 유틸리티 함수

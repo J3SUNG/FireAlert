@@ -33,7 +33,7 @@ import {
 
 // cache 유틸리티
 import {
-  CacheManager
+  createCache
 } from "./cache/cacheUtils";
 
 // Leaflet 유틸리티
@@ -69,7 +69,7 @@ export {
 
 // 캐시 유틸리티 내보내기
 export {
-  CacheManager
+  createCache
 };
 
 // Leaflet 유틸리티 내보내기
