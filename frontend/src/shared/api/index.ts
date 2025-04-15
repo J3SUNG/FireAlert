@@ -5,5 +5,5 @@
  */
 
 // API 서비스 내보내기
-export { forestFireService } from './forestFireService';
+export { forestFireService } from './forest-fire';
 export { geoJsonService } from './geoJsonService';

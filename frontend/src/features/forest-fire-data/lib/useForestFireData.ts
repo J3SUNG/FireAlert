@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { ForestFireData } from "../../../shared/model/forestFire";
-import { forestFireService } from "../../../shared/api/forestFireService";
+import { forestFireService } from "../../../shared/api/forest-fire";
 import {
   calculateResponseLevelCounts,
   calculateStatusCounts,

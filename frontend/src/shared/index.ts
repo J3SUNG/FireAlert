@@ -11,7 +11,7 @@ import { FireStatusSummary } from "./ui";
 import { combineClasses } from "./ui/utils/classNameUtils";
 
 // API 서비스
-import { forestFireService } from "./api/forestFireService";
+import { forestFireService } from "./api/forest-fire";
 import { geoJsonService } from "./api/geoJsonService";
 
 // 공통 유틸리티 및 훅
