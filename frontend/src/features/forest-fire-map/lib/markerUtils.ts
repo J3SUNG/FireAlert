@@ -1,4 +1,15 @@
-import L from "leaflet";
+import type { Map, LayerGroup, Marker, DivIcon, PopupOptions, Popup } from "leaflet";
+
+// 동적 로드를 위한 타입 정의
+type LeafletModule = typeof import("leaflet");
+
+// 캐싱된 리플렛 인스턴스
+let LeafletInstance: LeafletModule | null = null;
+
+// 리플렛 동적 로드 함수
+async function loadLeaflet(): Promise<LeafletModule> {
+  return import("leaflet");
+}
 import { ForestFireData } from "../../../shared/model/forestFire";
 
 /**
@@ -141,7 +152,7 @@ function createTooltipContent(fire: ForestFireData): string {
 interface FireMarkerOptions {
   onClick?: (selectedFire: ForestFireData) => void;
   isSelected?: boolean;
-  map?: L.Map;
+  map?: Map;
 }
 
 /**
@@ -154,13 +165,19 @@ interface FireMarkerOptions {
  * @param options 마커 옵션 객체 또는 선택 상태 불리언
  * @returns 산불 마커 레이어 그룹
  */
-export function createFireMarker(
+export async function createFireMarker(
   fire: ForestFireData,
   options?: boolean | FireMarkerOptions
-): L.LayerGroup {
+): Promise<LayerGroup> {
+  // 동적으로 Leaflet 로드
+  if (!LeafletInstance) {
+    LeafletInstance = await loadLeaflet();
+  }
+  const L = LeafletInstance;
   // 대응단계에 따른 색상 설정
   let color = FIRE_MARKER_COLORS[fire.severity] || FIRE_MARKER_COLORS.initial;
 
+  // 대응단계명이 있으면 해당 색상 적용
   // 대응단계명이 있으면 해당 색상 적용
   if (fire.responseLevelName) {
     if (fire.responseLevelName.includes("초기") || fire.responseLevelName.includes("초기진화")) {

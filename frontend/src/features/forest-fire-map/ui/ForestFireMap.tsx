@@ -1,5 +1,4 @@
 import React, { FC, useRef, useState, useEffect, useMemo } from "react";
-import "leaflet/dist/leaflet.css";
 import { LoadingIndicator } from "../../../shared/ui";
 import { useMap, useGeoJsonManager } from "../lib";
 import { GEOJSON_PATHS } from "../model/mapSettings";
@@ -30,6 +29,16 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(
     const mountedRef = useRef(true);
 
     // 맵 초기화 및 관리
+    // Leaflet CSS 동적 로드
+    useEffect(() => {
+      // CSS 동적 로드 함수
+      const loadLeafletCss = async () => {
+        await import("leaflet/dist/leaflet.css");
+      };
+
+      void loadLeafletCss();
+    }, []);
+
     const { map, isMapLoaded } = useMap({
       containerRef: mapContainerRef,
       legendPosition,

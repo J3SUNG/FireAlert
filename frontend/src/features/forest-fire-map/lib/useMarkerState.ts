@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react';
-import L from 'leaflet';
+import type { Map, LayerGroup } from 'leaflet';
 // ForestFireData 타입은 사용되지 않음
 
 /**
@@ -8,12 +8,12 @@ import L from 'leaflet';
  */
 export function useMarkerState() {
   // 마커 레이어 참조 저장
-  const markersRef = useRef<Record<string, L.LayerGroup>>({});
+  const markersRef = useRef<Record<string, LayerGroup>>({});
   // 마커 클릭 플래그 (지도 클릭 이벤트와 구분하기 위함)
   const isMarkerClickRef = useRef(false);
 
   // 마커 저장 함수
-  const setMarker = useCallback((id: string, marker: L.LayerGroup) => {
+  const setMarker = useCallback((id: string, marker: LayerGroup) => {
     markersRef.current[id] = marker;
   }, []);
 
@@ -23,7 +23,7 @@ export function useMarkerState() {
   }, []);
 
   // 마커 삭제 함수
-  const removeMarker = useCallback((id: string, map: L.Map | null) => {
+  const removeMarker = useCallback((id: string, map: Map | null) => {
     const marker = markersRef.current[id];
     if (marker && map) {
       // 이벤트 리스너 제거
@@ -46,7 +46,7 @@ export function useMarkerState() {
   }, []);
 
   // 모든 마커 삭제 함수
-  const clearAllMarkers = useCallback((map: L.Map | null) => {
+  const clearAllMarkers = useCallback((map: Map | null) => {
     if (!map) return;
     
     Object.values(markersRef.current).forEach(marker => {
@@ -71,7 +71,7 @@ export function useMarkerState() {
   }, []);
 
   // 선택되지 않은 마커 필터링 함수
-  const removeStaleMarkers = useCallback((currentIds: Set<string>, map: L.Map | null) => {
+  const removeStaleMarkers = useCallback((currentIds: Set<string>, map: Map | null) => {
     if (!map) return;
     
     Object.entries(markersRef.current).forEach(([id, marker]) => {

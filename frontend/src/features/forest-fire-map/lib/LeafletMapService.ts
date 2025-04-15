@@ -1,4 +1,16 @@
-import L from "leaflet";
+// Leaflet 타입만 임포트 하고, 실제 라이브러리는 동적으로 로드
+import type { Map, LayerGroup, GeoJSON, LatLngBounds, Marker } from "leaflet";
+
+// 타입 별칭 정의
+type LeafletModule = typeof import("leaflet");
+
+// Leaflet 동적 로드 함수
+async function loadLeaflet(): Promise<LeafletModule> {
+  return import("leaflet");
+}
+
+// Leaflet 인스턴스 캐싱
+let LeafletInstance: LeafletModule | null = null;
 import { ForestFireData } from "../../../shared/model/forestFire";
 import { createFireMarker } from "./markerUtils";
 
@@ -11,14 +23,19 @@ import { createFireMarker } from "./markerUtils";
  * 
  * 지정된 컨테이너에 Leaflet 맵 인스턴스 생성
  */
-export function initializeLeafletMap(container: HTMLElement, options: {
+export async function initializeLeafletMap(container: HTMLElement, options: {
   center: { lat: number; lng: number };
   zoom: number;
   minZoom?: number;
   maxZoom?: number;
   zoomControl?: boolean;
   attributionControl?: boolean;
-}): L.Map {
+}): Promise<Map> {
+  // Leaflet 동적 로드
+  if (!LeafletInstance) {
+    LeafletInstance = await loadLeaflet();
+  }
+  const L = LeafletInstance;
   // Leaflet 맵 인스턴스 생성
   const map = L.map(container, {
     center: [options.center.lat, options.center.lng],
@@ -42,7 +59,7 @@ export function initializeLeafletMap(container: HTMLElement, options: {
  * 
  * 맵 인스턴스 정리
  */
-export function destroyLeafletMap(map: L.Map): void {
+export function destroyLeafletMap(map: Map): void {
   if (map) {
     map.remove();
   }
@@ -53,7 +70,7 @@ export function destroyLeafletMap(map: L.Map): void {
  * 
  * 맵의 중심점과 줌 레벨 변경
  */
-export function setMapView(map: L.Map, position: { lat: number; lng: number; zoom?: number }): void {
+export function setMapView(map: Map, position: { lat: number; lng: number; zoom?: number }): void {
   if (!map) return;
   
   const currentZoom = map.getZoom();
@@ -65,10 +82,14 @@ export function setMapView(map: L.Map, position: { lat: number; lng: number; zoo
  * 
  * 맵의 경계 제한 설정
  */
-export function setMapBounds(map: L.Map, bounds: {
+export async function setMapBounds(map: Map, bounds: {
   southWest: { lat: number; lng: number };
   northEast: { lat: number; lng: number };
-}): void {
+}): Promise<void> {
+  if (!LeafletInstance) {
+    LeafletInstance = await loadLeaflet();
+  }
+  const L = LeafletInstance;
   if (!map) return;
   
   const latLngBounds = L.latLngBounds(
@@ -84,8 +105,8 @@ export function setMapBounds(map: L.Map, bounds: {
  * 
  * 지정된 위치에 마커 생성 및 추가
  */
-export function addMarker(
-  map: L.Map,
+export async function addMarker(
+  map: Map,
   position: { lat: number; lng: number },
   data: any,
   options: {
@@ -93,7 +114,11 @@ export function addMarker(
     opacity?: number;
     onClick?: (data: any) => void;
   } = {}
-): { id: string; marker: L.LayerGroup } {
+): Promise<{ id: string; marker: LayerGroup }> {
+  if (!LeafletInstance) {
+    LeafletInstance = await loadLeaflet();
+  }
+  const L = LeafletInstance;
   if (!map) throw new Error("Map is not initialized");
   
   // 마커 생성
@@ -126,7 +151,7 @@ export function addMarker(
  * 
  * 맵에서 마커 레이어 제거
  */
-export function removeMarker(map: L.Map, marker: L.LayerGroup): void {
+export function removeMarker(map: Map, marker: LayerGroup): void {
   if (!map) return;
   
   marker.removeFrom(map);
@@ -138,10 +163,14 @@ export function removeMarker(map: L.Map, marker: L.LayerGroup): void {
  * 지정된 URL에서 GeoJSON 데이터 로드하여 맵에 표시
  */
 export async function loadGeoJson(
-  map: L.Map,
+  map: Map,
   url: string,
   options: any = {}
-): Promise<{ id: string; layer: L.GeoJSON }> {
+): Promise<{ id: string; layer: GeoJSON }> {
+  if (!LeafletInstance) {
+    LeafletInstance = await loadLeaflet();
+  }
+  const L = LeafletInstance;
   if (!map) throw new Error("Map is not initialized");
   
   try {
@@ -179,7 +208,7 @@ export async function loadGeoJson(
  * 
  * 맵에서 GeoJSON 레이어 제거
  */
-export function removeGeoJson(map: L.Map, layer: L.GeoJSON): void {
+export function removeGeoJson(map: Map, layer: GeoJSON): void {
   if (!map) return;
   
   layer.removeFrom(map);
@@ -190,14 +219,17 @@ export function removeGeoJson(map: L.Map, layer: L.GeoJSON): void {
  * 
  * 산불 데이터로 커스텀 마커 생성 및 추가
  */
-export function addFireMarker(
-  map: L.Map,
+export async function addFireMarker(
+  map: Map,
   fire: ForestFireData,
   options: {
     isSelected?: boolean;
     onClick?: (data: ForestFireData) => void;
   } = {}
-): { id: string; marker: L.LayerGroup } {
+): Promise<{ id: string; marker: LayerGroup }> {
+  if (!LeafletInstance) {
+    LeafletInstance = await loadLeaflet();
+  }
   if (!map) throw new Error("Map is not initialized");
   
   // 마커 ID (산불 ID 사용)
@@ -243,7 +275,7 @@ export function mapLeafletEvent(event: string): string {
  * 
  * 현재 맵의 줌 레벨 반환
  */
-export function getMapZoom(map: L.Map): number {
+export function getMapZoom(map: Map): number {
   if (!map) return 0;
   return map.getZoom();
 }
@@ -253,7 +285,7 @@ export function getMapZoom(map: L.Map): number {
  * 
  * 애니메이션과 함께 지정된 위치로 이동
  */
-export function panToPosition(map: L.Map, position: { lat: number; lng: number }): void {
+export function panToPosition(map: Map, position: { lat: number; lng: number }): void {
   if (!map) return;
   map.panTo([position.lat, position.lng]);
 }

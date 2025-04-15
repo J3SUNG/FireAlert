@@ -1,5 +1,16 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import L from "leaflet";
+import type { Map, LatLngBounds, Control } from "leaflet";
+
+// 타입 별칭 정의
+type LeafletModule = typeof import("leaflet");
+
+// 비동기 함수에서 Leaflet API에 접근하기 위한 헬퍼 함수
+async function getLeaflet(): Promise<LeafletModule> {
+  return import("leaflet");
+}
+
+// 리플렛 인스턴스 저장
+let leafletInstance: LeafletModule | null = null;
 import { MAP_INIT_OPTIONS, KOREA_BOUNDS, MAP_BACKGROUND_COLOR } from "../model/mapSettings";
 import { UseMapOptions } from "../model/common-types";
 
@@ -15,12 +26,17 @@ export function useMap({
   fires = [],
 }: UseMapOptions) {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<Map | null>(null);
   const instanceIdRef = useRef<string>(`map-${Date.now()}`);
   const isInitializedRef = useRef<boolean>(false);
 
   // 맵 초기화 함수
-  const initializeMap = useCallback(() => {
+  const initializeMap = useCallback(async () => {
+    // 동적으로 Leaflet 로드
+    if (!leafletInstance) {
+      leafletInstance = await getLeaflet();
+    }
+    const L = leafletInstance;
     // 이미 초기화된 경우, 불필요한 재생성 방지
     if (isInitializedRef.current && mapRef.current) {
       // fires 데이터가 변경되면 범례만 업데이트
@@ -157,7 +173,12 @@ export function useMap({
 
   // 컴포넌트 마운트 시 맵 초기화
   useEffect(() => {
-    initializeMap();
+    // 비동기 함수 호출
+    const setupMap = async () => {
+      await initializeMap();
+    };
+    
+    void setupMap();
 
     // 컴포넌트 언마운트 시 정리
     return () => {
@@ -180,7 +201,13 @@ export function useMap({
         mapRef.current &&
         mapRef.current.getContainer() !== containerRef.current) {
       destroyMap();
-      initializeMap();
+      
+      // 비동기 함수 호출
+      const reinitMap = async () => {
+        await initializeMap();
+      };
+      
+      void reinitMap();
     }
   }, [containerRef, destroyMap, initializeMap]);
 

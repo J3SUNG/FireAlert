@@ -1,11 +1,11 @@
 import { useEffect, useCallback } from "react";
-import L from "leaflet";
+import type { Map, Layer } from "leaflet";
 import { ForestFireData } from "../../../shared/model/forestFire";
 import { useMarkerState } from "./useMarkerState";
 import { useMarkerCreation } from "./useMarkerCreation";
 
 interface UseMarkerManagerProps {
-  map: L.Map | null;
+  map: Map | null;
   fires: ForestFireData[];
   selectedFireId: string | undefined | null;
   onFireSelect?: (fire: ForestFireData) => void;
@@ -90,39 +90,45 @@ export function useMarkerManager({
   // 마커 생성 및 업데이트
   useEffect(() => {
     if (!map || !isGeoJsonLoaded) return;
+    
+    // 비동기 처리를 위한 함수
+    const updateMarkers = async () => {
+      // 유효한 산불 데이터만 필터링
+      const validFires = filterValidFires(fires);
 
-    // 유효한 산불 데이터만 필터링
-    const validFires = filterValidFires(fires);
+      // 현재 존재하는 산불 ID 목록
+      const currentFireIds = new Set(validFires.map((fire) => fire.id));
 
-    // 현재 존재하는 산불 ID 목록
-    const currentFireIds = new Set(validFires.map((fire) => fire.id));
+      // 지도에서 제거된 산불의 마커 삭제
+      removeStaleMarkers(currentFireIds, map);
 
-    // 지도에서 제거된 산불의 마커 삭제
-    removeStaleMarkers(currentFireIds, map);
+      // 각 산불에 대한 마커 처리
+      for (const fire of validFires) {
+        // 이미 존재하는 마커 확인
+        const existingMarker = getMarker(fire.id);
+        if (existingMarker) {
+          // 선택된 마커는 별도로 처리
+          if (fire.id === selectedFireId) {
+            continue;
+          }
 
-    // 각 산불에 대한 마커 처리
-    validFires.forEach((fire) => {
-      // 이미 존재하는 마커 확인
-      const existingMarker = getMarker(fire.id);
-      if (existingMarker) {
-        // 선택된 마커는 별도로 처리
-        if (fire.id === selectedFireId) {
-          return;
+          // 기존 마커 유지
+          continue;
         }
 
-        // 기존 마커 유지
-        return;
-      }
+        // 새 마커 생성 (선택 상태 반영)
+        const isSelected = fire.id === selectedFireId;
+        const newMarker = await createMarker(fire, isSelected, map);
 
-      // 새 마커 생성 (선택 상태 반영)
-      const isSelected = fire.id === selectedFireId;
-      const newMarker = createMarker(fire, isSelected, map);
-
-      // 생성된 마커 저장
-      if (newMarker) {
-        setMarker(fire.id, newMarker);
+        // 생성된 마커 저장
+        if (newMarker) {
+          setMarker(fire.id, newMarker);
+        }
       }
-    });
+    };
+    
+    // 비동기 함수 실행
+    void updateMarkers();
   }, [
     map,
     fires,
@@ -140,31 +146,37 @@ export function useMarkerManager({
   useEffect(() => {
     if (!map || !isGeoJsonLoaded) return;
 
-    try {
-      if (typeof selectedFireId === "string") {
-        const fire = fires.find((f) => f.id === selectedFireId);
+    // 비동기 처리를 위한 함수
+    const updateSelectedMarker = async () => {
+      try {
+        if (typeof selectedFireId === "string") {
+          const fire = fires.find((f) => f.id === selectedFireId);
 
-        if (fire) {
-          // 기존 마커 제거
-          const oldMarker = getMarker(selectedFireId);
-          if (oldMarker) {
-            map.removeLayer(oldMarker);
-          }
+          if (fire) {
+            // 기존 마커 제거
+            const oldMarker = getMarker(selectedFireId);
+            if (oldMarker) {
+              map.removeLayer(oldMarker);
+            }
 
-          // 선택된 상태의 새 마커 생성
-          const newMarker = createMarker(fire, true, map);
+            // 선택된 상태의 새 마커 생성
+            const newMarker = await createMarker(fire, true, map);
 
-          if (newMarker) {
-            setMarker(selectedFireId, newMarker);
+            if (newMarker) {
+              setMarker(selectedFireId, newMarker);
 
-            // 선택된 산불로 지도 중심 이동
-            map.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
+              // 선택된 산불로 지도 중심 이동
+              map.setView([fire.coordinates.lat, fire.coordinates.lng], 10);
+            }
           }
         }
+      } catch (error) {
+        console.error("선택된 마커 업데이트 오류:", error);
       }
-    } catch (error) {
-      console.error("선택된 마커 업데이트 오류:", error);
-    }
+    };
+    
+    // 비동기 함수 실행
+    void updateSelectedMarker();
   }, [selectedFireId, fires, map, isGeoJsonLoaded, createMarker, getMarker, setMarker]);
 
   // 외부에서 사용할 메서드 반환
@@ -172,20 +184,20 @@ export function useMarkerManager({
     markers,
 
     // 수동 마커 갱신 함수
-    refreshMarkers: useCallback(() => {
+    refreshMarkers: useCallback(async () => {
       const validFires = filterValidFires(fires);
       const currentFireIds = new Set(validFires.map((fire) => fire.id));
       
       removeStaleMarkers(currentFireIds, map);
 
-      validFires.forEach((fire) => {
+      for (const fire of validFires) {
         const isSelected = fire.id === selectedFireId;
         removeMarker(fire.id, map);
-        const newMarker = createMarker(fire, isSelected, map);
+        const newMarker = await createMarker(fire, isSelected, map);
         if (newMarker) {
           setMarker(fire.id, newMarker);
         }
-      });
+      }
     }, [
       map,
       fires,

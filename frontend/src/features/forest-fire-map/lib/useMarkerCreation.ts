@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import L from "leaflet";
+import type { Map, LayerGroup } from "leaflet";
 import { ForestFireData } from "../../../shared/model/forestFire";
 import { createFireMarker } from "./markerUtils";
 
@@ -14,12 +14,12 @@ interface UseMarkerCreationOptions {
 export function useMarkerCreation({ onFireSelect, setMarkerClicked }: UseMarkerCreationOptions) {
   // 마커 생성 함수
   const createMarker = useCallback(
-    (fire: ForestFireData, isSelected: boolean, map: L.Map | null) => {
+    async (fire: ForestFireData, isSelected: boolean, map: Map | null) => {
       if (!map) return null;
 
       try {
         // createFireMarker 유틸리티 함수를 사용하여 마커 생성
-        const marker = createFireMarker(fire, {
+        const marker = await createFireMarker(fire, {
           isSelected,
           onClick: (selectedFire) => {
             if (onFireSelect) {
