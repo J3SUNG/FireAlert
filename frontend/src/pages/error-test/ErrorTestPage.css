@@ -1,0 +1,173 @@
+.error-test-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.error-test-page h1 {
+  color: #333;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.test-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+@media (min-width: 992px) {
+  .test-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .test-section:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.test-section {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.test-section h2 {
+  color: #444;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.test-section h3 {
+  color: #555;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.error-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.error-button:hover {
+  background-color: #e0e0e0;
+}
+
+.error-button.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.error-boundary-container {
+  margin-bottom: 20px;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.error-component-wrapper {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.test-log {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.test-log ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.test-log li {
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.test-log li:last-child {
+  border-bottom: none;
+}
+
+.clear-button {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: .25rem;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  background-color: #ff5252;
+}
+
+/* CSS 변수 정의 (error-fallback.css에서 사용) */
+:root {
+  --bg-primary: #fff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f1f3f5;
+  --bg-filter: #e9ecef;
+  
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-tertiary: #6c757d;
+  
+  --error: #dc3545;
+  --warning: #ffc107;
+  --brand-primary: #0d6efd;
+  --blue-600: #0a58ca;
+  --gray-400: #ced4da;
+  --white: #fff;
+  
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 2.5rem;
+  
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  
+  --duration-fast: 150ms;
+}
