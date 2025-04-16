@@ -28,7 +28,10 @@ import {
   createDataFetchError,
   createDataParseError,
   createFireDataFetchError,
-  createFireDataUpdateError
+  createFireDataUpdateError,
+  createFireDataParseError,
+  createFireDataLoadError,
+  createForestFireDataError
 } from "./dataErrorTypes";
 
 import {
@@ -85,7 +88,10 @@ export {
   createDataFetchError,
   createDataParseError,
   createFireDataFetchError,
-  createFireDataUpdateError
+  createFireDataUpdateError,
+  createFireDataParseError,
+  createFireDataLoadError,
+  createForestFireDataError
 };
 
 // 맵 에러 유틸리티 내보내기

@@ -1,10 +1,10 @@
-import { useErrorHandling } from "../../../shared/lib/errors";
 import { 
+  useErrorHandling, 
   DataErrorCode, 
   createForestFireDataError, 
   createFireDataLoadError,
   createFireDataParseError 
-} from "../model/dataErrorTypes";
+} from "../../../shared/lib/errors";
 
 /**
  * 데이터 특화 에러 처리 훅

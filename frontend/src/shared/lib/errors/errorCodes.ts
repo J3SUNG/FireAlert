@@ -73,9 +73,11 @@ export const ERROR_MESSAGES: Record<string, string> = {
   [DataErrorCode.TIMEOUT]: '데이터 요청 시간이 초과되었습니다.',
   [DataErrorCode.EMPTY_RESPONSE]: '받은 데이터가 없습니다.',
   [DataErrorCode.CACHE_ERROR]: '캐시 처리 중 오류가 발생했습니다.',
-  [DataErrorCode.FIRE_DATA_FETCH_FAILED]: '산불 데이터를 가져오는데 실패했습니다.',
-  [DataErrorCode.FIRE_DATA_UPDATE_FAILED]: '산불 데이터 업데이트에 실패했습니다.',
-  [DataErrorCode.FIRE_DATA_PARSE_FAILED]: '산불 데이터 분석 중 오류가 발생했습니다.',
+  
+  // 산불 데이터 특화 에러 메시지
+  [DataErrorCode.FIRE_DATA_FETCH_FAILED]: '산불 데이터를 가져오는데 실패했습니다. 네트워크 연결을 확인해주세요.',
+  [DataErrorCode.FIRE_DATA_UPDATE_FAILED]: '산불 데이터 업데이트에 실패했습니다. 잠시 후 다시 시도해주세요.',
+  [DataErrorCode.FIRE_DATA_PARSE_FAILED]: '산불 데이터 분석 중 오류가 발생했습니다. 데이터 형식이 올바른지 확인해주세요.',
   
   // 지도 에러 메시지
   [MapErrorCode.CONTAINER_NOT_FOUND]: '지도를 표시할 컨테이너를 찾을 수 없습니다.',
