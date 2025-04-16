@@ -235,3 +235,28 @@
   box-shadow: 0 2px 4px var(--status-extinguished-shadow);
   font-weight: var(--font-bold);
 }
+
+/* 접근성: 스크린 리더 전용 클래스 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 포커스 스타일 개선 */
+:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* 키보드 네비게이션 포커스 스타일 */
+.keyboard-focus:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}

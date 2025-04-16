@@ -12,6 +12,7 @@ import "./ForestFireMap.css";
  * 산불 지도 컴포넌트
  *
  * 지도에 산불 데이터를 마커로 표시하고 지역 경계를 GeoJSON으로 렌더링합니다.
+ * 접근성 향상: ARIA 속성 및 설명 추가
  */
 export const ForestFireMap: FC<ForestFireMapProps> = React.memo(
   ({ fires, selectedFireId, onFireSelect, legendPosition = "bottomleft" }) => {
@@ -98,12 +99,30 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(
       return combineClasses("forest-fire-map", isLoading && "forest-fire-map--loading");
     }, [isLoading]);
 
+    // 접근성용 텍스트 생성
+    const getAccessibleMapDescription = () => {
+      if (fires.length === 0) {
+        return "현재 표시할 산불 데이터가 없습니다.";
+      }
+      
+      return `지도에 총 ${fires.length}개의 산불이 표시되어 있습니다. ${
+        selectedFireId ? "특정 산불이 선택되었습니다." : "산불을 선택하면 상세 정보를 볼 수 있습니다."
+      }`;
+    };
+
     return (
-      <div className={containerClassName} data-instance-id={instanceId}>
+      <div 
+        className={containerClassName} 
+        data-instance-id={instanceId}
+        role="region"
+        aria-label="산불 위치 지도"
+      >
         <div
           ref={mapContainerRef}
           className="forest-fire-map__container"
           data-map-instance={instanceId}
+          aria-hidden={isLoading}
+          tabIndex={isLoading ? -1 : 0}
         ></div>
 
         {/* 지도와 GeoJSON이 모두 로드된 경우에만 마커 표시 */}
@@ -120,10 +139,18 @@ export const ForestFireMap: FC<ForestFireMapProps> = React.memo(
 
         {/* 로딩 표시기 */}
         {isLoading && (
-          <div className="forest-fire-map__loading-overlay">
+          <div 
+            className="forest-fire-map__loading-overlay"
+            aria-live="polite"
+          >
             <LoadingIndicator message="지도를 불러오는 중입니다..." size="large" />
           </div>
         )}
+
+        {/* 접근성을 위한 설명 */}
+        <div className="sr-only" aria-live="polite">
+          {getAccessibleMapDescription()}
+        </div>
       </div>
     );
   }

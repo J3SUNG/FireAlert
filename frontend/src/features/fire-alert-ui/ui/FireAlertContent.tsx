@@ -13,6 +13,11 @@ import "./FireAlertContent.css";
  * 로딩 상태, 오류 표시, 지도, 산불 목록 사이드바를 표시합니다.
  * 데이터 상태(로딩/오류/데이터)에 따라 적절한 화면을 렌더링합니다.
  *
+ * 접근성 향상:
+ * - ARIA 영역과 라이브 리전 추가
+ * - 상태 변경 알림
+ * - 키보드 접근성 개선
+ * 
  * @param loading 로딩 상태
  * @param error 오류 메시지
  * @param handleReload 새로고침 핸들러
@@ -34,33 +39,40 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
   responseLevelCounts,
   setSelectedFilter,
 }) => {
+  // 로딩 상태 시 표시할 내용
   if (loading) {
     return (
-      <div className="fire-alert__content">
-        <div className="fire-alert__loading-container">
-          <div className="fire-alert__spinner"></div>
+      <main className="fire-alert__content" role="main">
+        <div className="fire-alert__loading-container" aria-live="polite" aria-busy="true">
+          <div className="fire-alert__spinner" role="progressbar" aria-valuetext={LOADING_MESSAGE}></div>
           <p className="fire-alert__loading-text">{LOADING_MESSAGE}</p>
         </div>
-      </div>
+      </main>
     );
   }
 
+  // 에러 상태 시 표시할 내용
   if (error !== null && error !== "") {
     return (
-      <div className="fire-alert__content">
-        <div className="fire-alert__error-container">
-          <p className="fire-alert__error-text">{error || ERROR_MESSAGES.default}</p>
-          <button className="fire-alert__retry-button" onClick={handleReload}>
+      <main className="fire-alert__content" role="main">
+        <div className="fire-alert__error-container" aria-live="assertive">
+          <p className="fire-alert__error-text" role="alert">{error || ERROR_MESSAGES.default}</p>
+          <button 
+            className="fire-alert__retry-button" 
+            onClick={handleReload}
+            aria-label="데이터 다시 불러오기"
+          >
             {BUTTON_TEXT.retry}
           </button>
         </div>
-      </div>
+      </main>
     );
   }
 
+  // 정상 데이터 표시
   return (
-    <div className="fire-alert__content">
-      <div className="fire-alert__map-container">
+    <main className="fire-alert__content" role="main">
+      <div className="fire-alert__map-container" aria-label="산불 발생 지도">
         <ForestFireMap
           fires={filteredData}
           selectedFireId={selectedFireId}
@@ -85,6 +97,6 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
         handleFireSelect={handleFireSelect}
         setSelectedFilter={setSelectedFilter}
       />
-    </div>
+    </main>
   );
 };

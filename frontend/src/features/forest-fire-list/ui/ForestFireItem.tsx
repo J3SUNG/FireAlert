@@ -8,8 +8,11 @@ import "./ForestFireList.css";
  * 개별 산불 데이터를 표시하는 카드 형태의 컴포넌트입니다.
  * 산불 위치, 발생 일자, 영향 면적, 대응 단계, 진화율 등의 정보를 포함합니다.
  *
- * 메모이제이션을 적용하여 불필요한 렌더링을 방지합니다.
- *
+ * 접근성 향상:
+ * - 적절한 ARIA 속성 및 역할 추가
+ * - 키보드 탐색 지원
+ * - 상태 변경 알림 기능
+ * 
  * @param {ForestFireItemProps} props 산불 항목 속성
  * @returns {JSX.Element} 산불 항목 컴포넌트
  */
@@ -22,6 +25,18 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
     const handleClick = useCallback(() => {
       if (onSelect) {
         onSelect(fire);
+      }
+    }, [onSelect, fire]);
+
+    /**
+     * 키보드 이벤트 처리 (접근성 지원)
+     */
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (onSelect) {
+          onSelect(fire);
+        }
       }
     }, [onSelect, fire]);
 
@@ -104,7 +119,7 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
       if (fire.status === "active" || fire.status === "contained") {
         return (
           <>
-            <span className={statusIconClass}></span>
+            <span className={statusIconClass} aria-hidden="true"></span>
             진화율: <span>{percentage}%</span>
           </>
         );
@@ -112,28 +127,63 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
 
       return (
         <>
-          <span className={statusIconClass}></span>
+          <span className={statusIconClass} aria-hidden="true"></span>
           {statusLabel}
         </>
       );
     }, [fire.status, fire.extinguishPercentage, statusIconClass, statusLabel]);
 
+    /**
+     * 접근성을 위한 완전한 설명 생성
+     */
+    const getAccessibleDescription = useMemo(() => {
+      const location = fire.location;
+      const date = fire.date;
+      const area = `${fire.affectedArea}헥타르`;
+      const responseLevel = fire.responseLevelName ?? responseLevelLabel;
+      const status = statusLabel;
+      const extinguishPercentage = fire.extinguishPercentage 
+        ? `진화율 ${fire.extinguishPercentage}퍼센트` 
+        : '';
+      const description = fire.description ? `. 추가정보: ${fire.description}` : '';
+
+      return `${location}, ${date}에 발생, ${area} 면적, 대응단계 ${responseLevel}, 상태: ${status} ${extinguishPercentage}${description}`;
+    }, [fire, responseLevelLabel, statusLabel]);
+
     return (
-      <div className={containerClass} onClick={handleClick}>
+      <div 
+        className={containerClass} 
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-pressed={isSelected}
+        aria-label={getAccessibleDescription}
+      >
         <div className="forest-fire-item__content">
           <div className="forest-fire-item__info">
             <h3 className="forest-fire-item__title">{fire.location}</h3>
             <div className="forest-fire-item__meta">
-              <span className="forest-fire-item__date">{fire.date}</span>
-              <span className="forest-fire-item__separator">•</span>
+              <span className="forest-fire-item__date">
+                <time dateTime={new Date(fire.date).toISOString()}>{fire.date}</time>
+              </span>
+              <span className="forest-fire-item__separator" aria-hidden="true">•</span>
               <span className="forest-fire-item__area">{fire.affectedArea}ha</span>
             </div>
           </div>
           <div className="forest-fire-item__badge-container">
-            <span className={severityBadgeClass}>
+            <span 
+              className={severityBadgeClass}
+              aria-label={`대응단계: ${fire.responseLevelName ?? responseLevelLabel}`}
+            >
               대응단계: {fire.responseLevelName ?? responseLevelLabel}
             </span>
-            <span className="forest-fire-item__status-badge">{statusBadgeContent}</span>
+            <span 
+              className="forest-fire-item__status-badge"
+              aria-label={`상태: ${fire.status === "active" || fire.status === "contained" ? `진화율 ${fire.extinguishPercentage ?? "0"}%` : statusLabel}`}
+            >
+              {statusBadgeContent}
+            </span>
           </div>
         </div>
         {typeof fire.description === "string" && fire.description !== "" && (
