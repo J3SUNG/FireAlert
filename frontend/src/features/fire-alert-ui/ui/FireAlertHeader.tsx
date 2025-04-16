@@ -7,10 +7,19 @@ import "./FireAlertHeader.css";
 /**
  * 산불 알림 헤더 컴포넌트
  * 
- * 로고, 필터 버튼, 타임스태프를 표시합니다
+ * 애플리케이션 상단 헤더 영역을 표시합니다.
+ * 로고, 필터 버튼 그룹, 최종 업데이트 시간을 포함합니다.
+ * 각 필터 버튼에는 해당 상태의 산불 개수가 표시됩니다.
+ * 
+ * @param selectedFilter 현재 선택된 필터
+ * @param setSelectedFilter 필터 변경 핸들러
+ * @param buttonLabels 버튼 레이블 객체 (각 상태별 텍스트+개수)
+ * @param getButtonClass 버튼 클래스 계산 함수
+ * @param currentTime 현재 시간
+ * @param formatDate 날짜 포맷팅 함수
  */
 export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
-  selectedFilter: _unused, // TypeScript에서 선택된 필터 변수를 사용하지 않는 변수로 재할당
+  selectedFilter,
   setSelectedFilter,
   buttonLabels,
   getButtonClass,

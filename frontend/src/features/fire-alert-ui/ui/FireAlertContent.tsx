@@ -7,9 +7,21 @@ import { LOADING_MESSAGE, ERROR_MESSAGES, BUTTON_TEXT } from "../../../shared/co
 import "./FireAlertContent.css";
 
 /**
- * 산불 알림 컨텐츠 컴포넌트
- * 
- * 로딩, 에러 상태와 지도, 사이드바를 표시합니다.
+ * 산불 알림 콘텐츠 컴포넌트
+ *
+ * 산불 알림 페이지의 주요 콘텐츠 영역을 관리합니다.
+ * 로딩 상태, 오류 표시, 지도, 산불 목록 사이드바를 표시합니다.
+ * 데이터 상태(로딩/오류/데이터)에 따라 적절한 화면을 렌더링합니다.
+ *
+ * @param loading 로딩 상태
+ * @param error 오류 메시지
+ * @param handleReload 새로고침 핸들러
+ * @param filteredData 필터링된 산불 데이터
+ * @param selectedFireId 선택된 산불 ID
+ * @param selectedFilter 선택된 필터
+ * @param handleFireSelect 산불 선택 핸들러
+ * @param responseLevelCounts 대응단계별 산불 개수
+ * @param setSelectedFilter 필터 변경 핸들러
  */
 export const FireAlertContent: React.FC<FireAlertContentProps> = ({
   loading,

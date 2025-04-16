@@ -54,13 +54,27 @@ export default tseslint.config(
       "@typescript-eslint/prefer-optional-chain": "off", // 옵셔널 체이닝 강제 규칙 비활성화
       "@typescript-eslint/no-unnecessary-type-assertion": "off", // 불필요한 타입 단언 경고 비활성화
       
+      // 일관된 코드 스타일 유지 규칙 추가
+      "max-len": ["off"], // 라인 길이 제한 없음(가독성 개선을 위한 수동 개행 권장)
+      "indent": ["warn", 2], // 2칸 들여쓰기 사용
+      "quotes": ["warn", "double"], // 따옴표 일관성
+      "semi": ["warn", "always"], // 세미콜론 필수
+      "comma-dangle": ["warn", "always-multiline"], // 멀티라인에서 후행 콤마 사용
+      "arrow-parens": ["warn", "always"], // 화살표 함수 괄호 일관성
+      "eol-last": ["warn", "always"], // 파일 끝에 개행 추가
+      
       // 개발에 유용할 수 있는 규칙 재정의
       "@typescript-eslint/no-unused-vars": ["warn", { 
         "argsIgnorePattern": "^_", 
         "varsIgnorePattern": "^_", 
-        "caughtErrorsIgnorePattern": "^_" 
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_" 
       }],  // 사용되지 않는 변수 경고 (_로 시작하는 변수 제외)
       "@typescript-eslint/prefer-as-const": "warn",
+      
+      // 미사용 아이템 감지 규칙
+      "no-unused-expressions": "warn", // 사용되지 않는 표현식 경고
+      "no-unused-labels": "warn", // 사용되지 않는 레이블 경고
       
       // 콘솔 로그는 개발 중에 유용하므로 허용
       "no-console": "off",

@@ -7,7 +7,15 @@ import "./FireAlertSidebar.css";
 /**
  * 산불 알림 사이드바 컴포넌트
  * 
- * 산불 데이터 현황 및 목록을 표시합니다
+ * 화면 오른쪽에 표시되는 산불 목록 사이드바입니다.
+ * 산불 데이터 현황 요약과 함께 필터링된 산불 목록을 표시합니다.
+ * 현재 필터 조건과 데이터 개수에 따라 적절한 메시지를 표시합니다.
+ * 
+ * @param filteredData 필터링된 산불 데이터 배열
+ * @param selectedFilter 현재 선택된 필터
+ * @param selectedFireId 선택된 산불 ID
+ * @param handleFireSelect 산불 선택 핸들러
+ * @param setSelectedFilter 필터 변경 핸들러
  */
 export const FireAlertSidebar: React.FC<FireAlertSidebarProps> = ({
   filteredData,
