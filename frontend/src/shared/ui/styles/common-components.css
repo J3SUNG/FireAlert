@@ -57,10 +57,9 @@
   background-color: var(--brand-primary);
   color: var(--white);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   cursor: pointer;
   font-size: var(--text-sm);
-  transition: background-color var(--duration-fast);
 }
 
 .error-display__retry-button:hover {
@@ -74,40 +73,46 @@
   justify-content: center;
   padding: var(--space-xs) var(--space-md);
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all var(--duration-fast) ease;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   gap: var(--space-xs);
   line-height: 1.2;
   white-space: nowrap;
   height: 36px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.btn--primary {
-  background-color: var(--brand-primary);
-  color: var(--white);
+/* 필터 버튼 기본 스타일 (비선택 상태) */
+.btn--all {
+  background-color: var(--status-all-light);
+  color: var(--text-primary);
 }
 
-.btn--primary:hover {
-  background-color: var(--blue-600);
+.btn--active {
+  background-color: var(--status-active-light);
+  color: var(--text-primary);
 }
 
-.btn--secondary {
-  background-color: var(--green);
-  color: var(--white);
+.btn--contained {
+  background-color: var(--status-contained-light);
+  color: var(--text-primary);
 }
 
-.btn--secondary:hover {
-  background-color: #27ae60;
+.btn--extinguished {
+  background-color: var(--status-extinguished-light);
+  color: var(--text-primary);
 }
 
-/* 상태 버튼 스타일 */
+/* 필터 버튼 활성화 스타일 (선택된 상태) */
 .btn--active-all {
-  background-color: var(--brand-primary);
+  background-color: var(--status-all);
   color: var(--white);
 }
 
@@ -126,25 +131,14 @@
   color: var(--white);
 }
 
-/* 필터 버튼 스타일 */
-.btn--all {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+.btn--primary {
+  background-color: var(--brand-primary);
+  color: var(--white);
 }
 
-.btn--active {
-  background-color: var(--status-active-light);
-  color: var(--status-active);
-}
-
-.btn--contained {
-  background-color: var(--status-contained-light);
-  color: var(--status-contained);
-}
-
-.btn--extinguished {
-  background-color: var(--status-extinguished-light);
-  color: var(--status-extinguished);
+.btn--secondary {
+  background-color: var(--green);
+  color: var(--white);
 }
 
 .btn--full-width {
@@ -171,11 +165,12 @@
 
 /* 상태 스타일: 필터 */
 .btn--filter {
-  font-weight: var(--font-bold);
+  font-weight: var(--font-medium);
 }
 
+/* 데이터 필터 속성에 따른 스타일 */
 .btn--filter[data-filter="all"]:not(.btn--active-all) {
-  background-color: var(--brand-primary-light);
+  background-color: var(--bg-secondary);
 }
 
 .btn--filter[data-filter="active"]:not(.btn--active-red) {
@@ -190,7 +185,7 @@
   background-color: var(--status-extinguished-light);
 }
 
-/* 버튼 비활성화 슠타일 */
+/* 버튼 비활성화 스타일 */
 .btn:disabled,
 .btn--disabled {
   opacity: 0.6;
@@ -214,26 +209,6 @@
 /* 박스 그림자가 있는 버튼 스타일 */
 .btn--shadowed {
   box-shadow: var(--shadow-sm);
-}
-
-.btn--active-all {
-  box-shadow: 0 2px 4px var(--brand-primary-shadow);
-  font-weight: var(--font-bold);
-}
-
-.btn--active-red {
-  box-shadow: 0 2px 4px var(--status-active-shadow);
-  font-weight: var(--font-bold);
-}
-
-.btn--active-orange {
-  box-shadow: 0 2px 4px var(--status-contained-shadow);
-  font-weight: var(--font-bold);
-}
-
-.btn--active-green {
-  box-shadow: 0 2px 4px var(--status-extinguished-shadow);
-  font-weight: var(--font-bold);
 }
 
 /* 접근성: 스크린 리더 전용 클래스 */

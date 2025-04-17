@@ -121,6 +121,9 @@
   --brand-fire: var(--red);
 
   /* 상태 색상 */
+  --status-all: var(--blue);
+  --status-all-light: rgba(59, 130, 246, var(--opacity-7));
+  --status-all-shadow: rgba(59, 130, 246, var(--opacity-30));
   --status-active: var(--red);
   --status-active-light: rgba(239, 68, 68, var(--opacity-7));
   --status-active-shadow: rgba(239, 68, 68, var(--opacity-30));
