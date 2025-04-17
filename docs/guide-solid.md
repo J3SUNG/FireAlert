@@ -1,149 +1,54 @@
-# 프론트엔드 SOLID 원칙 가이드
+# 함수형 프론트엔드 SOLID 원칙
 
-## SOLID 원칙 개요
+## 핵심 원칙
 
-1. **단일 책임 원칙 (SRP)**: 하나의 컴포넌트는 하나의 책임만 가진다
+1. **단일 책임 원칙 (SRP)**: 하나의 함수/컴포넌트는 하나의 책임만 가진다
 2. **개방-폐쇄 원칙 (OCP)**: 확장에 열려있고, 수정에 닫혀있다
-3. **리스코프 치환 원칙 (LSP)**: 하위 타입은 상위 타입을 대체할 수 있어야 한다
-4. **인터페이스 분리 원칙 (ISP)**: 사용하지 않는 인터페이스에 의존하지 않는다
-5. **의존성 역전 원칙 (DIP)**: 구체적인 구현보다 추상화에 의존한다
+3. **리스코프 치환 원칙 (LSP)**: 하위 컴포넌트는 상위 컴포넌트를 대체할 수 있어야 한다
+4. **인터페이스 분리 원칙 (ISP)**: 불필요한 의존성을 가지지 않는다
+5. **의존성 역전 원칙 (DIP)**: 구체적 구현이 아닌 추상화에 의존한다
 
-## 프론트엔드 적용 사례
+## 함수형 적용 방법
 
-### 단일 책임 원칙 (SRP)
+### SRP (단일 책임)
 
-```tsx
-// ❌ 나쁜 예: 모든 책임이 하나의 컴포넌트에 집중
-const ForestFireMap = () => {
-  const [fires, setFires] = useState([]);
-  // 데이터 로딩, 에러 처리, UI 렌더링 등 모든 책임을 가짐
-}
+- 컴포넌트는 UI 렌더링만 담당
+- 데이터 로직은 커스텀 훅으로 분리
+- 유틸리티 함수는 하나의 기능만 수행
+- 비즈니스 로직과 표현 로직 분리
 
-// ✅ 좋은 예: 책임 분리
-const useForestFireData = () => {
-  // 데이터 관련 로직만 담당
-};
+### OCP (개방-폐쇄)
 
-const ForestFireMap = () => {
-  const { fires } = useForestFireData();
-  // UI 렌더링에만 집중
-};
+- 객체 매핑으로 조건부 로직 구현
+- props로 동작을 확장 가능하게 설계
+- 고차 컴포넌트나 훅으로 기능 확장
+- 설정 객체를 통한 동작 변경
 
-const FireMarker = ({ fire }) => {
-  // 마커 렌더링에만 집중
-};
-```
+### LSP (리스코프 치환)
 
-### 개방-폐쇄 원칙 (OCP)
+- 일관된 props 인터페이스 유지
+- 상위 컴포넌트의 동작 보존
+- 선택적 props에 기본값 제공
+- props의 의미를 임의로 변경하지 않음
 
-```tsx
-// ✅ 좋은 예: 확장에 열린 설계
-interface FireButtonProps {
-  variant?: 'default' | 'active' | 'contained';
-  className?: string;
-  onClick?: () => void;
-  children: React.ReactNode;
-}
+### ISP (인터페이스 분리)
 
-const FireButton: React.FC<FireButtonProps> = ({
-  variant = 'default',
-  className = '',
-  onClick,
-  children
-}) => {
-  // 객체 매핑으로 새 변형 추가 시 코드 수정 없이 확장 가능
-  const variantClasses = {
-    default: '',
-    active: 'fire-button--active',
-    contained: 'fire-button--contained'
-  };
-  
-  return (
-    <button className={`fire-button ${variantClasses[variant]} ${className}`} onClick={onClick}>
-      {children}
-    </button>
-  );
-};
-```
+- 최소한의 필요한 props만 정의
+- 목적별로 컴포넌트 분리
+- 관심사에 따라 훅 분리
+- 컴포넌트는 필요한 기능만 제공
 
-### 리스코프 치환 원칙 (LSP)
+### DIP (의존성 역전)
 
-```tsx
-// ✅ 좋은 예: 상위 타입을 대체 가능한 하위 타입
-interface InputProps {
-  value: string;
-  onChange: (value: string) => void;
-  validate?: (value: string) => boolean;
-}
+- 서비스 추상화 사용
+- 의존성을 props로 주입
+- 구현보다 인터페이스에 의존
+- 직접 API 호출보다 훅이나 서비스 사용
 
-// 기본 Input 컴포넌트
-const Input: React.FC<InputProps> = ({ value, onChange, validate = () => true }) => {
-  // ...
-};
+## 실무 적용 원칙
 
-// 하위 타입 - 상위 타입과 호환됨
-const NumericInput: React.FC<Omit<InputProps, 'validate'>> = (props) => {
-  return <Input {...props} validate={(value) => /^\d*$/.test(value)} />;
-};
-```
-
-### 인터페이스 분리 원칙 (ISP)
-
-```tsx
-// ✅ 좋은 예: 목적별로 분리된 인터페이스
-interface MapProps {
-  fires: FireData[];
-  center: [number, number];
-  zoom: number;
-}
-
-interface FilterProps {
-  selected: string;
-  options: Option[];
-  onChange: (value: string) => void;
-}
-
-// 각 컴포넌트는 필요한 props만 받음
-const ForestFireMap: React.FC<MapProps> = (props) => {
-  // 지도 관련 UI만 담당
-};
-
-const FilterControls: React.FC<FilterProps> = (props) => {
-  // 필터링 UI만 담당
-};
-```
-
-### 의존성 역전 원칙 (DIP)
-
-```tsx
-// ✅ 좋은 예: 추상화에 의존
-interface ForestFireService {
-  getForestFires(): Promise<FireData[]>;
-}
-
-// 구체적인 구현
-class ApiForestFireService implements ForestFireService {
-  async getForestFires() {
-    // API 호출 구현
-  }
-}
-
-// 컴포넌트는 구체적인 구현이 아닌 인터페이스에 의존
-const ForestFireList: React.FC = () => {
-  const fireService = useForestFireService(); // 서비스 추상화
-  
-  useEffect(() => {
-    fireService.getForestFires().then(setFires);
-  }, [fireService]);
-  
-  // 렌더링 로직
-};
-```
-
-## 실무 적용 팁
-
-1. **컴포넌트 분해**: 큰 컴포넌트는 작은 단위로 분해하여 책임 분산
-2. **커스텀 훅 활용**: 데이터 로직과 비즈니스 로직을 커스텀 훅으로 분리
-3. **인터페이스 정의**: 컴포넌트 props와 서비스 인터페이스를 명확히 정의
-4. **추상화 계층 도입**: API 호출은 서비스 계층을 통해 추상화
-5. **조합을 통한 확장**: 상속보다 조합을 통한 컴포넌트 확장 지향
+- **합성 우선**: 상속보다 합성(composition)으로 기능 확장
+- **단방향 데이터 흐름**: 데이터는 항상 상위에서 하위로 전달
+- **순수 함수**: 부수효과 없는 함수 지향
+- **기능 응집성**: 관련 기능은 함께 유지
+- **테스트 용이성**: 의존성 분리로 테스트 가능성 향상

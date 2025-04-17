@@ -1,110 +1,32 @@
-# FireAlert 네이밍 가이드라인
+# 네이밍 가이드라인
 
-## 디렉토리 네이밍
+## 디렉토리 & 파일 네이밍
+- 디렉토리: **kebab-case** (`forest-fire-map/`)
+- 컴포넌트 파일: **PascalCase.tsx** (`ForestFireMap.tsx`)
+- 스타일 파일: 컴포넌트와 동일명 (`ForestFireMap.css`)
+- 일반 코드: **camelCase.ts** (`mapUtils.ts`)
+- 모든 디렉토리에 `index.ts` 배치
 
-- 모든 디렉토리는 **kebab-case** 사용
-  ```
-  forest-fire-map/
-  fire-alert-ui/
-  ```
+## 코드 네이밍 규칙
+- 컴포넌트: **PascalCase** (`ForestFireMap`)
+- Props 인터페이스: **컴포넌트명Props** (`ForestFireMapProps`)
+- 변수: **camelCase** (`fireData`)
+- 불리언 변수: **is/has/should** 접두사 (`isLoading`)
+- 참조 변수: **Ref** 접미사 (`mapRef`)
+- 상수: **UPPER_SNAKE_CASE** (`MAP_INIT_OPTIONS`)
+- 함수: 동사로 시작하는 camelCase (`fetchData()`)
+- 이벤트 핸들러: **handle** 접두사 (`handleClick()`)
+- 커스텀 훅: **use** 접두사 (`useMap()`)
+- 타입/인터페이스: **PascalCase** (`ButtonVariant`)
 
-- FSD 레이어는 영어 소문자
-  ```
-  app/
-  pages/
-  features/
-  shared/
-  ```
+## CSS 클래스 네이밍
+BEM 방법론 기반:
+- 블록: `forest-fire-map`
+- 요소: `forest-fire-map__container`
+- 수정자: `forest-fire-map--loading`
 
-## 파일 네이밍
-
-### 컴포넌트 파일
-- **PascalCase** + .tsx
-  ```
-  FireAlertPage.tsx
-  ForestFireMap.tsx
-  ```
-
-### CSS 파일
-- 컴포넌트와 동일한 이름
-  ```
-  FireAlertHeader.tsx
-  FireAlertHeader.css
-  ```
-
-### 타입스크립트 파일
-- **camelCase** + .ts
-  ```
-  types.ts
-  mapUtils.ts
-  forestFireService.ts
-  ```
-
-### 인덱스 파일
-- 모든 디렉토리에 index.ts 또는 index.tsx
-  ```typescript
-  // 공개 API
-  export * from './model';
-  export * from './lib';
-  ```
-
-## 컴포넌트 명명
-
-- React 컴포넌트: **PascalCase**
-  ```typescript
-  export const ForestFireMap = () => { ... }
-  ```
-
-- 컨테이너 컴포넌트: `Container` 접미사
-  ```typescript
-  export const ForestFireMapContainer = () => { ... }
-  ```
-
-## 변수 및 함수 명명
-
-- 변수: **camelCase**
-  ```typescript
-  const fireData = fetchFireData();
-  ```
-
-- 불리언 변수: is, has, should 접두사
-  ```typescript
-  const isLoading = true;
-  const hasError = false;
-  ```
-
-- 상수: **UPPER_SNAKE_CASE**
-  ```typescript
-  const MAX_RETRIES = 3;
-  ```
-
-- 함수: **camelCase** + 동사로 시작
-  ```typescript
-  function fetchFireData() { ... }
-  ```
-
-- 이벤트 핸들러: `handle` 접두사
-  ```typescript
-  const handleClick = () => { ... }
-  ```
-
-- 커스텀 훅: `use` 접두사
-  ```typescript
-  function useForestFireData() { ... }
-  ```
-
-## CSS 클래스 명명
-
-- BEM 방법론 기반
-  ```css
-  .block { }
-  .block__element { }
-  .block__element--modifier { }
-  ```
-
-- 예시:
-  ```css
-  .fire-alert { }
-  .fire-alert__header { }
-  .fire-alert__button--active { }
-  ```
+## 네이밍 원칙
+- **명확성**: 목적과 의도가 이름에서 명확히 드러나야 함
+- **일관성**: 동일한 개념에는 동일한 네이밍 패턴 적용
+- **간결성**: 이해하기 쉽되 불필요하게 길지 않아야 함
+- **검색성**: 관련 코드를 쉽게 찾을 수 있어야 함
