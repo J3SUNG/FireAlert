@@ -102,8 +102,8 @@ export function useForestFireData() {
 
   return {
     fires,
-    loading: isLoading,
-    error: hasError ? errorMessage : null,
+    isLoading,
+    hasError: hasError ? errorMessage : null,
     statusCounts,
     responseLevelCounts,
     lastUpdated,

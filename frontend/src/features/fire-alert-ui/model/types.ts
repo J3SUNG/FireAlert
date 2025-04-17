@@ -33,8 +33,8 @@ export interface FireAlertHeaderProps extends FireAlertFilterProps {
  * 컨텐츠 컴포넌트 속성 인터페이스
  */
 export interface FireAlertContentProps {
-  loading: boolean; // 로딩 상태
-  error: string | null; // 오류 메시지
+  isLoading: boolean; // 로딩 상태
+  hasError: string | null; // 오류 메시지
   handleReload: () => void; // 데이터 재로드 핸들러
   filteredData: ForestFireData[]; // 필터링된 산불 데이터
   selectedFireId: string | undefined; // 선택된 산불 ID

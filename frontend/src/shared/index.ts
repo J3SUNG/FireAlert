@@ -30,6 +30,8 @@ import {
   getResponseLevel,
   createCache,
   setupDefaultLeafletIcons,
+  calculateStatusCounts,
+  calculateResponseLevelCounts
 } from "./lib";
 
 // 에러 처리
@@ -44,6 +46,7 @@ import {
 
 // 모델 및 타입
 import type { ForestFireData, GeoJsonData } from "./model";
+import { FireFilterType } from "./model/common/filterTypes";
 
 // UI 컴포넌트 내보내기
 export { Button, LoadingIndicator, ErrorDisplay, FireStatusSummary, combineClasses };
@@ -64,6 +67,8 @@ export {
   getResponseLevel,
   createCache,
   setupDefaultLeafletIcons,
+  calculateStatusCounts,
+  calculateResponseLevelCounts
 };
 
 // 에러 처리 내보내기
@@ -78,6 +83,7 @@ export {
 
 // 모델 및 타입 내보내기
 export type { ForestFireData, GeoJsonData };
+export { FireFilterType };
 
 // 상수 값 내보내기
 export { APP_TITLE, FIRE_STATUS_TEXT, LOADING_MESSAGE, ERROR_MESSAGES, BUTTON_TEXT, FIRE_STATUS_CLASSES };

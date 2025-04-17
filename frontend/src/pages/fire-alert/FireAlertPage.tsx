@@ -13,7 +13,7 @@ import "./FireAlertPage.css";
  */
 const FireAlertPageContent: React.FC = React.memo(() => {
   // 산불 데이터 관리 후크
-  const { fires, loading, error, statusCounts, responseLevelCounts, handleReload } =
+  const { fires, isLoading, hasError, statusCounts, responseLevelCounts, handleReload } =
     useForestFireData();
 
   // 필터링 및 선택 관리 후크
@@ -47,8 +47,8 @@ const FireAlertPageContent: React.FC = React.memo(() => {
       />
 
       <FireAlertContent
-        loading={loading}
-        error={error}
+        isLoading={isLoading}
+        hasError={hasError}
         handleReload={handleReload}
         filteredData={filteredData}
         selectedFireId={selectedFireId}

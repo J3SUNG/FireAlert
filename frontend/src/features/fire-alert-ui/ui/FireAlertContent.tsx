@@ -18,8 +18,8 @@ import "./FireAlertContent.css";
  * - 상태 변경 알림
  * - 키보드 접근성 개선
  * 
- * @param loading 로딩 상태
- * @param error 오류 메시지
+ * @param isLoading 로딩 상태
+ * @param hasError 오류 메시지
  * @param handleReload 새로고침 핸들러
  * @param filteredData 필터링된 산불 데이터
  * @param selectedFireId 선택된 산불 ID
@@ -29,8 +29,8 @@ import "./FireAlertContent.css";
  * @param setSelectedFilter 필터 변경 핸들러
  */
 export const FireAlertContent: React.FC<FireAlertContentProps> = ({
-  loading,
-  error,
+  isLoading,
+  hasError,
   handleReload,
   filteredData,
   selectedFireId,
@@ -40,7 +40,7 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
   setSelectedFilter,
 }) => {
   // 로딩 상태 시 표시할 내용
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="fire-alert__content" role="main">
         <div className="fire-alert__loading-container" aria-live="polite" aria-busy="true">
@@ -52,11 +52,11 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
   }
 
   // 에러 상태 시 표시할 내용
-  if (error !== null && error !== "") {
+  if (hasError !== null && hasError !== "") {
     return (
       <main className="fire-alert__content" role="main">
         <div className="fire-alert__error-container" aria-live="assertive">
-          <p className="fire-alert__error-text" role="alert">{error || ERROR_MESSAGES.default}</p>
+          <p className="fire-alert__error-text" role="alert">{hasError || ERROR_MESSAGES.default}</p>
           <button 
             className="fire-alert__retry-button" 
             onClick={handleReload}
