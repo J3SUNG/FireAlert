@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ForestFireData } from "../../../shared/model/forestFire";
-import { forestFireService } from "../../../shared/api/forest-fire";
 import {
+  ForestFireData,
+  forestFireService,
   calculateResponseLevelCounts,
   calculateStatusCounts,
-} from "../../../shared/lib/calculations/forestFireStats";
-import { useAsyncOperation } from "../../../shared/lib/errors";
+  useAsyncOperation
+} from "../../../shared";
 
 /**
  * 산불 데이터를 가져오고 관리하는 커스텀 훅

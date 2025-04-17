@@ -1,8 +1,6 @@
 import React from "react";
-import { FireAlertHeaderProps } from "../model/types";
-import { Button } from "../../../shared/ui/components";
-import { APP_TITLE } from "../../../shared/constants";
-import { FireFilterType } from "../../../shared/model/common/filterTypes";
+import { FireAlertHeaderProps } from "../model";
+import { Button, APP_TITLE, FireFilterType } from "../../../shared";
 import "./FireAlertHeader.css";
 
 /**

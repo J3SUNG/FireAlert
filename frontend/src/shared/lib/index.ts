@@ -22,7 +22,9 @@ import {
 import {
   calculateFireStatistics,
   groupFiresByStatus,
-  groupFiresByProvince
+  groupFiresByProvince,
+  calculateStatusCounts,
+  calculateResponseLevelCounts
 } from "./calculations/forestFireStats";
 
 // data 처리 세그먼트
@@ -58,7 +60,9 @@ export {
 export {
   calculateFireStatistics,
   groupFiresByStatus,
-  groupFiresByProvince
+  groupFiresByProvince,
+  calculateStatusCounts,
+  calculateResponseLevelCounts
 };
 
 // 데이터 처리 관련 유틸리티 내보내기

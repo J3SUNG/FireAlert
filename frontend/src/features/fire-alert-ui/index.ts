@@ -19,7 +19,7 @@ import type {
   FireAlertHeaderProps,
   FireAlertContentProps,
   FireAlertSidebarProps,
-} from "./model/types";
+} from "./model";
 
 // UI 컴포넌트 내보내기
 export { FireAlertHeader, FireAlertContent, FireAlertSidebar, FireAlertButtons, StatusSummary };
