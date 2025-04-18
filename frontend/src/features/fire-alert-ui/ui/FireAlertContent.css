@@ -1,4 +1,9 @@
-/* 콘텐츠 영역 스타일 */
+/**
+ * 산불 알림 콘텐츠 영역 스타일
+ * 메인 콘텐츠 레이아웃, 로딩 상태 및 에러 표시
+ */
+
+/* 콘텐츠 영역 레이아웃 */
 .fire-alert__content {
   display: flex;
   flex: 1;
@@ -18,7 +23,7 @@
   transition: width var(--duration-normal) ease;
 }
 
-/* 맵 컨테이너 내부 요소 스타일링 */
+/* 맵 컨테이너 내부 요소 */
 .fire-alert__map-overlay {
   position: absolute;
   top: var(--space-md);
@@ -30,7 +35,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* 로딩 관련 스타일 */
+/* 로딩 상태 표시 */
 .fire-alert__loading-container {
   display: flex;
   flex-direction: column;
@@ -58,7 +63,7 @@
   font-weight: var(--font-medium);
 }
 
-/* 에러 관련 스타일 */
+/* 에러 표시 */
 .fire-alert__error-container {
   display: flex;
   flex-direction: column;
@@ -102,7 +107,7 @@
   outline-offset: 2px;
 }
 
-/* 반응형 조정 */
+/* 반응형 레이아웃 */
 @media (max-width: 992px) {
   .fire-alert__content {
     flex-direction: column;

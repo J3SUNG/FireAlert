@@ -1,19 +1,22 @@
-/* 지도 컴포넌트 스타일 */
+/**
+ * 산불 지도 컴포넌트 스타일
+ * 지도 구성 요소, 마커, 범례 및 로딩 상태 관련 스타일 정의
+ */
 
-/* 기본 시도 레이어 관련 스타일 */
+/* 행정구역 경계선 스타일 */
 .province-boundary {
   pointer-events: none;
   shape-rendering: crispEdges;
   visibility: visible;
 }
 
-/* 기본 시군구 레이어 관련 스타일 */
 .district-boundary {
   pointer-events: none;
   shape-rendering: crispEdges;
   visibility: visible;
 }
 
+/* 마커 스타일 */
 .custom-marker {
   cursor: pointer;
   transition: transform var(--duration-fast) ease;
@@ -28,17 +31,15 @@
   transform: scale(1.1);
 }
 
-/* 활성 마커 애니메이션 */
 .custom-marker.active {
   animation: pulse-shadow 1.5s infinite;
 }
 
-/* 마커 래퍼 스타일 */
+/* 마커 컨테이너 및 라벨 */
 .marker-wrapper {
   position: relative;
 }
 
-/* 마커 위치 텍스트 */
 .marker-name {
   position: absolute;
   top: 100%;
@@ -54,7 +55,7 @@
   border: 1px solid var(--border-light);
 }
 
-/* Leaflet 맵 컴포넌트 스타일 */
+/* 지도 컨테이너 레이아웃 */
 .forest-fire-map {
   width: 100%;
   height: 100%;
@@ -97,7 +98,7 @@
   color: var(--text-secondary);
 }
 
-/* 범례 스타일 */
+/* 지도 범례 스타일 */
 .map-legend {
   background-color: var(--white);
   padding: var(--space-sm);
@@ -139,7 +140,7 @@
   margin-bottom: 0;
 }
 
-/* 각 단계별 배경색 */
+/* 대응 단계별 색상 스타일 */
 .map-legend__item--initial {
   background-color: var(--level-initial-light);
 }
@@ -201,7 +202,6 @@
   flex-shrink: 0;
 }
 
-/* 범례 아이콘 색상 */
 .map-legend__icon--initial {
   background-color: var(--level-initial);
 }
@@ -218,12 +218,12 @@
   background-color: var(--level-3);
 }
 
+/* 행정구역 레이블 스타일 */
 .province-label__container {
   background: transparent;
   border: none;
 }
 
-/* 시도 레이블 스타일 */
 .province-label {
   background-color: transparent;
   border: none;
@@ -248,7 +248,6 @@
   border: none;
 }
 
-/* 시군구 레이블 스타일 */
 .district-label {
   background-color: transparent;
   border: none;
@@ -307,7 +306,6 @@
   }
 }
 
-/* 마커 추가 스타일 */
 .forest-fire-map__marker--selected {
   border-width: 3px;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
@@ -354,7 +352,6 @@
   width: 200px;
   max-width: 280px;
   background-color: #ffffff;
-  /* 부드러운 애니메이션 추가 */
   animation: tooltip-fade-in 0.2s ease-out;
 }
 

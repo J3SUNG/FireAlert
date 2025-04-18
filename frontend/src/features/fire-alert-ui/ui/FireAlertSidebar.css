@@ -1,4 +1,9 @@
-/* 사이드바 스타일 */
+/**
+ * 산불 알림 사이드바 스타일
+ * 산불 목록 표시 패널, 헤더 및 콘텐츠 영역
+ */
+
+/* 사이드바 기본 레이아웃 */
 .fire-alert__sidebar {
   width: var(--sidebar-width);
   background-color: var(--bg-primary);
@@ -22,7 +27,6 @@
   gap: var(--space-xs);
 }
 
-/* 사이드바 제목 */
 .fire-alert__sidebar-title {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
@@ -31,20 +35,19 @@
   letter-spacing: -0.5px;
 }
 
-/* 사이드바 부제목 */
 .fire-alert__sidebar-subtitle {
   font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
-/* 사이드바 콘텐츠 */
+/* 사이드바 콘텐츠 영역 */
 .fire-alert__sidebar-content {
   overflow-y: auto;
   flex: 1;
   padding: var(--space-sm);
 }
 
-/* 사이드바 항목 */
+/* 사이드바 항목 스타일 */
 .fire-alert__sidebar-item {
   padding: var(--space-sm);
   border-radius: var(--radius-md);

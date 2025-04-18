@@ -1,4 +1,9 @@
-/* 헤더 스타일 */
+/**
+ * 산불 알림 헤더 스타일
+ * 상단 헤더 레이아웃, 로고, 필터 및 타임스탬프
+ */
+
+/* 헤더 기본 스타일 */
 .fire-alert__header {
   padding: var(--space-sm) var(--space-2xl);
   background-color: var(--bg-primary);
@@ -13,21 +18,19 @@
   position: relative;
 }
 
-/* 로고 컨테이너 */
+/* 로고 영역 */
 .fire-alert__logo-container {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
-/* 로고 아이콘 */
 .fire-alert__logo-icon {
   font-size: var(--text-2xl);
   margin-right: var(--space-sm);
   color: var(--status-active);
 }
 
-/* 로고 텍스트 */
 .fire-alert__logo-text {
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
@@ -35,12 +38,10 @@
   letter-spacing: -0.5px;
 }
 
-/* 로고 내 불씨 글자 */
 .fire-alert__logo-text--fire {
   color: var(--status-active);
 }
 
-/* 서브타이틀 */
 .fire-alert__subtitle {
   font-size: var(--text-sm);
   color: var(--text-secondary);
@@ -69,7 +70,7 @@
   font-weight: var(--font-medium);
 }
 
-/* 반응형 스타일 */
+/* 반응형 조정 */
 @media (max-width: var(--screen-lg)) {
   .fire-alert__header {
     flex-wrap: wrap;

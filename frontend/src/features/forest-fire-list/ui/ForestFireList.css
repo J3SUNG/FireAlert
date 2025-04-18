@@ -1,7 +1,14 @@
+/**
+ * 산불 목록 컴포넌트 스타일
+ * 산불 목록, 필터링 버튼 및 개별 항목 카드
+ */
+
+/* 전체 목록 컨테이너 */
 .forest-fire-list {
   height: 100%;
 }
 
+/* 필터 영역 */
 .forest-fire-list__filter-container {
   padding: 12px 16px 8px;
   border-bottom: 1px solid #e2e8f0;
@@ -17,6 +24,7 @@
   background: #f8fafc;
 }
 
+/* 목록 콘텐츠 영역 */
 .forest-fire-list__content {
   padding: 12px;
   overflow-y: auto;
@@ -43,6 +51,7 @@
   color: #475569;
 }
 
+/* 산불 항목 카드 */
 .forest-fire-item {
   padding: 14px;
   border: 1px solid #e2e8f0;
@@ -95,6 +104,7 @@
   margin-left: 4px;
 }
 
+/* 배지 스타일 */
 .forest-fire-item__badge-container {
   display: flex;
   flex-direction: column;
@@ -160,6 +170,7 @@
   background-color: #22c55e;
 }
 
+/* 설명 텍스트 */
 .forest-fire-item__description {
   font-size: 12px;
   color: #334155;

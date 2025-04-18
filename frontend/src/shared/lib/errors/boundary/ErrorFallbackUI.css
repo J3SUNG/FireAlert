@@ -1,3 +1,9 @@
+/**
+ * 에러 폴백 UI 스타일
+ * ErrorBoundary에서 사용되는 에러 표시 화면
+ */
+
+/* 에러 폴백 컨테이너 */
 .error-fallback {
   display: flex;
   flex-direction: column;
@@ -9,6 +15,7 @@
   box-sizing: border-box;
 }
 
+/* 에러 콘텐츠 */
 .error-fallback__content {
   max-width: 600px;
   background-color: var(--bg-primary);
@@ -19,6 +26,7 @@
   text-align: center;
 }
 
+/* 에러 아이콘 */
 .error-fallback__icon {
   display: flex;
   justify-content: center;
@@ -26,12 +34,14 @@
   color: var(--error);
 }
 
+/* 에러 제목 */
 .error-fallback__title {
   font-size: var(--text-2xl);
   color: var(--text-primary);
   margin-bottom: var(--space-md);
 }
 
+/* 에러 메시지 */
 .error-fallback__message {
   font-size: var(--text-md);
   color: var(--text-secondary);
@@ -39,6 +49,7 @@
   line-height: 1.5;
 }
 
+/* 에러 상세 정보 */
 .error-fallback__details {
   background-color: var(--bg-tertiary);
   border-radius: var(--radius-sm);
@@ -59,6 +70,7 @@
   color: var(--text-secondary);
 }
 
+/* 스택 트레이스 */
 .error-fallback__stack {
   background-color: var(--bg-filter);
   border-radius: var(--radius-sm);
@@ -71,6 +83,7 @@
   overflow-y: auto;
 }
 
+/* 버튼 영역 */
 .error-fallback__actions {
   display: flex;
   justify-content: center;
@@ -78,6 +91,7 @@
   margin-top: var(--space-2xl);
 }
 
+/* 기본 버튼 */
 .error-fallback__button {
   padding: var(--space-sm) var(--space-md);
   font-size: var(--text-sm);
@@ -93,6 +107,7 @@
   background-color: var(--bg-tertiary);
 }
 
+/* 주요 버튼 */
 .error-fallback__button--primary {
   background-color: var(--brand-primary);
   color: var(--white);

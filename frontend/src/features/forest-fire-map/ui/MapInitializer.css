@@ -1,4 +1,9 @@
-/* 맵 초기화 스타일 */
+/**
+ * 지도 초기화 컴포넌트 스타일
+ * 지도 컨테이너, 로딩 및 오류 상태 표시
+ */
+
+/* 맵 컨테이너 */
 .map-initializer {
   width: 100%;
   height: 100%;
@@ -11,7 +16,7 @@
   z-index: 1;
 }
 
-/* 맵 로딩 스타일 */
+/* 맵 로딩 인디케이터 */
 .map-initializer__loading {
   position: absolute;
   top: 0;
@@ -40,7 +45,7 @@
   color: #334155;
 }
 
-/* 맵 오류 스타일 */
+/* 맵 오류 표시 */
 .map-initializer__error {
   position: absolute;
   top: 0;

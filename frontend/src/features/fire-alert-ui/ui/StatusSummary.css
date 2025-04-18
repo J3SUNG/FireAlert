@@ -1,4 +1,9 @@
-/* 상태 요약 패널 스타일 */
+/**
+ * 상태 요약 패널 스타일
+ * 지도 위에 표시되는 대응 단계별 산불 현황 요약
+ */
+
+/* 상태 요약 패널 컨테이너 */
 .fire-alert__status-summary {
   position: absolute;
   bottom: var(--space-md);
@@ -29,7 +34,7 @@
   text-align: center;
 }
 
-/* 요약 그리드 */
+/* 요약 그리드 레이아웃 */
 .fire-alert__summary-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -37,7 +42,7 @@
   padding: 0;
 }
 
-/* 요약 항목 */
+/* 요약 항목 스타일 */
 .fire-alert__summary-item {
   display: flex;
   border-radius: var(--radius-md);
@@ -49,7 +54,7 @@
   margin: 0 auto;
 }
 
-/* 단계별 배경색 */
+/* 대응 단계별 배경색 */
 .fire-alert__summary-item--initial {
   background-color: var(--level-initial-light);
 }

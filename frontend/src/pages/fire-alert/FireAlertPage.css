@@ -1,4 +1,9 @@
-/* 기본 레이아웃 스타일 */
+/**
+ * 산불 알림 페이지 스타일
+ * 메인 페이지의 전체 레이아웃 구조
+ */
+
+/* 기본 레이아웃 */
 .fire-alert {
   display: flex;
   flex-direction: column;

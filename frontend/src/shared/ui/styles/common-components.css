@@ -1,4 +1,9 @@
-/* 로딩 인디케이터 스타일 */
+/**
+ * 공통 UI 컴포넌트 스타일
+ * 애플리케이션 전반에서 사용되는 재사용 가능한 UI 요소
+ */
+
+/* 로딩 인디케이터 */
 .loading-indicator {
   display: flex;
   flex-direction: column;
@@ -36,7 +41,7 @@
   font-size: var(--text-sm);
 }
 
-/* 에러 디스플레이 스타일 */
+/* 에러 디스플레이 */
 .error-display {
   display: flex;
   flex-direction: column;
@@ -89,7 +94,7 @@
   user-select: none;
 }
 
-/* 필터 버튼 기본 스타일 (비선택 상태) */
+/* 필터 버튼 기본 스타일 */
 .btn--all {
   background-color: var(--status-all-light);
   color: var(--text-primary);
@@ -110,7 +115,7 @@
   color: var(--text-primary);
 }
 
-/* 필터 버튼 활성화 스타일 (선택된 상태) */
+/* 필터 버튼 활성화 스타일 */
 .btn--active-all {
   background-color: var(--status-all);
   color: var(--white);
@@ -131,6 +136,7 @@
   color: var(--white);
 }
 
+/* 기본 버튼 변형 */
 .btn--primary {
   background-color: var(--brand-primary);
   color: var(--white);
@@ -145,12 +151,11 @@
   width: 100%;
 }
 
-/* 버튼 올림 스타일 - 원형 버튼 */
+/* 버튼 모양 변형 */
 .btn--pill {
   border-radius: var(--radius-full);
 }
 
-/* 작은 버튼 */
 .btn--small {
   padding: var(--space-xs) var(--space-sm);
   font-size: var(--text-xs);
@@ -163,7 +168,7 @@
   gap: var(--space-xs);
 }
 
-/* 상태 스타일: 필터 */
+/* 필터 버튼 */
 .btn--filter {
   font-weight: var(--font-medium);
 }
@@ -185,7 +190,7 @@
   background-color: var(--status-extinguished-light);
 }
 
-/* 버튼 비활성화 스타일 */
+/* 비활성화 버튼 */
 .btn:disabled,
 .btn--disabled {
   opacity: 0.6;
@@ -193,7 +198,7 @@
   filter: grayscale(30%);
 }
 
-/* 아이콘 포함 버튼 */
+/* 아이콘 버튼 */
 .btn--with-icon {
   display: inline-flex;
   align-items: center;
@@ -206,12 +211,12 @@
   flex-shrink: 0;
 }
 
-/* 박스 그림자가 있는 버튼 스타일 */
+/* 그림자 버튼 */
 .btn--shadowed {
   box-shadow: var(--shadow-sm);
 }
 
-/* 접근성: 스크린 리더 전용 클래스 */
+/* 접근성 클래스 */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -224,13 +229,12 @@
   border-width: 0;
 }
 
-/* 포커스 스타일 개선 */
+/* 포커스 스타일 */
 :focus-visible {
   outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
 }
 
-/* 키보드 네비게이션 포커스 스타일 */
 .keyboard-focus:focus {
   outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
