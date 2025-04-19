@@ -1,10 +1,10 @@
 import React from "react";
 import { FireAlertContentProps } from "../model/types";
 import { ForestFireMap } from "../../../features/forest-fire-map";
-import { FireStatusSummary } from "../../../shared";
 import { FireAlertSidebar } from "./FireAlertSidebar";
 import { LOADING_MESSAGE, ERROR_MESSAGES, BUTTON_TEXT } from "../../../shared/constants";
 import "./FireAlertContent.css";
+import { FireStatusSummary } from "./StatusSummary";
 
 /**
  * 산불 알림 콘텐츠 컴포넌트
@@ -67,7 +67,6 @@ export const FireAlertContent: React.FC<FireAlertContentProps> = ({
           onFireSelect={handleFireSelect}
           legendPosition="bottomleft"
         />
-
         <FireStatusSummary
           level3Count={responseLevelCounts.level3}
           level2Count={responseLevelCounts.level2}

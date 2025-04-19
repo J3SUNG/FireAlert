@@ -1,5 +1,6 @@
 import React from "react";
-import { ForestFireData } from "../model/forestFire";
+import { ForestFireData } from "../../../shared";
+import "./StatusSummary.css";
 
 /**
  * FireStatusSummary 컴포넌트 프롭스 인터페이스

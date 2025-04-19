@@ -1,5 +1,4 @@
 import { Button, LoadingIndicator, ErrorDisplay } from "./ui/components";
-import { FireStatusSummary } from "./ui";
 import { combineClasses } from "./ui/utils/classNameUtils";
 import { forestFireService } from "./api/forest-fire";
 import { geoJsonService } from "./api/geoJsonService";
@@ -36,7 +35,7 @@ import {
 } from "./lib/errors";
 import type { ForestFireData, GeoJsonData } from "./model";
 import { FireFilterType } from "./model/filterTypes";
-export { Button, LoadingIndicator, ErrorDisplay, FireStatusSummary, combineClasses };
+export { Button, LoadingIndicator, ErrorDisplay, combineClasses };
 export { forestFireService, geoJsonService };
 export {
   useCurrentTime,
