@@ -10,10 +10,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   { ignores: ["dist"] },
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
@@ -28,15 +25,43 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
-      // React 관련 규칙
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": "off",
-      // 추가: react-hooks/exhaustive-deps 규칙 비활성화 (의존성 배열 경고 제거)
       "react-hooks/exhaustive-deps": "off",
-      
-      // 자주 방해되는 TypeScript 규칙 비활성화
+
+      // 코드 스타일 규칙
+      indent: "off",
+      quotes: ["warn", "double"],
+      semi: ["warn", "always"],
+      "comma-dangle": [
+        "warn",
+        {
+          arrays: "always-multiline",
+          objects: "always-multiline",
+          imports: "always-multiline",
+          exports: "always-multiline",
+          functions: "never",
+        },
+      ],
+      "arrow-parens": ["warn", "always"],
+      "eol-last": ["warn", "always"],
+      "max-len": "off",
+
+      // 사용되지 않는 변수 무시 (앞에 _ 붙이면 제외)
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
+      "no-unused-vars": "off",
+
+      // 불필요하거나 과한 TypeScript 규칙 비활성화
       "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off", 
+      "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
@@ -48,39 +73,14 @@ export default tseslint.config(
       "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
-      "@typescript-eslint/prefer-nullish-coalescing": "off", // || 대신 ?? 사용 권장 규칙 비활성화
-      
-      // TypeScript 규칙 조정: 추가 규칙 비활성화
-      "@typescript-eslint/prefer-optional-chain": "off", // 옵셔널 체이닝 강제 규칙 비활성화
-      "@typescript-eslint/no-unnecessary-type-assertion": "off", // 불필요한 타입 단언 경고 비활성화
-      
-      // 일관된 코드 스타일 유지 규칙 추가
-      "max-len": ["off"], // 라인 길이 제한 없음(가독성 개선을 위한 수동 개행 권장)
-      "indent": ["warn", 2], // 2칸 들여쓰기 사용
-      "quotes": ["warn", "double"], // 따옴표 일관성
-      "semi": ["warn", "always"], // 세미콜론 필수
-      "comma-dangle": ["warn", "always-multiline"], // 멀티라인에서 후행 콤마 사용
-      "arrow-parens": ["warn", "always"], // 화살표 함수 괄호 일관성
-      "eol-last": ["warn", "always"], // 파일 끝에 개행 추가
-      
-      // 개발에 유용할 수 있는 규칙 재정의
-      "@typescript-eslint/no-unused-vars": ["warn", { 
-        "argsIgnorePattern": "^_", 
-        "varsIgnorePattern": "^_", 
-        "caughtErrorsIgnorePattern": "^_",
-        "destructuredArrayIgnorePattern": "^_" 
-      }],  // 사용되지 않는 변수 경고 (_로 시작하는 변수 제외)
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+
       "@typescript-eslint/prefer-as-const": "warn",
-      
-      // 미사용 아이템 감지 규칙
-      "no-unused-expressions": "warn", // 사용되지 않는 표현식 경고
-      "no-unused-labels": "warn", // 사용되지 않는 레이블 경고
-      
-      // 콘솔 로그는 개발 중에 유용하므로 허용
+      "no-unused-expressions": "warn",
+      "no-unused-labels": "warn",
       "no-console": "off",
-      
-      // 기타 일반적인 규칙 조정
-      "no-unused-vars": "off", // TypeScript 버전이 대신 처리
     },
   }
 );
