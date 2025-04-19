@@ -1,4 +1,4 @@
-import { Button, LoadingIndicator, ErrorDisplay } from "./ui/components";
+import { Button, LoadingIndicator } from "./ui/components";
 import { combineClasses } from "./ui/utils/classNameUtils";
 import { forestFireService } from "./api/forest-fire";
 import { geoJsonService } from "./api/geoJsonService";
@@ -15,9 +15,6 @@ import {
   useFireFilterAndSelection,
   formatLocation,
   extractLocation,
-  calculateFireStatistics,
-  groupFiresByStatus,
-  groupFiresByProvince,
   convertStatus,
   getResponseLevel,
   createCache,
@@ -25,26 +22,16 @@ import {
   calculateStatusCounts,
   calculateResponseLevelCounts,
 } from "./lib";
-import {
-  ErrorBoundary,
-  ErrorFallbackUI,
-  useErrorHandling,
-  useAsyncOperation,
-  createDataFetchError,
-  createMapInitError,
-} from "./lib/errors";
+import { ErrorBoundary, ErrorFallbackUI, useAsyncOperation } from "./lib/errors";
 import type { ForestFireData, GeoJsonData } from "./model";
 import { FireFilterType } from "./model/filterTypes";
-export { Button, LoadingIndicator, ErrorDisplay, combineClasses };
+export { Button, LoadingIndicator, combineClasses };
 export { forestFireService, geoJsonService };
 export {
   useCurrentTime,
   useFireFilterAndSelection,
   formatLocation,
   extractLocation,
-  calculateFireStatistics,
-  groupFiresByStatus,
-  groupFiresByProvince,
   convertStatus,
   getResponseLevel,
   createCache,
@@ -52,14 +39,7 @@ export {
   calculateStatusCounts,
   calculateResponseLevelCounts,
 };
-export {
-  ErrorBoundary,
-  ErrorFallbackUI,
-  useErrorHandling,
-  useAsyncOperation,
-  createDataFetchError,
-  createMapInitError,
-};
+export { ErrorBoundary, ErrorFallbackUI, useAsyncOperation };
 export type { ForestFireData, GeoJsonData };
 export { FireFilterType };
 export {

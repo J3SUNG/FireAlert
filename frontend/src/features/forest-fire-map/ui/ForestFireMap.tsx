@@ -5,7 +5,6 @@ import { GEOJSON_PATHS } from "../model/mapSettings";
 import { FireMarkerManager } from "./FireMarkerManager";
 import { ForestFireMapProps } from "../model/common-types";
 import { combineClasses } from "../../../shared/ui/utils";
-import "./MapInitializer.css";
 import "./ForestFireMap.css";
 
 /**

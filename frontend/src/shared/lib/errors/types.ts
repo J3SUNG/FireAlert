@@ -39,6 +39,7 @@ export interface ErrorContext {
   params?: Record<string, any>;
   timestamp?: number;
   action?: string;
+  silent?: boolean;
 }
 
 export interface ErrorOptions {

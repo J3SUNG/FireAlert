@@ -5,7 +5,6 @@ import type {
   ResponseLevelCounts,
   FireAlertFilterProps,
 } from "./types";
-
 export type {
   FireAlertHeaderProps,
   FireAlertContentProps,

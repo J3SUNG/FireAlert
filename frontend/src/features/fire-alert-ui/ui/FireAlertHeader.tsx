@@ -14,7 +14,6 @@ export const FireAlertHeader: React.FC<FireAlertHeaderProps> = ({
   selectedFilter,
   setSelectedFilter,
   buttonLabels,
-  getButtonClass,
   currentTime,
   formatDate,
 }) => {

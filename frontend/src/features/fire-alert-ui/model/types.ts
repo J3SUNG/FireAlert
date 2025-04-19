@@ -18,7 +18,6 @@ export interface FireAlertFilterProps {
   selectedFilter: FireFilterType;
   setSelectedFilter: (filter: FireFilterType) => void;
   buttonLabels: FilterType;
-  getButtonClass: (filter: FireFilterType) => string;
 }
 
 /**

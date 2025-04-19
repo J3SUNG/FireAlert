@@ -18,21 +18,6 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
     setSelectedFireId((prevId) => (prevId === fire.id ? undefined : fire.id));
   }, []);
 
-  const getButtonClass = useMemo(() => {
-    return (filter: FireFilterType): string => {
-      const className = "btn btn--pill btn--filter";
-
-      if (filter === selectedFilter) {
-        if (filter === FireFilterType.ALL) return `${className} btn--active-all`;
-        if (filter === FireFilterType.ACTIVE) return `${className} btn--active-red`;
-        if (filter === FireFilterType.CONTAINED) return `${className} btn--active-orange`;
-        return `${className} btn--active-green`;
-      }
-
-      return className;
-    };
-  }, [selectedFilter]);
-
   const getFilterButtonLabels = useMemo(() => {
     return (counts: {
       total: number;
@@ -58,7 +43,6 @@ export function useFireFilterAndSelection(fires: ForestFireData[]) {
     selectedFireId,
     filteredData,
     handleFireSelect,
-    getButtonClass,
     getFilterButtonLabels,
   };
 }

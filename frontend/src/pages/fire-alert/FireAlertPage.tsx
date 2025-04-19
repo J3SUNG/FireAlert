@@ -20,7 +20,6 @@ const FireAlertPageContent: React.FC = React.memo(() => {
     selectedFireId,
     filteredData,
     handleFireSelect,
-    getButtonClass,
     getFilterButtonLabels,
   } = useFireFilterAndSelection(fires);
 
@@ -36,7 +35,6 @@ const FireAlertPageContent: React.FC = React.memo(() => {
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
         buttonLabels={buttonLabels}
-        getButtonClass={getButtonClass}
         currentTime={currentTime}
         formatDate={formatDate}
       />

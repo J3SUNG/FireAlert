@@ -9,7 +9,7 @@ export default defineConfig({
     strictPort: true,
     fs: {
       strict: false,
-      allow: ['..'], // 상위 디렉토리에도 접근 허용
+      allow: [".."], // 상위 디렉토리에도 접근 허용
     },
     proxy: {
       "/api": {

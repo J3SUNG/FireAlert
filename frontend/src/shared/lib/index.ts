@@ -3,9 +3,6 @@ import { useCurrentTime, useFireFilterAndSelection } from "./hooks";
 import { formatLocation, extractLocation, provinceShortNames } from "./formatting";
 
 import {
-  calculateFireStatistics,
-  groupFiresByStatus,
-  groupFiresByProvince,
   calculateStatusCounts,
   calculateResponseLevelCounts,
 } from "./calculations/forestFireStats";
@@ -20,13 +17,7 @@ export { useCurrentTime, useFireFilterAndSelection };
 
 export { formatLocation, extractLocation, provinceShortNames };
 
-export {
-  calculateFireStatistics,
-  groupFiresByStatus,
-  groupFiresByProvince,
-  calculateStatusCounts,
-  calculateResponseLevelCounts,
-};
+export { calculateStatusCounts, calculateResponseLevelCounts };
 
 export { convertStatus, getResponseLevel };
 
