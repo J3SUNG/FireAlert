@@ -9,8 +9,6 @@ interface ErrorDisplayProps {
 
 /**
  * 공통 에러 표시 컴포넌트
- * 
- * 애플리케이션 전체에 일관된 에러 표시 제공
  */
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   message = ERROR_MESSAGES.default,
@@ -18,7 +16,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   className = "",
 }) => {
   const containerClass = `error-display ${className}`;
-  
+
   return (
     <div className={containerClass}>
       <p className="error-display__text">{message}</p>

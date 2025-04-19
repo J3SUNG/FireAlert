@@ -5,12 +5,6 @@ import { Coordinates } from "../../model/geoJson";
 
 /**
  * 날짜 문자열 포맷팅
- * 
- * YYYYMMDD 형식의 날짜 문자열을 YYYY-MM-DD 형식으로 변환합니다.
- * 날짜 문자열이 없거나 유효하지 않은 경우 빈 문자열을 반환합니다.
- * 
- * @param {string} dateStr 포맷팅할 날짜 문자열
- * @returns {string} 포맷팅된 날짜 문자열
  */
 export const formatDateString = (dateStr: string): string => {
   if (!dateStr) return "";
@@ -22,13 +16,6 @@ export const formatDateString = (dateStr: string): string => {
 
 /**
  * API에서 가져온 산불 데이터 항목을 추출하고 포맷팅하는 함수
- * 
- * API에서 가져온 원데이터를 내부 형식에 맞게 변환합니다.
- * 날짜, 위치, 상태 등의 데이터를 추출하고 필요한 형식으로 변환합니다.
- * 
- * @param {Record<string, unknown>} item API에서 가져온 데이터 항목
- * @param {number} index 항목 인덱스
- * @returns 추출된 필요한 데이터 필드
  */
 export const extractItemData = (
   item: Record<string, unknown>,
@@ -85,14 +72,6 @@ export const extractItemData = (
 
 /**
  * 산불 데이터 항목에서 좌표 정보를 추가하는 함수
- * 
- * 추출된 데이터 항목에 GeoJSON 데이터에서 찾은 좌표를 추가합니다.
- * 좌표를 찾지 못한 경우 null을 반환합니다.
- * 
- * @param extractedItem 추출된 데이터 항목
- * @param geoJsonData GeoJSON 데이터
- * @param getCoordinatesByName 좌표 검색 함수
- * @returns {ForestFireData | null} 좌표가 추가된 산불 데이터 또는 null
  */
 export const createForestFireDataWithCoordinates = (
   extractedItem: ReturnType<typeof extractItemData>,
