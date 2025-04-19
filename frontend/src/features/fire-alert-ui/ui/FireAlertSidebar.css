@@ -100,7 +100,7 @@
     border-left: none;
     border-top: 1px solid var(--border);
   }
-  
+
   .fire-alert__sidebar-toggle {
     display: none;
   }
@@ -110,11 +110,11 @@
   .fire-alert__sidebar-header {
     padding: var(--space-sm);
   }
-  
+
   .fire-alert__sidebar-content {
     padding: var(--space-xs);
   }
-  
+
   .fire-alert__sidebar-item {
     padding: var(--space-xs);
     margin-bottom: var(--space-xs);

@@ -98,7 +98,7 @@
 }
 
 .fire-alert__retry-button:hover {
-  background-color: var(--blue-600); 
+  background-color: var(--blue-600);
   box-shadow: var(--shadow-sm);
 }
 
@@ -114,7 +114,7 @@
     height: auto;
     max-height: none;
   }
-  
+
   .fire-alert__map-container {
     height: 60vh;
     min-height: 400px;

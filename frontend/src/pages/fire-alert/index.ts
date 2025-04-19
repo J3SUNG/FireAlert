@@ -1,1 +1,1 @@
-export { default as FireAlertPage } from './FireAlertPage';
+export { default as FireAlertPage } from "./FireAlertPage";
