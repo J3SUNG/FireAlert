@@ -1,13 +1,10 @@
 /**
  * 산불 통계 계산 관련 유틸리티 함수 모음
  */
-
 import { ForestFireData } from "../../model/forestFire";
 
 /**
  * 산불 데이터 통계 계산
- * 
- * 지역별, 위험도별, 상태별 종합 통계를 계산
  */
 export const getForestFireStatistics = (fires: ForestFireData[]) => {
   const provinceStats = {} as Record<
@@ -62,15 +59,11 @@ export const getForestFireStatistics = (fires: ForestFireData[]) => {
 
 /**
  * 산불 데이터 통계 계산 (별칭)
- * 
- * getForestFireStatistics와 동일한 함수의 다른 이름
  */
 export const calculateFireStatistics = getForestFireStatistics;
 
 /**
  * 상태별 산불 그룹화
- * 
- * 산불 데이터를 상태별로 그룹화
  */
 export const groupFiresByStatus = (fires: ForestFireData[]) => {
   return {
@@ -82,12 +75,10 @@ export const groupFiresByStatus = (fires: ForestFireData[]) => {
 
 /**
  * 지역별 산불 그룹화
- * 
- * 산불 데이터를 지역별로 그룹화
  */
 export const groupFiresByProvince = (fires: ForestFireData[]) => {
   const result: Record<string, ForestFireData[]> = {};
-  
+
   fires.forEach((fire) => {
     const province = fire.province ?? "기타";
     if (!result[province]) {
@@ -95,14 +86,12 @@ export const groupFiresByProvince = (fires: ForestFireData[]) => {
     }
     result[province].push(fire);
   });
-  
+
   return result;
 };
 
 /**
  * 상태별 카운트 계산
- * 
- * 산불 상태별 개수 계산 (전체, 진행중, 통제중, 진화완료)
  */
 export const calculateStatusCounts = (fires: ForestFireData[]) => {
   return {
@@ -115,8 +104,6 @@ export const calculateStatusCounts = (fires: ForestFireData[]) => {
 
 /**
  * 대응 단계별 카운트 계산
- * 
- * 심각도에 따른 대응 단계별 개수 계산
  */
 export const calculateResponseLevelCounts = (fires: ForestFireData[]) => {
   return {

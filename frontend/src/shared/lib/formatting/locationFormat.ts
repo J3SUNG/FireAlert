@@ -4,8 +4,6 @@
 
 /**
  * 시도 이름 약어 매핑
- *
- * 긴 행정구역명을 간결한 형태로 변환
  */
 export const provinceShortNames: Record<string, string> = {
   서울특별시: "서울",
@@ -30,8 +28,6 @@ export const provinceShortNames: Record<string, string> = {
 
 /**
  * 위치 문자열에서 시도와 시군구 추출
- *
- * 주소 문자열을 분석하여 행정구역 정보 추출
  */
 export const extractLocation = (
   location: string,
@@ -41,7 +37,6 @@ export const extractLocation = (
 
   const provinceMap: Record<string, string> = {};
 
-  // 정방향 매핑과 역방향 매핑 모두 포함
   for (const [fullName, shortName] of Object.entries(provinceShortNames)) {
     provinceMap[shortName] = fullName;
   }
@@ -70,7 +65,6 @@ export const extractLocation = (
   let province = "기타";
   let district = "";
 
-  // 시도 파싱
   if (parts.length > 0) {
     if (
       parts[0].includes("도") ||
@@ -84,11 +78,9 @@ export const extractLocation = (
     }
   }
 
-  // 시군구 파싱
   if (sigungu && sigungu.trim().length > 0) {
     district = sigungu.trim();
   } else if (parts.length > 1) {
-    // 시군구 접미사로 판별
     for (let i = 1; i < parts.length; i++) {
       if (parts[i].endsWith("시") || parts[i].endsWith("군") || parts[i].endsWith("구")) {
         district = parts[i];
@@ -102,20 +94,15 @@ export const extractLocation = (
 
 /**
  * 위치 정보 포맷팅
- * 
- * 행정구역 정보를 간결한 형태로 표시
- * 예: '서울특별시 강남구' -> '서울 강남구'
  */
 export const formatLocation = (location: string, sigungu?: string): string => {
   const { province, district } = extractLocation(location, sigungu);
-  
-  // 시도 이름 간소화
+
   const shortProvince = provinceShortNames[province] || province;
-  
-  // 시군구가 있으면 포함, 없으면 시도만 표시
-  if (district && district.trim() !== '') {
+
+  if (district && district.trim() !== "") {
     return `${shortProvince} ${district}`;
   }
-  
+
   return shortProvince;
 };
