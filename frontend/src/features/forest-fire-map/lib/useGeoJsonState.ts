@@ -1,23 +1,18 @@
 import { useRef, useCallback } from "react";
 import L from "leaflet";
-// GeoJsonProperties는 사용되지 않음
 
 /**
  * GeoJSON 레이어 상태 관리 훅
- * 지도 레이어의 생성, 업데이트, 제거 등의 상태 관리
  */
 export function useGeoJsonState() {
-  // GeoJSON 레이어 참조 저장
   const geoJsonLayersRef = useRef<{
     provinces?: L.GeoJSON;
     districts?: L.GeoJSON;
   }>({});
 
-  // 레이블 마커 참조
   const provinceMarkersRef = useRef<L.Marker[]>([]);
   const districtMarkersRef = useRef<L.Marker[]>([]);
 
-  // 레이어 설정 함수
   const setProvinceLayer = useCallback((layer: L.GeoJSON) => {
     geoJsonLayersRef.current.provinces = layer;
   }, []);
@@ -26,7 +21,6 @@ export function useGeoJsonState() {
     geoJsonLayersRef.current.districts = layer;
   }, []);
 
-  // 레이어 조회 함수
   const getProvinceLayer = useCallback(() => {
     return geoJsonLayersRef.current.provinces;
   }, []);
@@ -35,7 +29,6 @@ export function useGeoJsonState() {
     return geoJsonLayersRef.current.districts;
   }, []);
 
-  // 마커 관리 함수
   const addProvinceMarker = useCallback((marker: L.Marker) => {
     provinceMarkersRef.current.push(marker);
   }, []);
@@ -44,20 +37,17 @@ export function useGeoJsonState() {
     districtMarkersRef.current.push(marker);
   }, []);
 
-  // 레이어 제거 함수
   const cleanupLayers = useCallback(
     (map: L.Map | null, markerHandlerMap?: Map<L.Marker, () => void>) => {
       if (!map) return;
 
       const { provinces, districts } = geoJsonLayersRef.current;
 
-      // 레이어 제거 - 이벤트 리스너 먼저 제거
       if (provinces) {
         if ("off" in provinces) {
           provinces.off();
         }
 
-        // 레이어 제거
         if (map.hasLayer(provinces)) {
           map.removeLayer(provinces);
         }
@@ -68,13 +58,11 @@ export function useGeoJsonState() {
           districts.off();
         }
 
-        // 레이어 제거
         if (map.hasLayer(districts)) {
           map.removeLayer(districts);
         }
       }
 
-      // 시도 레이블 마커 제거
       provinceMarkersRef.current.forEach((marker) => {
         if ("off" in marker) {
           marker.off();
@@ -86,7 +74,6 @@ export function useGeoJsonState() {
       });
       provinceMarkersRef.current = [];
 
-      // 시군구 레이블 마커 제거
       districtMarkersRef.current.forEach((marker) => {
         if (map && markerHandlerMap?.has(marker)) {
           const handler = markerHandlerMap.get(marker);
@@ -106,29 +93,24 @@ export function useGeoJsonState() {
       });
       districtMarkersRef.current = [];
 
-      // 참조 초기화
       geoJsonLayersRef.current = {};
     },
     []
   );
 
   return {
-    // 레이어 참조
     layers: geoJsonLayersRef.current,
     provinceMarkers: provinceMarkersRef.current,
     districtMarkers: districtMarkersRef.current,
 
-    // 레이어 관리 함수
     setProvinceLayer,
     setDistrictLayer,
     getProvinceLayer,
     getDistrictLayer,
 
-    // 마커 관리 함수
     addProvinceMarker,
     addDistrictMarker,
 
-    // 정리 함수
     cleanupLayers,
   };
 }

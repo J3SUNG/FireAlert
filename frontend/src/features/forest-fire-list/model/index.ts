@@ -1,6 +1,1 @@
-/**
- * 산불 목록 관련 모델
- * 
- * 산불 목록 표시에 필요한 타입을 정의합니다.
- */
-export * from './types';
+export * from "./types";

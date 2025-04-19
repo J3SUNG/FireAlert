@@ -6,44 +6,27 @@ import "./ForestFireList.css";
 /**
  * 산불 항목 컴포넌트
  * 개별 산불 데이터를 표시하는 카드 형태의 컴포넌트입니다.
- * 산불 위치, 발생 일자, 영향 면적, 대응 단계, 진화율 등의 정보를 포함합니다.
- *
- * 접근성 향상:
- * - 적절한 ARIA 속성 및 역할 추가
- * - 키보드 탐색 지원
- * - 상태 변경 알림 기능
- * 
- * @param {ForestFireItemProps} props 산불 항목 속성
- * @returns {JSX.Element} 산불 항목 컴포넌트
  */
 export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
   ({ fire, onSelect, isSelected }) => {
-    /**
-     * 산불 항목 클릭 이벤트 처리
-     * useCallback으로 메모이제이션하여 불필요한 함수 재생성을 방지합니다.
-     */
     const handleClick = useCallback(() => {
       if (onSelect) {
         onSelect(fire);
       }
     }, [onSelect, fire]);
 
-    /**
-     * 키보드 이벤트 처리 (접근성 지원)
-     */
-    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (onSelect) {
-          onSelect(fire);
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (onSelect) {
+            onSelect(fire);
+          }
         }
-      }
-    }, [onSelect, fire]);
+      },
+      [onSelect, fire]
+    );
 
-    /**
-     * 대응단계 라벨 가져오기
-     * 산불 위험 등급을 한글 대응단계로 변환합니다.
-     */
     const responseLevelLabel = useMemo(() => {
       switch (fire.severity) {
         case "low":
@@ -59,10 +42,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
       }
     }, [fire.severity]);
 
-    /**
-     * 산불 상태 라벨 가져오기
-     * 산불 상태에 따른 한글 라벨을 반환합니다.
-     */
     const statusLabel = useMemo(() => {
       switch (fire.status) {
         case "active":
@@ -76,10 +55,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
       }
     }, [fire.status]);
 
-    /**
-     * 산불 위험도에 따른 배지 클래스 가져오기
-     * 위험도에 따라 다른 스타일을 적용하기 위한 CSS 클래스를 반환합니다.
-     */
     const severityBadgeClass = useMemo(() => {
       return combineClasses(
         "forest-fire-item__severity-badge",
@@ -90,10 +65,6 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
       );
     }, [fire.severity]);
 
-    /**
-     * 산불 상태 아이콘 클래스 가져오기
-     * 산불 상태에 따른 아이콘 스타일을 적용하기 위한 CSS 클래스를 반환합니다.
-     */
     const statusIconClass = useMemo(() => {
       return combineClasses(
         "forest-fire-item__status-icon",
@@ -103,16 +74,10 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
       );
     }, [fire.status]);
 
-    /**
-     * 컨테이너 클래스
-     */
     const containerClass = useMemo(() => {
       return `forest-fire-item ${isSelected === true ? "forest-fire-item--selected" : ""}`;
     }, [isSelected]);
 
-    /**
-     * 진화율 또는 상태 표시
-     */
     const statusBadgeContent = useMemo(() => {
       const percentage = fire.extinguishPercentage ?? "0";
 
@@ -133,26 +98,23 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
       );
     }, [fire.status, fire.extinguishPercentage, statusIconClass, statusLabel]);
 
-    /**
-     * 접근성을 위한 완전한 설명 생성
-     */
     const getAccessibleDescription = useMemo(() => {
       const location = fire.location;
       const date = fire.date;
       const area = `${fire.affectedArea}헥타르`;
       const responseLevel = fire.responseLevelName ?? responseLevelLabel;
       const status = statusLabel;
-      const extinguishPercentage = fire.extinguishPercentage 
-        ? `진화율 ${fire.extinguishPercentage}퍼센트` 
-        : '';
-      const description = fire.description ? `. 추가정보: ${fire.description}` : '';
+      const extinguishPercentage = fire.extinguishPercentage
+        ? `진화율 ${fire.extinguishPercentage}퍼센트`
+        : "";
+      const description = fire.description ? `. 추가정보: ${fire.description}` : "";
 
       return `${location}, ${date}에 발생, ${area} 면적, 대응단계 ${responseLevel}, 상태: ${status} ${extinguishPercentage}${description}`;
     }, [fire, responseLevelLabel, statusLabel]);
 
     return (
-      <div 
-        className={containerClass} 
+      <div
+        className={containerClass}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -167,20 +129,26 @@ export const ForestFireItem: FC<ForestFireItemProps> = React.memo(
               <span className="forest-fire-item__date">
                 <time dateTime={new Date(fire.date).toISOString()}>{fire.date}</time>
               </span>
-              <span className="forest-fire-item__separator" aria-hidden="true">•</span>
+              <span className="forest-fire-item__separator" aria-hidden="true">
+                •
+              </span>
               <span className="forest-fire-item__area">{fire.affectedArea}ha</span>
             </div>
           </div>
           <div className="forest-fire-item__badge-container">
-            <span 
+            <span
               className={severityBadgeClass}
               aria-label={`대응단계: ${fire.responseLevelName ?? responseLevelLabel}`}
             >
               대응단계: {fire.responseLevelName ?? responseLevelLabel}
             </span>
-            <span 
+            <span
               className="forest-fire-item__status-badge"
-              aria-label={`상태: ${fire.status === "active" || fire.status === "contained" ? `진화율 ${fire.extinguishPercentage ?? "0"}%` : statusLabel}`}
+              aria-label={`상태: ${
+                fire.status === "active" || fire.status === "contained"
+                  ? `진화율 ${fire.extinguishPercentage ?? "0"}%`
+                  : statusLabel
+              }`}
             >
               {statusBadgeContent}
             </span>

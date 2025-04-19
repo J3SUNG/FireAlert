@@ -1,11 +1,3 @@
-/**
- * @deprecated 
- * 이 파일은 중복 코드 통합을 위해 더 이상 사용되지 않습니다.
- * 모든 에러 타입 및 함수는 shared/lib/errors로 이동되었습니다.
- * 다음 파일을 참조하세요: import { createFireDataLoadError } from '../../../shared/lib/errors';
- */
-
-// 에러 타입 및 함수를 shared/lib/errors에서 가져와 호환성 유지
 import {
   AppError,
   ErrorType,
@@ -14,19 +6,28 @@ import {
   DataErrorCode,
   createFireDataLoadError,
   createFireDataParseError,
-  createForestFireDataError
+  createForestFireDataError,
 } from "../../../shared/lib/errors";
 
-// 현재 파일에서 사용되던 함수들을 중앙 모듈에서 재내보내기
+/**
+ * 산불 데이터 관련 에러 함수 및 콘스턴트
+ *
+ * 산불 데이터 처리 중 발생할 수 있는 에러를 관리하기 위한 API를 제공합니다.
+ */
 export {
   DataErrorCode,
   createFireDataLoadError,
   createFireDataParseError,
-  createForestFireDataError
+  createForestFireDataError,
 };
 
-// 이전 FOREST_FIRE_DATA_MESSAGES 상수도 내보내기 (호환성 유지)
+/**
+ * 산불 데이터 에러 관련 메시지
+ *
+ * 에러 유형별 사용자 친화적인 메시지를 정의합니다.
+ */
 export const FOREST_FIRE_DATA_MESSAGES: Record<string, string> = {
-  [DataErrorCode.FIRE_DATA_FETCH_FAILED]: "산불 데이터를 가져오는데 실패했습니다. 네트워크 연결을 확인해주세요.",
+  [DataErrorCode.FIRE_DATA_FETCH_FAILED]:
+    "산불 데이터를 가져오는데 실패했습니다. 네트워크 연결을 확인해주세요.",
   [DataErrorCode.CACHE_ERROR]: "산불 데이터 캐시 처리 중 오류가 발생했습니다.",
 };

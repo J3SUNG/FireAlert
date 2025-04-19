@@ -21,23 +21,18 @@ export const PROVINCE_LOCATIONS = [
   { name: "제주특별자치도", lat: 33.4996, lng: 126.5312 },
 ];
 
-// 동일한 좌표값을 다른 형식으로 내보내기 (마커 위치로 사용)
-export const PROVINCE_COORDINATES = PROVINCE_LOCATIONS.map(loc => ({
+export const PROVINCE_COORDINATES = PROVINCE_LOCATIONS.map((loc) => ({
   name: loc.name,
-  coordinates: [loc.lat, loc.lng]
+  coordinates: [loc.lat, loc.lng],
 }));
 
 /**
  * 이름으로 시도 좌표 찾기
- * 
- * 정확한 일치 또는 부분 일치로 좌표 검색
  */
 export const findProvinceLocation = (name: string) => {
-  // 정확한 일치 먼저 확인
   const exactMatch = PROVINCE_LOCATIONS.find((location) => location.name === name);
   if (exactMatch) return exactMatch;
 
-  // 부분 일치 확인 (예: "강원도"와 "강원특별자치도")
   const partialMatch = PROVINCE_LOCATIONS.find(
     (location) => name.includes(location.name) || location.name.includes(name)
   );

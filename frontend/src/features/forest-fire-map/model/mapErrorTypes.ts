@@ -1,7 +1,6 @@
 import { ErrorCategory, ErrorSeverity, AppError, ErrorType } from "../../../shared/lib/errors";
 import { MapErrorCode, getErrorMessage } from "../../../shared/lib/errors/errorCodes";
 
-// 외부에서 사용할 수 있도록 MapErrorCode 내보내기
 export { MapErrorCode };
 
 /**
@@ -16,7 +15,7 @@ export enum MapErrorCategory {
 }
 
 /**
- * 산불 지도 특화 에러 메시지 (feature별 특화 메시지가 필요한 경우)
+ * 산불 지도 특화 에러 메시지
  */
 export const FOREST_FIRE_MAP_MESSAGES: Record<string, string> = {
   [MapErrorCode.INITIALIZATION_FAILED]:
@@ -25,25 +24,20 @@ export const FOREST_FIRE_MAP_MESSAGES: Record<string, string> = {
 };
 
 /**
- * 산불 지도 feature 특화 에러 생성 함수
- *
- * 산불 지도 슬라이스에 특화된 에러 컨텍스트를 포함합니다
+ * 산불 지도 에러 생성 함수
  */
 export function createForestFireMapError(
   code: MapErrorCode,
   originalError?: Error,
   additionalInfo?: string
 ): AppError {
-  // feature 특화 메시지 또는 공통 메시지 사용
   const baseMessage = FOREST_FIRE_MAP_MESSAGES[code] || getErrorMessage(code);
   const message = additionalInfo ? `${baseMessage} ${additionalInfo}` : baseMessage;
 
-  // 에러 유형에 따라 카테고리와 타입 분류
   const category: ErrorCategory = ErrorCategory.MAP;
   const type: ErrorType = ErrorType.MAP_LOAD_FAILED;
   let mapCategory: MapErrorCategory = MapErrorCategory.MAP_INITIALIZATION;
 
-  // 코드 접두사로 에러 카테고리 결정
   if (code.startsWith("MAP-")) {
     mapCategory = MapErrorCategory.MAP_INITIALIZATION;
   } else if (code.startsWith("GEO-")) {
@@ -86,8 +80,6 @@ export function createForestFireMapError(
 
 /**
  * 지도 초기화 실패 에러 생성 함수
- *
- * 산불 지도 초기화에 실패했을 때 사용
  */
 export function createMapInitializationError(
   originalError?: Error,
@@ -102,8 +94,6 @@ export function createMapInitializationError(
 
 /**
  * GeoJSON 로드 실패 에러 생성 함수
- *
- * 지역 경계 데이터 로드에 실패했을 때 사용
  */
 export function createGeoJsonLoadError(originalError?: Error, additionalInfo?: string): AppError {
   return createForestFireMapError(MapErrorCode.GEOJSON_LOAD_FAILED, originalError, additionalInfo);
@@ -111,8 +101,6 @@ export function createGeoJsonLoadError(originalError?: Error, additionalInfo?: s
 
 /**
  * 마커 생성 실패 에러 생성 함수
- *
- * 산불 마커 생성에 실패했을 때 사용
  */
 export function createMarkerCreationError(
   originalError?: Error,
