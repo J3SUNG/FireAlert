@@ -7,10 +7,23 @@
       href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="실시간 산불 알림 서비스. 전국 산불 발생 현황을 지도와 목록으로 확인하세요." />
+    <link rel="preconnect" href="http://openapi.forest.go.kr" />
+    <link rel="preload" href="/src/main.tsx" as="script" />
+    <link rel="preload" href="/src/app/styles/index.css" as="style" />
     <title>불씨 알림</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- 초기 로딩 화면 -->
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #f8fafc;">
+        <div style="text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 12px;">🔥</div>
+          <div style="font-weight: bold; font-size: 20px;"><span style="color: #ef4444;">불씨</span>알림</div>
+          <div style="margin-top: 12px; font-size: 14px;">로딩중...</div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

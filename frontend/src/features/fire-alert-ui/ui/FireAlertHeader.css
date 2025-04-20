@@ -27,7 +27,6 @@
 
 .fire-alert__logo-icon {
   font-size: var(--text-2xl);
-  margin-right: var(--space-sm);
   color: var(--status-active);
 }
 
